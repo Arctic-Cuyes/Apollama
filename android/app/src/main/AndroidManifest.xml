@@ -2,7 +2,7 @@
     package="com.example.zona_hub">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="zona_hub"
+        android:label="Zona Hub"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
