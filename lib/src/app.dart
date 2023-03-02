@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/views/Notifications/notifications.dart';
 import 'package:zona_hub/src/views/home/home.dart';
 import 'package:zona_hub/src/views/map/map.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
@@ -40,19 +42,23 @@ class _RootState extends State<Root> {
 
   int currentPage = 0;
   //Here goes the views Pages Home(), Map(), Profile(), etc.
-  List<Widget> pages = const [HomePage(), ProfilePage(), MapPage()];
+  List<Widget> pages = const [HomePage(), MapPage(), NotificationsPage()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //Sidebar
+      //Ingonar la recomendación de hacer constante el componente ya que contiene elementos que van a cambiar
+      drawer: Drawer(
+        child: DrawerComponent() 
+      ),
       appBar: AppBar(
         title: const Text("Zona Hub"),
         actions: [
           IconButton(
-            icon: Icon( MyApp.themeNotifier.value == ThemeMode.light ? Icons.light_mode : Icons.dark_mode), 
+            icon: const Icon( Icons.search ), 
             onPressed: () {
-              //Change the theme mode
-              MyApp.themeNotifier.value = (MyApp.themeNotifier.value == ThemeMode.light) ? ThemeMode.dark : ThemeMode.light;  
+              //Search logic 
             },)
         ],
       ),
@@ -61,8 +67,8 @@ class _RootState extends State<Root> {
       bottomNavigationBar: NavigationBar(
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-          NavigationDestination(icon: Icon(Icons.person_2), label: "Profiles"),
-          NavigationDestination(icon: Icon(Icons.map), label: "Map")
+          NavigationDestination(icon: Icon(Icons.map), label: "Map"),
+          NavigationDestination(icon: Icon(Icons.notifications), label: "Notifications"),
         ],
         onDestinationSelected: (int index) {
           setState(() {
