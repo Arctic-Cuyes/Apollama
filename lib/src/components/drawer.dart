@@ -119,7 +119,8 @@ class _ProfileSummaryState extends State<ProfileSummary> {
             ),
           ),
         ),
-        const Text("Stripper"),
+        const Text("+51 123 456 789"),
+        const Text("ContactoOpcional@gmail.com")
       ]),
     );
   }

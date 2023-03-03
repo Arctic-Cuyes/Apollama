@@ -67,7 +67,7 @@ class _RootState extends State<Root> {
       bottomNavigationBar: NavigationBar(
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-          NavigationDestination(icon: Icon(Icons.map), label: "Map"),
+          NavigationDestination(icon: Icon(Icons.location_pin), label: "Map"),
           NavigationDestination(icon: Icon(Icons.notifications), label: "Notifications"),
         ],
         onDestinationSelected: (int index) {
