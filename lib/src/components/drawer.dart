@@ -79,11 +79,10 @@ class ProfileSummary extends StatefulWidget {
 class _ProfileSummaryState extends State<ProfileSummary> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 165,
-      width: 210,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, 
+    return Expanded(
+      child: Flex(
+        direction: Axis.vertical, 
+        crossAxisAlignment: CrossAxisAlignment.center, 
         children: [
         //User image in circle shape
         GestureDetector(
@@ -110,7 +109,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
         ),
         //User name
         const Padding(
-          padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Text(
             "Fogel McLovin", 
             style: TextStyle(
