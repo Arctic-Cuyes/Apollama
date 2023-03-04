@@ -18,7 +18,7 @@ class _RecientesState extends State<Recientes> {
           itemCount: 10, //lista.length
           itemBuilder: (context, index) {
             // Se reemplazará por la lista de posts obtenida desde la base de datos
-            return PostComponent(
+            return const PostComponent(
               userphoto: "https://i.pinimg.com/originals/30/8d/79/308d795c3cac0f8f16610f53df4e1005.jpg",
               username: "User Name ",
               imageUrl: "https://www.hogarmania.com/archivos/201910/mascota-perdida-XxXx80.jpg",

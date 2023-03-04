@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
                   
                 });              
               },
-              child: TabBarView (
+              child: const TabBarView (
                 children:  [
                  Recientes(),
                  Recientes(),
