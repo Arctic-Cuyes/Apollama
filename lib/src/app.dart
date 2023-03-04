@@ -63,11 +63,12 @@ class _RootState extends State<Root> {
         ],
       ),
       body: pages[currentPage],
-    
+
       bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         height: 60,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Inicio'),
+          NavigationDestination(icon: Icon(Icons.home), label: 'Inicio',),
           NavigationDestination(icon: Icon(Icons.location_pin), label: 'Maps'),
           NavigationDestination(icon: Icon(Icons.notifications), label: 'Notificaciones'),
         ],

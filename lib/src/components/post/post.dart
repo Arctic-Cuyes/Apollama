@@ -74,7 +74,7 @@ class _PostComponentState extends State<PostComponent> {
           //User image
           const Divider(),
           Text(
-            (widget.postText.length > 255) ? "${widget.postText.substring(0, 255)}  ... ver más" : widget.postText,
+            (widget.postText.length > 300) ? "${widget.postText.substring(0, 300)}  ... ver más" : widget.postText,
           ),
           const Divider(
             color: Colors.transparent,
@@ -84,12 +84,12 @@ class _PostComponentState extends State<PostComponent> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                icon: const Icon(Icons.thumb_up_alt),
+                icon: const Icon(Icons.thumb_up_off_alt_outlined),
                 onPressed: addLike,
               ),
               Text(likes.toString()),
               IconButton(
-                icon: const Icon(Icons.thumb_down),
+                icon: const Icon(Icons.thumb_down_alt_outlined),
                 onPressed: addDislike,
               ),
               Text(dislikes.toString()),
