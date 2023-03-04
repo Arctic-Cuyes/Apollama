@@ -8,10 +8,10 @@ import 'package:zona_hub/src/views/profile/profile.dart';
 */
 
 const List<Map<String, dynamic>> options = [
-  {'icon': Icon(Icons.person_2_rounded), 'option': 'Perfil'},
-  {'icon': Icon(Icons.settings), 'option': 'Configuración'},
-  {'icon': Icon(Icons.edit), 'option': 'Editar elemento'},
-  {'icon': Icon(Icons.logout), 'option': 'Cerrar sesión' },
+  {'icon': Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage()},
+  {'icon': Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage() },
+  {'icon': Icon(Icons.edit), 'option': 'Editar elemento', 'page': ProfilePage()},
+  {'icon': Icon(Icons.logout), 'option': 'Cerrar sesión', 'page': ProfilePage()},
 ];
 
 class DrawerComponent extends StatelessWidget {
@@ -31,6 +31,7 @@ class DrawerComponent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const ProfileSummary(),
+                  //Theme mode icon
                   IconButton(
                     onPressed: () {
                       MyApp.themeNotifier.value =
@@ -52,20 +53,6 @@ class DrawerComponent extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class ThemeModeIcon extends StatefulWidget {
-  const ThemeModeIcon({super.key});
-
-  @override
-  State<ThemeModeIcon> createState() => _ThemeModeIconState();
-}
-
-class _ThemeModeIconState extends State<ThemeModeIcon> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
 
@@ -111,7 +98,8 @@ class _ProfileSummaryState extends State<ProfileSummary> {
         const Padding(
           padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Text(
-            "Fogel McLovin", 
+            "Fogel McLovin",
+            textAlign: TextAlign.center, 
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -139,8 +127,9 @@ class DrawerOptions extends StatelessWidget {
         title: Text(options[index]['option']),
         leading: options[index]['icon'],
         onTap: (){
-          //Lógica para abrir página seleccionada
+          //Lógica para abrir página de opción seleccionada
           debugPrint((index).toString());
+          Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
         },
         );
       },

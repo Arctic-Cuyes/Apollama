@@ -3,7 +3,6 @@ import 'package:zona_hub/src/components/drawer.dart';
 import 'package:zona_hub/src/views/Notifications/notifications.dart';
 import 'package:zona_hub/src/views/home/home.dart';
 import 'package:zona_hub/src/views/map/map.dart';
-import 'package:zona_hub/src/views/profile/profile.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -53,6 +52,7 @@ class _RootState extends State<Root> {
         child: DrawerComponent() 
       ),
       appBar: AppBar(
+        elevation: 0,
         title: const Text("Zona Hub"),
         actions: [
           IconButton(
@@ -65,10 +65,11 @@ class _RootState extends State<Root> {
       body: pages[currentPage],
     
       bottomNavigationBar: NavigationBar(
+        height: 60,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-          NavigationDestination(icon: Icon(Icons.location_pin), label: "Map"),
-          NavigationDestination(icon: Icon(Icons.notifications), label: "Notifications"),
+          NavigationDestination(icon: Icon(Icons.home), label: 'Inicio'),
+          NavigationDestination(icon: Icon(Icons.location_pin), label: 'Maps'),
+          NavigationDestination(icon: Icon(Icons.notifications), label: 'Notificaciones'),
         ],
         onDestinationSelected: (int index) {
           setState(() {
@@ -80,34 +81,3 @@ class _RootState extends State<Root> {
     );
   }
 }
-
-
-// class MyApp extends StatefulWidget {
-//   const MyApp({super.key});
-  
-//   @override
-//   State<MyApp> createState() => _MyAppState();
-// }
-
-// class _MyAppState extends State<MyApp> {
-//   // Initial theme mode is the system theme mode
-//   static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.system);
-  
-//   @override
-//   Widget build(BuildContext context) {
-//     return ValueListenableBuilder<ThemeMode>(
-//       valueListenable: themeNotifier,
-//       builder: (context, currentMode, _) {
-//         return MaterialApp(
-//           debugShowCheckedModeBanner: false,
-//           title: 'ZonaHub',
-//           theme: ThemeData(primarySwatch: Colors.amber),
-//           darkTheme: ThemeData.dark(),
-//           themeMode: currentMode,
-//           home: const Scaffold(),
-//         );
-//       } 
-//     );
-
-//   }
-// }
