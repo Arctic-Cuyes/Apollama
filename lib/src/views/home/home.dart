@@ -81,7 +81,7 @@ class HomeTab extends StatelessWidget {
               //Show tags multiple selection menu             
             }, 
             icon: const Icon(Icons.filter_list_rounded,
-            color: Colors.amber,
+            color: Colors.white,
           )),
         ),
       ],
