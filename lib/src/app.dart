@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           darkTheme: ThemeData.dark(),
           themeMode: currentMode,
           
-          home: Root(),
+          home: const Root(),
         );
       } 
     );
@@ -48,7 +48,7 @@ class _RootState extends State<Root> {
     return Scaffold(
       //Sidebar
       //Ingonar la recomendación de hacer constante el componente ya que contiene elementos que van a cambiar
-      drawer: Drawer(
+      drawer: const Drawer(
         child: DrawerComponent() 
       ),
       appBar: AppBar(
