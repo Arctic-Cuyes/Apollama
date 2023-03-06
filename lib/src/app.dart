@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/styles/custom_themes.dart';
+
 import 'package:zona_hub/src/views/notifications/notifications.dart';
 import 'package:zona_hub/src/views/home/home.dart';
 import 'package:zona_hub/src/views/map/map.dart';
@@ -18,9 +20,9 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'ZonaHub',
           //Customize light theme
-          theme: ThemeData(primarySwatch: Colors.amber,),
-          //Customize darak theme
-          darkTheme: ThemeData.dark(),
+          theme: customLightTheme(),
+          //Customize dark theme with primarySwatch amber
+          darkTheme: customDarkTheme(),
           themeMode: currentMode,
           
           home: const Root(),
