@@ -26,7 +26,8 @@ class MyApp extends StatelessWidget {
           darkTheme: customDarkTheme(),
           themeMode: currentMode,
           
-          home: const Root(),
+          //IGNORAR RECOMENDACIÓN DE USAR CONST
+          home: Root(),
         );
       } 
     );

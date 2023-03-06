@@ -25,21 +25,12 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
          body: 
-            RefreshIndicator(
-              onRefresh: () async {
-                //simulate a database query
-                await Future.delayed(const Duration(seconds: 2)); 
-                setState(() {
-                  
-                });              
-              },
-              child: const TabBarView (
-                children:  [
-                 Recientes(),
-                 Recientes(),
-                 Recientes(),
-                ],
-              ),
+            const TabBarView (
+              children:  [
+               Recientes(),
+               Recientes(),
+               Recientes(),
+              ],
             ),
         floatingActionButton: 
           FloatingActionButton(
