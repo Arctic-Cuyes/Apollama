@@ -18,7 +18,9 @@ ThemeData customDarkTheme () {
         indicatorSize: TabBarIndicatorSize.label
       ),
       //Botón "(+)" en página home
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: mainColorDark)
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: mainColorDark),
+      //Loaders 
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: mainColorDark),
   );
 }
 
