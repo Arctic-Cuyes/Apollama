@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
           darkTheme: customDarkTheme(),
           themeMode: currentMode,
           
-          home: const Root(),
+          //IGNORAR RECOMENDACIÓN DE USAR CONST
+          home: Root(),
         );
       } 
     );
@@ -50,7 +51,7 @@ class _RootState extends State<Root> {
     return Scaffold(
       //Sidebar
       //Ingonar la recomendación de hacer constante el componente ya que contiene elementos que van a cambiar
-      drawer: const Drawer(
+      drawer: Drawer(
         child: DrawerComponent() 
       ),
       appBar: AppBar(
