@@ -1,28 +1,32 @@
 //Dark theme and light theme customization
 import 'package:flutter/material.dart';
 
-const Color mainColor = Color.fromARGB(255, 210, 91, 55);
+const Color mainColorDark = Colors.amber;
+
+const MaterialColor  mainColorLight = Colors.amber;
 
 ThemeData customDarkTheme () {
   return  ThemeData.dark().copyWith(
       // Barra de navegación de la parte inferior de la app (home, maps, notificaciones)
-      navigationBarTheme:  const NavigationBarThemeData(indicatorColor: mainColor),
+      navigationBarTheme:  const NavigationBarThemeData(indicatorColor: mainColorDark),
       //Barra en la parte superior de la página home (recientes, popular, noticias)
       tabBarTheme: const TabBarTheme(
-        indicatorColor: mainColor, 
-        labelColor: mainColor,
+        indicatorColor: mainColorDark, 
+        labelColor: mainColorDark,
         unselectedLabelColor: Colors.white38,
-        indicator: UnderlineTabIndicator(borderSide: BorderSide(color: mainColor, width: 2.0)),
+        indicator: UnderlineTabIndicator(borderSide: BorderSide(color: mainColorDark, width: 2.0)),
         indicatorSize: TabBarIndicatorSize.label
       ),
       //Botón "(+)" en página home
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: mainColor)
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: mainColorDark)
   );
 }
 
 ThemeData customLightTheme(){
-  return ThemeData(primarySwatch: Colors.deepOrange).copyWith(
+  return ThemeData(primarySwatch: mainColorLight).copyWith(
     tabBarTheme: const TabBarTheme(
+      labelColor: Colors.black,
+      indicator: UnderlineTabIndicator(borderSide: BorderSide(color: Colors.black, width: 2.0)),
       unselectedLabelColor: Colors.white54,
       indicatorSize: TabBarIndicatorSize.label
     )
