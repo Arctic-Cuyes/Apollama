@@ -13,13 +13,16 @@ class MapPage extends StatelessWidget {
         children: [
           Consumer<MapController>(
             builder: (context, controller, _) {
+              debugPrint("Se construye solo");
               return GoogleMap(
                 markers: controller.markers,
                 initialCameraPosition: controller.initialCameraPos,
                 myLocationButtonEnabled: true,
+                myLocationEnabled: true,
+                mapType: MapType.normal,
                 compassEnabled: true,
                 zoomControlsEnabled: false,
-                onTap: (context) => debugPrint("Hola"),
+                onTap: (context) => debugPrint("Presionado en mapa"),
               );
             },
           )

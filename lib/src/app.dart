@@ -35,6 +35,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class _MapPageProvider extends StatelessWidget {
+  const _MapPageProvider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<MapController>(
+      create: (context) => MapController(),
+      child: const MapPage(),
+    );
+  }
+}
+
 class Root extends StatefulWidget {
   const Root({super.key});
 
@@ -45,13 +57,10 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   int currentPage = 0;
   //Here goes the views Pages Home(), Map(), Profile(), etc.
-  List<Widget> pages = [
-    const HomePage(),
-    ChangeNotifierProvider<MapController>(
-      create: (context) => MapController(),
-      child: const MapPage(),
-    ),
-    const NotificationsPage()
+  List<Widget> pages = const [
+    HomePage(),
+    _MapPageProvider(),
+    NotificationsPage()
   ];
 
   @override

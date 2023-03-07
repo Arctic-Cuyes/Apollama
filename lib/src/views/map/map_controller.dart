@@ -27,6 +27,7 @@ class MapController extends ChangeNotifier {
     final newMarker = Marker(
       markerId: markerId,
       position: cMarker.location,
+      draggable: true,
       onTap: () => debugPrint("$markerId"),
     );
 
