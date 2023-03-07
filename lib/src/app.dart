@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/drawer.dart';
 import 'package:zona_hub/src/styles/custom_themes.dart';
+import 'package:zona_hub/src/views/auth/login.dart';
 import 'package:zona_hub/src/views/map/map_controller.dart';
 
 import 'package:zona_hub/src/views/notifications/notifications.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
             themeMode: currentMode,
 
             //IGNORAR RECOMENDACIÓN DE USAR CONST
-            home: Root(),
+            home: LoginPage(),
           );
         });
   }
