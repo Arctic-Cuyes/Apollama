@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/drawer.dart';
 import 'package:zona_hub/src/styles/custom_themes.dart';
+import 'package:zona_hub/src/views/map/map_controller.dart';
 
 import 'package:zona_hub/src/views/notifications/notifications.dart';
 import 'package:zona_hub/src/views/home/home.dart';
@@ -15,21 +17,32 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeNotifier,
-      builder: (context, currentMode, _) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'ZonaHub',
-          //Customize light theme
-          theme: customLightTheme(),
-          //Customize dark theme with primarySwatch amber
-          darkTheme: customDarkTheme(),
-          themeMode: currentMode,
-          
-          //IGNORAR RECOMENDACIÓN DE USAR CONST
-          home: Root(),
-        );
-      } 
+        valueListenable: themeNotifier,
+        builder: (context, currentMode, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'ZonaHub',
+            //Customize light theme
+            theme: customLightTheme(),
+            //Customize dark theme with primarySwatch amber
+            darkTheme: customDarkTheme(),
+            themeMode: currentMode,
+
+            //IGNORAR RECOMENDACIÓN DE USAR CONST
+            home: Root(),
+          );
+        });
+  }
+}
+
+class _MapPageProvider extends StatelessWidget {
+  const _MapPageProvider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<MapController>(
+      create: (context) => MapController(),
+      child: const MapPage(),
     );
   }
 }
@@ -44,7 +57,11 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   int currentPage = 0;
   //Here goes the views Pages Home(), Map(), Profile(), etc.
-  List<Widget> pages = const [HomePage(), MapPage(), NotificationsPage()];
+  List<Widget> pages = const [
+    HomePage(),
+    _MapPageProvider(),
+    NotificationsPage()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -74,9 +91,14 @@ class _RootState extends State<Root> {
             icon: Icon(Icons.home),
             label: 'Inicio',
           ),
-          NavigationDestination(icon: Icon(Icons.location_pin), label: 'Maps'),
           NavigationDestination(
-              icon: Icon(Icons.notifications), label: 'Notificaciones'),
+            icon: Icon(Icons.location_pin),
+            label: 'Maps',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.notifications),
+            label: 'Notificaciones',
+          ),
         ],
         onDestinationSelected: (int index) {
           setState(() {
