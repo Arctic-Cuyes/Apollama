@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:zona_hub/src/views/auth/auth_controller.dart';
 
-import '../../app.dart';
+import '../root.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
