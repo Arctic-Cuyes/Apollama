@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/views/permissions/permission.dart';
 import 'home/home.dart';
 import 'map/map.dart';
 import 'notifications/notifications.dart';
@@ -13,12 +16,33 @@ class Root extends StatefulWidget {
 
 class _RootState extends State<Root> {
   int currentPage = 0;
+  PermissionStatus? _status;
   //Here goes the views Pages Home(), Map(), Profile(), etc.
   List<Widget> pages = const [
     HomePage(),
     MapPageProvider(),
     NotificationsPage()
   ];
+
+  void _requestPermission() async {
+    _status = await Permission.locationWhenInUse.status;
+    if (_status != PermissionStatus.granted) {
+      _goRequestPermission();
+    }
+  }
+
+  void _goRequestPermission() {
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (_) => const RequestPermissionPage()));
+  }
+
+  @override
+  void initState() {
+    debugPrint("Se construye main");
+    // TODO: implement initState
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) => _requestPermission());
+  }
 
   @override
   Widget build(BuildContext context) {

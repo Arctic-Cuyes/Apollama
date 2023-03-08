@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  AuthController _controller = AuthController();
+  final _controller = AuthController();
   late String? loginToken;
   bool isLoading = true;
 
