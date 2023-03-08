@@ -3,8 +3,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/views/map/map_controller.dart';
 
-class MapPage extends StatelessWidget {
-  const MapPage({super.key});
+class MapPageProvider extends StatelessWidget {
+  const MapPageProvider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<MapController>(
+      create: (context) => MapController(),
+      child: const _MapPage(),
+    );
+  }
+}
+
+class _MapPage extends StatelessWidget {
+  const _MapPage({super.key});
 
   @override
   Widget build(BuildContext context) {
