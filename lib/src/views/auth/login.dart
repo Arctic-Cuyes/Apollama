@@ -1,8 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:zona_hub/src/views/auth/auth_controller.dart';
-
-import '../root.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,65 +9,55 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _controller = AuthController();
-  late String? loginToken;
-  bool isLoading = true;
-
-  Future<void> _autoRedirectIfLogged() async {
-    //TODO: Get login token
-    loginToken = await _controller.getSavedSession();
-    if (loginToken != null) {
-      _goHome();
-    }
-
-    setState(() => isLoading = false);
-  }
-
-  void _goHome() {
-    Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, anim1, anim2) => Root(),
-          transitionDuration: Duration.zero,
-          reverseTransitionDuration: Duration.zero,
-        ));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    SchedulerBinding.instance
-        .addPostFrameCallback((_) => _autoRedirectIfLogged());
-  }
-
-  Widget _showLogin() {
-    if (isLoading) {
-      return const CircularProgressIndicator();
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text("Fake Login"),
-        ElevatedButton(
-          onPressed: () => _goHome(),
-          child: const Text("Login"),
-        ),
-        const ElevatedButton(
-          onPressed: null,
-          child: Text("Register"),
-        )
-      ],
-    );
-  }
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Center(
-        child: _showLogin(),
-      )),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.all(10),
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _emailController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(labelText: "Email"),
+              ),
+              const SizedBox(height: 4,),
+              TextField(
+                controller: _passwordController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(labelText: "Password"),
+                obscureText: true,
+              ),
+              
+              const SizedBox(height: 4,),
+          
+              ElevatedButton(
+                onPressed: () => _signIn(),
+                child: const Text("Login"),
+              ),
+              const ElevatedButton(
+                onPressed: null,
+                child: Text("Register"),
+              )
+            ],
+            ),
+          ),
+        )
+      ),
+    );
+  }
+
+  Future _signIn() async{
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _emailController.text.trim(), 
+      password: _passwordController.text.trim(),
     );
   }
 }
+
