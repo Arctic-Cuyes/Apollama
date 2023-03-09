@@ -38,7 +38,7 @@ class _RootState extends State<Root> {
 
   @override
   void initState() {
-    debugPrint("Se construye main");
+    debugPrint("Se construye Root");
     // TODO: implement initState
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => _requestPermission());
