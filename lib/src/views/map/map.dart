@@ -23,19 +23,32 @@ class _MapPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Consumer<MapController>(
-            builder: (context, controller, _) {
-              debugPrint("Se construye solo");
-              return GoogleMap(
-                markers: controller.markers,
-                initialCameraPosition: controller.initialCameraPos,
-                myLocationButtonEnabled: true,
-                myLocationEnabled: true,
-                mapType: MapType.normal,
-                compassEnabled: true,
-                zoomControlsEnabled: false,
-                onTap: (context) => debugPrint("Presionado en mapa"),
-              );
+          FutureBuilder(
+            future: Provider.of<MapController>(context, listen: false)
+                .initialCameraPos,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                return Consumer<MapController>(
+                  builder: (context, controller, _) {
+                    debugPrint("Se construye el mapa");
+                    return GoogleMap(
+                      markers: controller.markers,
+                      initialCameraPosition: snapshot.data!,
+                      myLocationButtonEnabled: true,
+                      myLocationEnabled: true,
+                      mapType: MapType.normal,
+                      compassEnabled: true,
+                      zoomControlsEnabled: false,
+                      onTap: (context) => debugPrint("Presionado en mapa"),
+                    );
+                  },
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
             },
           )
         ],

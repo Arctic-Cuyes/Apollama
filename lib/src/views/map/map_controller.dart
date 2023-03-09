@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import '../../services/gps_service.dart';
 import 'marker_examples.dart';
 
 class MapController extends ChangeNotifier {
-  final initialCameraPos = const CameraPosition(
-    target: LatLng(-8.1166336, -79.0429696),
-    zoom: 15,
-  );
+  final _gpsService = GpsService();
+  late CameraPosition _initialCameraPos;
+
+  Future<CameraPosition> get initialCameraPos async {
+    Position? initialPosition = await _gpsService.determinePosition();
+    if (initialPosition != null) {
+      _initialCameraPos = CameraPosition(
+          target: LatLng(initialPosition.latitude, initialPosition.longitude),
+          zoom: 14.5);
+    } else {
+      _initialCameraPos = const CameraPosition(target: LatLng(0, 0), zoom: 0.0);
+    }
+    return _initialCameraPos;
+  }
 
   final fetchedMarkers = customMarkers;
 
