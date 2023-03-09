@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
@@ -11,7 +12,7 @@ const List<Map<String, dynamic>> options = [
   {'icon': Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage()},
   {'icon': Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage() },
   {'icon': Icon(Icons.edit), 'option': 'Editar elemento', 'page': ProfilePage()},
-  {'icon': Icon(Icons.logout), 'option': 'Cerrar sesión', 'page': ProfilePage()},
+  {'icon': Icon(Icons.logout), 'option': 'Cerrar sesión',},
 ];
 
 class DrawerComponent extends StatelessWidget {
@@ -64,6 +65,9 @@ class ProfileSummary extends StatefulWidget {
 }
 
 class _ProfileSummaryState extends State<ProfileSummary> {
+  
+  final user = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -107,7 +111,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
           ),
         ),
         const Text("+51 123 456 789"),
-        const Text("ContactoOpcional@gmail.com")
+        Text(user.email!),
       ]),
     );
   }
@@ -128,8 +132,11 @@ class DrawerOptions extends StatelessWidget {
         leading: options[index]['icon'],
         onTap: (){
           //Lógica para abrir página de opción seleccionada
-          debugPrint((index).toString());
-          Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
+          if(index == 3){ //Logout
+            FirebaseAuth.instance.signOut();
+          }else{
+            Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
+          }
         },
         );
       },
