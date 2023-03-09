@@ -15,8 +15,17 @@ class MapController extends ChangeNotifier {
           target: LatLng(initialPosition.latitude, initialPosition.longitude),
           zoom: 14.5);
     } else {
-      _initialCameraPos = const CameraPosition(target: LatLng(0, 0), zoom: 0.0);
+      initialPosition = await _gpsService.determineLastPosition();
+      if (initialPosition != null) {
+        _initialCameraPos = CameraPosition(
+            target: LatLng(initialPosition.latitude, initialPosition.longitude),
+            zoom: 14.5);
+      } else {
+        _initialCameraPos =
+            const CameraPosition(target: LatLng(0, 0), zoom: 0.0);
+      }
     }
+
     return _initialCameraPos;
   }
 

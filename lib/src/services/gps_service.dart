@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 
@@ -26,5 +27,9 @@ class GpsService {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
+  }
+
+  Future<Position?> determineLastPosition() async {
+    return await Geolocator.getLastKnownPosition();
   }
 }

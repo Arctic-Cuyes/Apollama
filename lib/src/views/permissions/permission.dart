@@ -6,6 +6,7 @@ import 'package:zona_hub/src/views/permissions/permission_controller.dart';
 import 'package:zona_hub/src/views/root.dart';
 
 final _controller = RequestPermissionController(Permission.locationWhenInUse);
+bool _fromSettings = false;
 
 class RequestPermissionPage extends StatefulWidget {
   const RequestPermissionPage({super.key});
@@ -35,6 +36,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
   void initState() {
     // TODO: implement initState
     super.initState();
+    debugPrint("Se construye permission page");
     WidgetsBinding.instance.addObserver(this);
     _subscription = _controller.onStatusChanged.listen((status) {
       if (status == PermissionStatus.granted) {
@@ -46,6 +48,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
           builder: (_) => (const RequireDialog()),
         );
       }
+      debugPrint("Llega aqui");
     });
   }
 
@@ -67,10 +70,10 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && _fromSettings) {
       _controller.notify();
     }
+    _fromSettings = false;
   }
 }
 
@@ -88,7 +91,7 @@ class RequireDialog extends StatelessWidget {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await openAppSettings();
+              _fromSettings = await openAppSettings();
             },
             style: const ButtonStyle(
               backgroundColor: MaterialStatePropertyAll(
