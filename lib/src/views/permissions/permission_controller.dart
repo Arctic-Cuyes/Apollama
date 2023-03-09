@@ -19,9 +19,6 @@ class RequestPermissionController {
     if (!_streamController.isClosed && _streamController.hasListener) {
       _streamController.sink.add(status);
     }
-    if (!_streamController.hasListener) {
-      print("No hay listener pipipi");
-    }
   }
 
   void notify() async {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zona_hub/src/views/permissions/permission_controller.dart';
 import 'package:zona_hub/src/views/root.dart';
@@ -40,7 +41,16 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
     WidgetsBinding.instance.addObserver(this);
     _subscription = _controller.onStatusChanged.listen((status) {
       if (status == PermissionStatus.granted) {
-        _goHome();
+        Geolocator.getLocationAccuracy().then((value) {
+          if (value != LocationAccuracyStatus.precise) {
+            showDialog(
+              context: context,
+              builder: (_) => (const _RequirePreciseDialog()),
+            );
+          } else {
+            _goHome();
+          }
+        });
       }
       if (status == PermissionStatus.permanentlyDenied) {
         showDialog(
@@ -85,7 +95,7 @@ class RequireDialog extends StatelessWidget {
     return AlertDialog(
         title: const Text("INFO"),
         content: const Text(
-          "No se pudo recuperar la ubicación. Por favor, activarlo de forma manual",
+          "No se pudo recuperar el acceso a la ubicación. Por favor, activarlo de forma manual en configuraciones",
         ),
         actions: [
           TextButton(
@@ -102,7 +112,7 @@ class RequireDialog extends StatelessWidget {
               ),
             ),
             child: const Text(
-              "Go To Settings",
+              "Ir a configuraciones",
               style: TextStyle(color: Colors.black),
             ),
           ),
@@ -136,7 +146,7 @@ class RequireWidget extends StatelessWidget {
               height: 20,
             ),
             const Text(
-              "La aplicación requiere permisos de ubicación para mostrar los eventos cercanos a tu ubicación",
+              "La aplicación requiere permisos de ubicación precisa para mostrar los eventos cercanos a tu ubicación",
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -150,5 +160,43 @@ class RequireWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _RequirePreciseDialog extends StatelessWidget {
+  const _RequirePreciseDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+        title: const Text("Aviso sobre ubicación"),
+        content: const Text(
+            "La aplicación require ubicación precisa. Por favor dar este permiso en el menú de nuevo o ir a configuraciones si no aparece."),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              _fromSettings = await openAppSettings();
+            },
+            style: const ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(
+                Colors.amber,
+              ),
+              padding: MaterialStatePropertyAll(
+                EdgeInsets.symmetric(horizontal: 15),
+              ),
+            ),
+            child: const Text(
+              "Ir a configuraciones",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "Cancelar",
+            ),
+          )
+        ]);
   }
 }
