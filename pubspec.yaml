@@ -42,7 +42,8 @@ dependencies:
   permission_handler: ^10.2.0
   #Authentication
   firebase_auth: ^4.2.10
-
+  flutter_login_facebook: ^1.7.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
