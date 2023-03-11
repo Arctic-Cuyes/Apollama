@@ -86,16 +86,18 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
 
 class _RequireDialog extends StatelessWidget {
   const _RequireDialog({super.key});
-
+  final String contenido = """No se pudo acceder a la ubicación del dispositivo.
+  \nIr a configuraciones y seguir los siguientes pasos:\n
+- Ir a permisos de aplicación.
+- Seleccionar ubicación.
+- Seleccionar "Permitir solo con la app en uso y activar el uso de la ubicación precisa""";
   @override
   Widget build(BuildContext context) {
-    return const AlertDialog(
-        title: Text("Acceso a la ubicación"),
-        content: Text(
-          "No se pudo acceder a la ubicación del dispositivo.\n\nPor favor, activarlo de forma manual en configuraciones de la aplicación.",
-        ),
-        actionsPadding: EdgeInsets.only(right: 20, bottom: 15),
-        actions: [
+    return AlertDialog(
+        title: const Text("Acceso a la ubicación"),
+        content: Text(contenido),
+        actionsPadding: const EdgeInsets.only(right: 20, bottom: 15),
+        actions: const [
           _CancelarButtonWidget(),
           _ConfiguracionButtonWidget(),
         ]);
@@ -105,7 +107,7 @@ class _RequireDialog extends StatelessWidget {
 class _RequirePreciseDialog extends StatelessWidget {
   const _RequirePreciseDialog({super.key});
   final String contenido =
-      """Se necesita ubicación precisa para el correcto funcionamiento.
+      """No se pudo acceder a la ubicación precisa del dispositivo.
       \nIr a configuraciones y seguir los siguientes pasos:\n
 - Ir a permisos de aplicación.
 - Seleccionar ubicación.
@@ -128,16 +130,20 @@ class _CancelarButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = Theme.of(context);
+    final isDarkTheme = currentTheme.brightness == Brightness.dark;
     return OutlinedButton(
-      onPressed: () => Navigator.pop(context),
-      style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Colors.amber),
-        foregroundColor: Colors.black,
-      ),
-      child: const Text(
-        "Cancelar",
-      ),
-    );
+        onPressed: () => Navigator.pop(context),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.amber),
+          foregroundColor: Colors.black,
+        ),
+        child: Text(
+          "Cancelar",
+          style: (isDarkTheme
+              ? const TextStyle(color: Colors.white)
+              : const TextStyle(color: Colors.black)),
+        ));
   }
 }
 
@@ -168,6 +174,8 @@ class RequireWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = Theme.of(context);
+    final isDarkTheme = currentTheme.brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30),
@@ -196,12 +204,20 @@ class RequireWidget extends StatelessWidget {
               style: TextStyle(fontSize: 18),
             ),
             const SizedBox(
-              height: 20,
+              height: 24,
             ),
             ElevatedButton(
               onPressed: () => _controller.request(),
-              child: const Text("Permitir"),
-            )
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              child: const Text(
+                "Permitir",
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
+            ),
           ],
         ),
       ),
