@@ -27,7 +27,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
         child: ConstrainedBox(
           constraints:
               BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-          child: const SafeArea(child: RequireWidget()),
+          child: const SafeArea(child: RequirePageWidget()),
         ),
       ),
     );
@@ -79,8 +79,9 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && _fromSettings) {
       _controller.notify();
+      debugPrint("Se notifica");
+      _fromSettings = false;
     }
-    _fromSettings = false;
   }
 }
 
@@ -169,13 +170,11 @@ class _ConfiguracionButtonWidget extends StatelessWidget {
   }
 }
 
-class RequireWidget extends StatelessWidget {
-  const RequireWidget({super.key});
+class RequirePageWidget extends StatelessWidget {
+  const RequirePageWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final currentTheme = Theme.of(context);
-    final isDarkTheme = currentTheme.brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30),
