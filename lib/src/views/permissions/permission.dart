@@ -27,7 +27,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
         child: ConstrainedBox(
           constraints:
               BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-          child: SafeArea(child: RequireWidget()),
+          child: const SafeArea(child: RequireWidget()),
         ),
       ),
     );
@@ -35,7 +35,6 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     debugPrint("Se construye permission page");
     WidgetsBinding.instance.addObserver(this);
@@ -55,10 +54,9 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
       if (status == PermissionStatus.permanentlyDenied) {
         showDialog(
           context: context,
-          builder: (_) => (const RequireDialog()),
+          builder: (_) => (const _RequireDialog()),
         );
       }
-      debugPrint("Llega aqui");
     });
   }
 
@@ -71,7 +69,6 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     WidgetsBinding.instance.removeObserver(this);
     _subscription.cancel();
     _controller.dispose();
@@ -87,42 +84,82 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
   }
 }
 
-class RequireDialog extends StatelessWidget {
-  const RequireDialog({super.key});
+class _RequireDialog extends StatelessWidget {
+  const _RequireDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const AlertDialog(
+        title: Text("Acceso a la ubicación"),
+        content: Text(
+          "No se pudo acceder a la ubicación del dispositivo.\n\nPor favor, activarlo de forma manual en configuraciones de la aplicación.",
+        ),
+        actionsPadding: EdgeInsets.only(right: 20, bottom: 15),
+        actions: [
+          _CancelarButtonWidget(),
+          _ConfiguracionButtonWidget(),
+        ]);
+  }
+}
+
+class _RequirePreciseDialog extends StatelessWidget {
+  const _RequirePreciseDialog({super.key});
+  final String contenido =
+      """Se necesita ubicación precisa para el correcto funcionamiento.
+      \nIr a configuraciones y seguir los siguientes pasos:\n
+- Ir a permisos de aplicación.
+- Seleccionar ubicación.
+- Seleccionar "Permitir solo con la app en uso y activar el uso de la ubicación precisa""";
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        title: const Text("INFO"),
-        content: const Text(
-          "No se pudo recuperar el acceso a la ubicación. Por favor, activarlo de forma manual en configuraciones",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              _fromSettings = await openAppSettings();
-            },
-            style: const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
-                Colors.amber,
-              ),
-              padding: MaterialStatePropertyAll(
-                EdgeInsets.symmetric(horizontal: 15),
-              ),
-            ),
-            child: const Text(
-              "Ir a configuraciones",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "Cancelar",
-            ),
-          )
+        title: const Text("Acceso a ubicación precisa"),
+        content: Text(contenido),
+        actions: const [
+          _CancelarButtonWidget(),
+          _ConfiguracionButtonWidget(),
         ]);
+  }
+}
+
+class _CancelarButtonWidget extends StatelessWidget {
+  const _CancelarButtonWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: () => Navigator.pop(context),
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(color: Colors.amber),
+        foregroundColor: Colors.black,
+      ),
+      child: const Text(
+        "Cancelar",
+      ),
+    );
+  }
+}
+
+class _ConfiguracionButtonWidget extends StatelessWidget {
+  const _ConfiguracionButtonWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        Navigator.pop(context);
+        _fromSettings = await openAppSettings();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.amber,
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+      ),
+      child: const Text(
+        "Ir a configuraciones",
+        style: TextStyle(color: Colors.black),
+      ),
+    );
   }
 }
 
@@ -133,11 +170,19 @@ class RequireWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              Icons.share_location_sharp,
+              color: Colors.amber.shade600,
+              size: 64.0,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             const Text(
               "Acceso a ubicación",
               style: TextStyle(fontSize: 30),
@@ -146,8 +191,9 @@ class RequireWidget extends StatelessWidget {
               height: 20,
             ),
             const Text(
-              "La aplicación requiere permisos de ubicación precisa para mostrar los eventos cercanos a tu ubicación",
+              "La aplicación requiere permisos de ubicación precisa para mostrar lo que está sucediendo en tu comunidad.",
               textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
             ),
             const SizedBox(
               height: 20,
@@ -160,43 +206,5 @@ class RequireWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _RequirePreciseDialog extends StatelessWidget {
-  const _RequirePreciseDialog({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-        title: const Text("Aviso sobre ubicación"),
-        content: const Text(
-            "La aplicación require ubicación precisa. Por favor dar este permiso en el menú de nuevo o ir a configuraciones si no aparece."),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              _fromSettings = await openAppSettings();
-            },
-            style: const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
-                Colors.amber,
-              ),
-              padding: MaterialStatePropertyAll(
-                EdgeInsets.symmetric(horizontal: 15),
-              ),
-            ),
-            child: const Text(
-              "Ir a configuraciones",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "Cancelar",
-            ),
-          )
-        ]);
   }
 }
