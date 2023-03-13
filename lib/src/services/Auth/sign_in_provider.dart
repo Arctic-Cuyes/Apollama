@@ -50,8 +50,8 @@ class SignInProvider extends ChangeNotifier{
     _isSignedIn = true;
     notifyListeners();
   }
-
-  //sign in with facebook
+  // Sign in with Facebook, google and email
+    //sign in with Facebook
   Future<void> signInWithFacebook() async {
     final LoginResult result = await facebookAuth.login(permissions: ["public_profile", "email", "user_friends"]);
     
@@ -67,10 +67,8 @@ class SignInProvider extends ChangeNotifier{
         _userID = userData['id'];
         _hasError = false;
         _provider = "FACEBOOK";
-        debugPrint("Datos de usuario login facebook $_email - $imageURL");
         notifyListeners();
       } on FirebaseAuthException catch (e) {
-        debugPrint(e.code.toString());
         _hasError = true;
         _errorCode = e.code;
         notifyListeners();
@@ -80,6 +78,33 @@ class SignInProvider extends ChangeNotifier{
       notifyListeners();
     }
   }
+    //Sign in with Google
+
+    //Sign in with Email and password
+  Future signInWithEmail (emailController, passwordController) async {
+    try {
+      await firebaseAuth.signInWithEmailAndPassword(
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(),
+      );
+      final user = firebaseAuth.currentUser!;
+      //debugPrint("Post datos de email user: ${user.email} ${user.displayName} ${user.photoURL} $_userID");
+      _name = user.displayName ?? "user"; 
+      _email = user.email;
+      _imageURL = user.photoURL ?? "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png";
+      _userID = user.uid;
+      _hasError = false;
+      _provider = "EMAIL";
+      //debugPrint("Datos de email user: $_name $_email $_imageURL $_userID");
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      _hasError = true;
+      _errorCode = e.code;
+      notifyListeners();
+    }
+    
+  }
+
   //Save data to shared preferences
   Future saveDataToSP() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
