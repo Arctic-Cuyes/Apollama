@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zona_hub/src/services/Auth/auth_controller.dart';
+// import 'package:zona_hub/src/services/Auth/auth_controller.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/views/root.dart';
@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final sp = context.read<SignInProvider>();
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 4,),
 
               ElevatedButton(
-                onPressed: () => signIn(_emailController, _passwordController),
+                onPressed: () => handleEmailSignIn(),
                 child: const Text("Login"),
               ),
               const ElevatedButton(
@@ -80,6 +81,18 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  Future handleEmailSignIn()async{
+    final sp = context.read<SignInProvider>();
+    await sp.signInWithEmail(_emailController, _passwordController).then((value){
+      if(sp.hasError == true){
+        debugPrint("Error Email auth:  ${sp.errorCode}");
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
+        }));   
+      }
+    });
+    }
   // handleAfterSignIn(){
 
   // }

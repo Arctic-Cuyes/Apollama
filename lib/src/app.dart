@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
@@ -8,7 +5,6 @@ import 'package:zona_hub/src/styles/custom_themes.dart';
 import 'package:zona_hub/src/views/auth/login.dart';
 import 'package:zona_hub/src/views/root.dart';
 import 'package:provider/provider.dart';
-
 // class MyApp extends StatelessWidget {
 //   const MyApp({super.key});
 //   // Initial theme mode is the system theme mode
@@ -60,7 +56,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     final sp = context.read<SignInProvider>();
     sp.addListener(_onSignInProviderChanged); // Agregar un listener a SignInProvider
-    sp.checkSignInUser(); // Verificar la sesión iniciada al cargar la aplicación
+    //sp.checkSignInUser(); // Verificar la sesión iniciada al cargar la aplicación
     super.initState();
   }
 
@@ -80,7 +76,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final sp = context.read<SignInProvider>();
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: MyApp.themeNotifier,
         builder: (context, currentMode, _) {
@@ -94,7 +89,10 @@ class _MyAppState extends State<MyApp> {
             themeMode: currentMode,
           
             //IGNORAR RECOMENDACIÓN DE USAR CONST
-            home: sp.isSignedIn ? Root() : LoginPage(),
+            home: isSigned == null ? 
+                    const Scaffold(body: Center(child: CircularProgressIndicator())) 
+                  : 
+                    isSigned == true ? Root() : LoginPage(),
           );
         });
   }
