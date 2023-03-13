@@ -5,19 +5,19 @@ import 'dart:ui' as ui;
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class CustomMarkers {
-  static final Future<BitmapDescriptor> avisoMarker =
-      _getBitmapDesc(CustomMarkersPath.AVISO);
-  static final Future<BitmapDescriptor> ayudaMarker =
-      _getBitmapDesc(CustomMarkersPath.AYUDA);
-  static final Future<BitmapDescriptor> eventoMarker =
-      _getBitmapDesc(CustomMarkersPath.EVENTO);
-  static final Future<BitmapDescriptor> saludMarker =
-      _getBitmapDesc(CustomMarkersPath.SALUD);
-  static final Future<BitmapDescriptor> vetMarker =
-      _getBitmapDesc(CustomMarkersPath.VET);
+class CustomMarkerIcons {
+  final Future<BitmapDescriptor> avisoMarker =
+      _getBitmapDesc(CustomMarkersIconPath.AVISO);
+  final Future<BitmapDescriptor> ayudaMarker =
+      _getBitmapDesc(CustomMarkersIconPath.AYUDA);
+  final Future<BitmapDescriptor> eventoMarker =
+      _getBitmapDesc(CustomMarkersIconPath.EVENTO);
+  final Future<BitmapDescriptor> saludMarker =
+      _getBitmapDesc(CustomMarkersIconPath.SALUD);
+  final Future<BitmapDescriptor> petMarker =
+      _getBitmapDesc(CustomMarkersIconPath.PET);
 
-  static Future<Uint8List> _assetToBytes(String path, {int width = 100}) async {
+  static Future<Uint8List> _assetToBytes(String path, {int width = 105}) async {
     var byteData = await rootBundle.load(path);
     final bytes = byteData.buffer.asUint8List();
     final codec = await ui.instantiateImageCodec(bytes, targetWidth: width);
@@ -35,10 +35,10 @@ class CustomMarkers {
   }
 }
 
-class CustomMarkersPath {
+class CustomMarkersIconPath {
   static const String AVISO = "assets/markers/marker_aviso.png";
   static const String AYUDA = "assets/markers/marker_ayuda.png";
   static const String EVENTO = "assets/markers/marker_evento.png";
   static const String SALUD = "assets/markers/marker_salud.png";
-  static const String VET = "assets/markers/marker_vet.png";
+  static const String PET = "assets/markers/marker_pet.png";
 }
