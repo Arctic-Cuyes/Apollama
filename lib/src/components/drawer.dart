@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zona_hub/src/app.dart';
+import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
+import 'package:zona_hub/src/views/auth/login.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
+import 'package:zona_hub/src/views/root.dart';
 
 /*
   Sidebar that contains summary profile information and other
@@ -66,7 +70,18 @@ class ProfileSummary extends StatefulWidget {
 
 class _ProfileSummaryState extends State<ProfileSummary> {
   
-  final user = FirebaseAuth.instance.currentUser!;
+  //final user = FirebaseAuth.instance.currentUser!;
+  // Future getData()async{
+  //   final sp = context.read<SignInProvider>();
+  //   sp.getDataFromSP();
+  // }
+
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   getData();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +105,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
               child: ClipOval(
                   child: Image.network(
                   //Cambiará según la base de datos, por el momento una imagen de internet
-                  "https://i.pinimg.com/originals/30/8d/79/308d795c3cac0f8f16610f53df4e1005.jpg",
+                  Root.user.imageURL!,
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
@@ -99,19 +114,19 @@ class _ProfileSummaryState extends State<ProfileSummary> {
           ),
         ),
         //User name
-        const Padding(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Text(
-            "Fogel McLovin",
+            Root.user.name!,
             textAlign: TextAlign.center, 
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         const Text("+51 123 456 789"),
-        Text(user.email!),
+        Text(Root.user.email!),
       ]),
     );
   }
@@ -123,6 +138,7 @@ class DrawerOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sp = context.read<SignInProvider>();
     return ListView.builder(
       shrinkWrap: true,
       itemCount: options.length,
@@ -133,7 +149,8 @@ class DrawerOptions extends StatelessWidget {
         onTap: (){
           //Lógica para abrir página de opción seleccionada
           if(index == 3){ //Logout
-            FirebaseAuth.instance.signOut();
+            sp.userSignOut();
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
           }else{
             Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
           }
