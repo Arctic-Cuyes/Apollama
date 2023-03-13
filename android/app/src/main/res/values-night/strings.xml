@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resource>
+    <string name="app_name">app.arctic_cuyes.zona_hub</string>
+    <string name="facebook_app_id">1907860516280318</string>
+    <string name="fb_login_protocol_scheme">fb1907860516280318</string>
+    <string name="facebook_client_token">f4476a1584bb344b5bceaeb41a3d4609</string>
+</resource>

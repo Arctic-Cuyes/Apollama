@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:zona_hub/src/views/permissions/permission.dart';
 import 'home/home.dart';
 import 'map/map.dart';
 import 'notifications/notifications.dart';
+import 'package:provider/provider.dart';
 
 class Root extends StatefulWidget {
   const Root({super.key});
-
+  
+  static SignInProvider user = SignInProvider();
+  
   @override
   State<Root> createState() => _RootState();
 }
@@ -36,12 +40,21 @@ class _RootState extends State<Root> {
         MaterialPageRoute(builder: (_) => const RequestPermissionPage()));
   }
 
+  //Data from Shared Preferences (logged user)
+
+  Future getData()async{
+    final sp = context.read<SignInProvider>();
+    sp.getDataFromSP();
+    Root.user = sp;
+  }
+
   @override
   void initState() {
     debugPrint("Se construye Root");
     // TODO: implement initState
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => _requestPermission());
+    getData();
   }
 
   @override

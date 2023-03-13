@@ -1,5 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zona_hub/src/services/Auth/auth_controller.dart';
+import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:zona_hub/src/views/root.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -36,14 +39,25 @@ class _LoginPageState extends State<LoginPage> {
               ),
               
               const SizedBox(height: 4,),
-          
+
               ElevatedButton(
-                onPressed: () => _signIn(),
+                onPressed: () => signIn(_emailController, _passwordController),
                 child: const Text("Login"),
               ),
               const ElevatedButton(
                 onPressed: null,
                 child: Text("Register"),
+              ),
+              
+              Row(
+                children: [
+                  ElevatedButton(
+                    child: Image.network("https://cdn-icons-png.flaticon.com/512/61/61045.png", width: 50,),
+                    onPressed: (){
+                      handleFacebookSignIn();
+                    },
+                  )
+                ],
               )
             ],
             ),
@@ -53,11 +67,21 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future _signIn() async{
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim(), 
-      password: _passwordController.text.trim(),
-    );
+  Future handleFacebookSignIn() async {
+    final sp = context.read<SignInProvider>();
+    await sp.signInWithFacebook().then((value){
+      if (sp.hasError == true){
+        debugPrint("Error de fb auth: ${sp.errorCode.toString()}");
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
+        }));   
+      }
+    });
   }
+
+  // handleAfterSignIn(){
+
+  // }
 }
 

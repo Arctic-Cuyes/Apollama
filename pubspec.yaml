@@ -40,8 +40,11 @@ dependencies:
   provider: ^6.0.5
   google_maps_flutter: ^2.2.5
   permission_handler: ^10.2.0
+  shared_preferences: ^2.0.18
   #Authentication
   firebase_auth: ^4.2.10
+  flutter_facebook_auth: ^5.0.8
+  
   geolocator: ^9.0.2
   google_maps_flutter_android: ^2.4.9
   google_maps_flutter_platform_interface: ^2.2.6
