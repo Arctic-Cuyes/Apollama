@@ -6,15 +6,15 @@ import 'dart:ui' as ui;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CustomMarkers {
-  static final Future<BitmapDescriptor> _avisoMarker =
+  static final Future<BitmapDescriptor> avisoMarker =
       _getBitmapDesc(CustomMarkersPath.AVISO);
-  static final Future<BitmapDescriptor> _ayudaMarker =
+  static final Future<BitmapDescriptor> ayudaMarker =
       _getBitmapDesc(CustomMarkersPath.AYUDA);
-  static final Future<BitmapDescriptor> _eventoMarker =
+  static final Future<BitmapDescriptor> eventoMarker =
       _getBitmapDesc(CustomMarkersPath.EVENTO);
-  static final Future<BitmapDescriptor> _saludMarker =
+  static final Future<BitmapDescriptor> saludMarker =
       _getBitmapDesc(CustomMarkersPath.SALUD);
-  static final Future<BitmapDescriptor> _vetMarker =
+  static final Future<BitmapDescriptor> vetMarker =
       _getBitmapDesc(CustomMarkersPath.VET);
 
   static Future<Uint8List> _assetToBytes(String path, {int width = 100}) async {
@@ -36,9 +36,9 @@ class CustomMarkers {
 }
 
 class CustomMarkersPath {
-  static const String AVISO = "/assets/markers/marker_aviso.png";
-  static const String AYUDA = "/assets/markers/marker_ayuda.png";
-  static const String EVENTO = "/assets/markers/marker_evento.png";
-  static const String SALUD = "/assets/markers/marker_salud.png";
-  static const String VET = "/assets/markers/marker_vet.png";
+  static const String AVISO = "assets/markers/marker_aviso.png";
+  static const String AYUDA = "assets/markers/marker_ayuda.png";
+  static const String EVENTO = "assets/markers/marker_evento.png";
+  static const String SALUD = "assets/markers/marker_salud.png";
+  static const String VET = "assets/markers/marker_vet.png";
 }
