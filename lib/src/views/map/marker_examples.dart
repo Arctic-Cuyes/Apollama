@@ -5,11 +5,13 @@ class CustomMarker {
     required this.title,
     required this.address,
     required this.location,
+    required this.category,
   });
 
   final String title;
   final String address;
   final LatLng location;
+  final int category;
 }
 
 const _locations = [
@@ -25,31 +27,37 @@ final customMarkers = [
     title: 'Marcos',
     address: "aaa",
     location: _locations[0],
+    category: 1,
   ),
   CustomMarker(
     title: 'Juan',
     address: "bbb",
     location: _locations[1],
+    category: 2,
   ),
   CustomMarker(
     title: 'Ana',
     address: "ccc",
     location: _locations[2],
+    category: 3,
   ),
   CustomMarker(
     title: 'Martha',
     address: "ddd",
     location: _locations[3],
+    category: 4,
   ),
-  // CustomMarker(
-  //   title: 'Leo',
-  //   address: "eee",
-  //   location: _locations[4],
-  // ),
+  CustomMarker(
+    title: 'Leo',
+    address: "eee",
+    location: _locations[4],
+    category: 5,
+  ),
 ];
 
 final additionalCustom = CustomMarker(
   title: 'Leo',
   address: "eee",
   location: _locations[4],
+  category: 5,
 );
