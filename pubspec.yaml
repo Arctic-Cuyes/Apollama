@@ -44,7 +44,8 @@ dependencies:
   #Authentication
   firebase_auth: ^4.2.10
   flutter_facebook_auth: ^5.0.8
-  
+  google_sign_in: ^6.0.2 
+
   geolocator: ^9.0.2
   google_maps_flutter_android: ^2.4.9
   google_maps_flutter_platform_interface: ^2.2.6
