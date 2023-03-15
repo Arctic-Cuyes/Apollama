@@ -9,7 +9,7 @@ class MapPageProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MapController>(
-      create: (context) => MapController(),
+      create: (context) => MapController(context),
       child: const _MapPage(),
     );
   }
@@ -21,42 +21,32 @@ class _MapPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          FutureBuilder(
-            future: Provider.of<MapController>(context, listen: false)
-                .initialCameraPos,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData) {
-                return Consumer<MapController>(
-                  builder: (context, controller, _) {
-                    debugPrint("Se construye el mapa");
-                    return GoogleMap(
-                      markers: controller.markers,
-                      initialCameraPosition: snapshot.data!,
-                      myLocationButtonEnabled: true,
-                      myLocationEnabled: true,
-                      mapType: MapType.normal,
-                      compassEnabled: true,
-                      zoomControlsEnabled: false,
-                      onTap: (context) => debugPrint("Presionado en mapa"),
-                    );
-                  },
+      body: FutureBuilder(
+        future:
+            Provider.of<MapController>(context, listen: false).initialCameraPos,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            return Consumer<MapController>(
+              builder: (context, controller, _) {
+                debugPrint("Se construye el mapa");
+                return GoogleMapWidget(
+                  controller: controller,
+                  snapshot: snapshot,
                 );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          )
-        ],
+              },
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         mini: true,
         onPressed: () => Provider.of<MapController>(context, listen: false)
-            .addExampleMarker(),
+            .addExampleMarker(context),
         child: const Icon(
           Icons.add,
           color: Colors.black,
@@ -64,6 +54,31 @@ class _MapPage extends StatelessWidget {
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
+    );
+  }
+}
+
+class GoogleMapWidget extends StatelessWidget {
+  final MapController controller;
+  final AsyncSnapshot<CameraPosition> snapshot;
+
+  const GoogleMapWidget({
+    super.key,
+    required this.controller,
+    required this.snapshot,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GoogleMap(
+      markers: controller.markers,
+      initialCameraPosition: snapshot.data!,
+      myLocationButtonEnabled: true,
+      myLocationEnabled: true,
+      mapType: MapType.normal,
+      compassEnabled: true,
+      zoomControlsEnabled: false,
+      onTap: (_) => debugPrint("Presionado en mapa"),
     );
   }
 }
