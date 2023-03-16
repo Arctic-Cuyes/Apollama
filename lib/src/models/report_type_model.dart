@@ -1,21 +1,21 @@
 class ReportType {
   ReportType({
-    required this.id,
+    this.id,
     required this.description,
   });
 
-  ReportType.fromJson(Map<String, Object?> json)
+  ReportType.fromJson(Map<String, dynamic> json)
       : this(
-          id: json['id']! as String,
+          id: json['id'] as String? ?? '',
           description: json['description']! as String,
         );
 
-  final String id;
+  late String? id;
   final String description;
 
-  Map<String, Object> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'description': description,
     };
   }
