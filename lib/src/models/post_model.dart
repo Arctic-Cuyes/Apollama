@@ -21,7 +21,12 @@ class Post {
   Post.fromJson(Map<String, dynamic> json)
       : this(
           id: json['id'] as String?,
-          author: JsonDocumentReference(json['author']).toDocumentReference(),
+          author: json['author'] != null
+              ? JsonDocumentReference((json['author']
+                          as DocumentReference<Map<String, dynamic>>)
+                      .path)
+                  .toDocumentReference()
+              : null,
           title: json['title'] as String? ?? '',
           description: json['description'] as String? ?? '',
           location: json['location'] as Map<String, dynamic>?,
@@ -39,8 +44,9 @@ class Post {
                       JsonDocumentReference(ref.path).toDocumentReference())
                   .toList() ??
               [],
-          community:
-              JsonDocumentReference(json['community']).toDocumentReference(),
+          community: json['community'] != null
+              ? JsonDocumentReference(json['community']).toDocumentReference()
+              : null,
           reports: (json['reports'] as List<dynamic>?)
                   ?.map((ref) =>
                       JsonDocumentReference(ref.path).toDocumentReference())
