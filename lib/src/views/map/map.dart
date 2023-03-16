@@ -20,6 +20,7 @@ class _MapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Se construye pagina de mapa");
     return Scaffold(
       body: FutureBuilder(
         future:

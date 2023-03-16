@@ -23,7 +23,7 @@ class MapController extends ChangeNotifier {
   MapController(BuildContext context) {
     _markersService = CustomMarkerIcons();
     _gpsService = GpsService();
-    fetchedMarkers = customMarkers;
+
     loadMarkers(context);
   }
 
@@ -50,13 +50,15 @@ class MapController extends ChangeNotifier {
   }
 
   void loadMarkers(BuildContext context) async {
+    fetchedMarkers = await asyncCustomMarkers();
     avisoMarker = await _markersService.avisoMarker;
     ayudaMarker = await _markersService.ayudaMarker;
     eventoMarker = await _markersService.eventoMarker;
     petMarker = await _markersService.petMarker;
     saludMarker = await _markersService.saludMarker;
 
-    for (CustomMarker item in customMarkers) {
+    for (CustomMarker item in fetchedMarkers) {
+      // ignore: use_build_context_synchronously
       addMarker(item, context);
     }
   }
@@ -105,7 +107,9 @@ class MapController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addExampleMarker(BuildContext context) {
-    addMarker(additionalCustom, context);
+  void addExampleMarker(BuildContext context) async {
+    CustomMarker additional = await asyncAdditionalCustom();
+    // ignore: use_build_context_synchronously
+    addMarker(additional, context);
   }
 }
