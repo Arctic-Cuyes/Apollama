@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/models/utils/json_document_reference.dart';
 
 class Post {
   Post({
     this.id,
     this.author,
+    this.authorData,
     required this.title,
     required this.description,
     this.location,
@@ -55,7 +57,8 @@ class Post {
         );
 
   late String? id;
-  final DocumentReference<Map<String, dynamic>>? author;
+  late DocumentReference<Map<String, dynamic>>? author;
+  late User? authorData;
   final String title;
   final String description;
   final Map<String, dynamic>? location;
