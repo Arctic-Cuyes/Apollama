@@ -20,10 +20,12 @@ class MapController extends ChangeNotifier {
   late final List<CustomMarker> fetchedMarkers;
   final Map<MarkerId, Marker> _markers = {};
 
+  late bool isDisposed;
+
   MapController(BuildContext context) {
     _markersService = CustomMarkerIcons();
     _gpsService = GpsService();
-
+    isDisposed = false;
     loadMarkers(context);
   }
 
@@ -111,5 +113,19 @@ class MapController extends ChangeNotifier {
     CustomMarker additional = await asyncAdditionalCustom();
     // ignore: use_build_context_synchronously
     addMarker(additional, context);
+  }
+
+  @override
+  void notifyListeners() {
+    if (!isDisposed) {
+      super.notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    isDisposed = true;
+    super.dispose();
   }
 }
