@@ -24,7 +24,7 @@ const _locations = [
   LatLng(-8.131847, -79.037786),
 ];
 
-final customMarkers = [
+final _customMarkers = [
   CustomMarker(
     id: 1,
     title: 'Marcos',
@@ -62,10 +62,24 @@ final customMarkers = [
   ),
 ];
 
-final additionalCustom = CustomMarker(
+Future<List<CustomMarker>> asyncCustomMarkers() {
+  return Future.delayed(
+    const Duration(seconds: 3),
+    () => _customMarkers,
+  );
+}
+
+final _additionalCustom = CustomMarker(
   id: 0,
   title: 'Leo',
   address: "eee",
   location: _locations[4],
   category: 5,
 );
+
+Future<CustomMarker> asyncAdditionalCustom() {
+  return Future.delayed(
+    const Duration(seconds: 2),
+    () => _additionalCustom,
+  );
+}
