@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInProvider extends ChangeNotifier{
@@ -8,7 +9,7 @@ class SignInProvider extends ChangeNotifier{
   //Instancias 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FacebookAuth facebookAuth = FacebookAuth.instance;
-  //Google instance
+  final GoogleSignIn googleAuth = GoogleSignIn();
   //
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
@@ -79,7 +80,43 @@ class SignInProvider extends ChangeNotifier{
     }
   }
     //Sign in with Google
+  Future signInWithGoogle() async { 
+    //Excepción al cancelar signIn solo se lanza en depuración 
+    //https://stackoverflow.com/questions/51914691/flutter-platform-exception-upon-cancelling-google-sign-in-flow
+    final GoogleSignInAccount? googleSignInAccount = await googleAuth.signIn().catchError((e){
+      _hasError = true;
+      _errorCode = e.code;
+      notifyListeners();
+    }); 
+    if (googleSignInAccount != null){
+      try {
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+        
+        final AuthCredential credential = 
+          GoogleAuthProvider.credential(
+            accessToken: googleSignInAuthentication.accessToken,
+            idToken: googleSignInAuthentication.idToken
+          );
+        
+        final User user  = (await firebaseAuth.signInWithCredential(credential)).user!;
+        _name = user.displayName ?? "user"; 
+        _email = user.email;
+        _imageURL = user.photoURL ?? "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png";
+        _userID = user.uid;
+        _hasError = false;
+        _provider = "GOOGLE";
 
+        notifyListeners();
+      } on FirebaseAuthException catch (e) {
+        _errorCode = e.code;
+        notifyListeners();
+      }
+    }else{
+      _hasError = true;
+      _errorCode = "Inicio de sesiòn cancelado";
+      notifyListeners();
+    }
+  }
     //Sign in with Email and password
   Future signInWithEmail (emailController, passwordController) async {
     try {
@@ -126,6 +163,7 @@ class SignInProvider extends ChangeNotifier{
   Future userSignOut() async {
     await firebaseAuth.signOut();
     await facebookAuth.logOut();
+    await googleAuth.signOut();
     _isSignedIn = false;
     notifyListeners();
     clearSotredData();

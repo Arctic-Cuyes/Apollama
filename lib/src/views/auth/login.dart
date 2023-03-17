@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:zona_hub/src/services/Auth/auth_controller.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:zona_hub/src/views/auth/register.dart';
 import 'package:zona_hub/src/views/root.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,7 +18,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final sp = context.read<SignInProvider>();
     return Scaffold(
       body: SafeArea(
           child: Center(
@@ -47,9 +47,12 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () => handleEmailSignIn(),
                 child: const Text("Login"),
               ),
-              const ElevatedButton(
-                onPressed: null,
-                child: Text("Register"),
+              
+              ElevatedButton(
+                onPressed: ()=>{
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()))
+                },
+                child: const Text("Register"),
               ),
               Row(
                 children: [
@@ -60,6 +63,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onPressed: () {
                       handleFacebookSignIn();
+                    },
+                  ),
+                  ElevatedButton(
+                    child: Image.network("https://e7.pngegg.com/pngimages/704/688/png-clipart-google-google.png", width: 50,),
+                    onPressed: (){
+                      handleGoogleSignIn();
                     },
                   )
                 ],
@@ -76,23 +85,41 @@ class _LoginPageState extends State<LoginPage> {
     sp.signInWithFacebook().then((value) {
       if (sp.hasError == true) {
         debugPrint("Error de fb auth: ${sp.errorCode.toString()}");
-      } else {
-        sp.saveDataToSP().then((value) => sp.setSignIn());
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          handleAfterSignIn();
+        }));   
       }
     });
   }
 
-  void handleEmailSignIn() {
+  void handleGoogleSignIn() async {
+    final sp = context.read<SignInProvider>();
+    await sp.signInWithGoogle().then((value){
+      if(sp.hasError){
+        debugPrint(sp.errorCode);
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          handleAfterSignIn();
+        }));       
+      }
+    });
+  }
+
+ void handleEmailSignIn()async{
     final sp = context.read<SignInProvider>();
     sp.signInWithEmail(_emailController, _passwordController).then((value) {
       if (sp.hasError == true) {
         debugPrint("Error Email auth:  ${sp.errorCode}");
-      } else {
-        sp.saveDataToSP().then((value) => sp.setSignIn());
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          handleAfterSignIn();
+        }));   
       }
     });
+    }
+  
+  handleAfterSignIn(){
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
   }
-  // handleAfterSignIn(){
-
-  // }
 }
