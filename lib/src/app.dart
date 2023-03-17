@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
@@ -6,23 +8,33 @@ import 'package:zona_hub/src/views/auth/login.dart';
 import 'package:zona_hub/src/views/root.dart';
 
 class MyApp extends StatefulWidget {
+  
   const MyApp({super.key});
-  static final ValueNotifier<ThemeMode> themeNotifier =
-      ValueNotifier(ThemeMode.system);
+  
+  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.system);
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  
+  final navigatorKey = GlobalKey<NavigatorState>();
+  bool? isSignedIn;
 
   @override
-  void initState() {
+  void initState()  {
+    final sp = context.read<SignInProvider>();
+    Timer(const Duration(seconds: 2), () { 
+      setState(() {
+        isSignedIn = sp.isSignedIn;
+      });
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final sp = context.read<SignInProvider>();
     return ValueListenableBuilder<ThemeMode>(
         valueListenable: MyApp.themeNotifier,
         builder: (context, currentMode, _) {
@@ -36,7 +48,7 @@ class _MyAppState extends State<MyApp> {
             themeMode: currentMode,
           
             //IGNORAR RECOMENDACIÓN DE USAR CONST
-            home: sp.isSignedIn == true ? Root() : LoginPage(),
+            home: isSignedIn == true ? Root() : LoginPage(),
           );
         });
   }
