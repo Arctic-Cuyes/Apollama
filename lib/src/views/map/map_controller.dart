@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/services/custom_markers_service.dart';
+import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/gps_service.dart';
 import 'marker_examples.dart';
 
@@ -19,11 +20,11 @@ class MapController extends ChangeNotifier {
   late final List<CustomMarker> fetchedMarkers;
   final Map<MarkerId, Marker> _markers = {};
 
-  MapController() {
+  MapController(BuildContext context) {
     _markersService = CustomMarkerIcons();
     _gpsService = GpsService();
     fetchedMarkers = customMarkers;
-    loadMarkers();
+    loadMarkers(context);
   }
 
   Set<Marker> get markers => _markers.values.toSet();
@@ -48,7 +49,7 @@ class MapController extends ChangeNotifier {
     return _initialCameraPos;
   }
 
-  void loadMarkers() async {
+  void loadMarkers(BuildContext context) async {
     avisoMarker = await _markersService.avisoMarker;
     ayudaMarker = await _markersService.ayudaMarker;
     eventoMarker = await _markersService.eventoMarker;
@@ -56,7 +57,7 @@ class MapController extends ChangeNotifier {
     saludMarker = await _markersService.saludMarker;
 
     for (CustomMarker item in customMarkers) {
-      addMarker(item);
+      addMarker(item, context);
     }
   }
 
@@ -84,23 +85,27 @@ class MapController extends ChangeNotifier {
     return icon;
   }
 
-  void addMarker(CustomMarker cMarker) async {
-    final id = _markers.length.toString();
-    final markerId = MarkerId(id);
+  void addMarker(CustomMarker cMarker, BuildContext context) async {
+    final id = _markers.length;
+    cMarker.id = id;
+    final markerId = MarkerId(id.toString());
     final icon = assignIcon(cMarker.category);
     final newMarker = Marker(
       markerId: markerId,
       position: cMarker.location,
       icon: icon,
-      // draggable: true,
-      onTap: () => debugPrint("$markerId"),
+      draggable: true,
+      onTap: () {
+        debugPrint(markerId.toString());
+        showMarkerBottomSheet(context, cMarker);
+      },
     );
 
     _markers[markerId] = newMarker;
     notifyListeners();
   }
 
-  void addExampleMarker() {
-    addMarker(additionalCustom);
+  void addExampleMarker(BuildContext context) {
+    addMarker(additionalCustom, context);
   }
 }

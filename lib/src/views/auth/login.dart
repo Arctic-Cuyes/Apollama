@@ -20,10 +20,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Container(
-            margin: const EdgeInsets.all(10),
-            child: Column(
+          child: Center(
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
@@ -31,16 +31,18 @@ class _LoginPageState extends State<LoginPage> {
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(labelText: "Email"),
               ),
-              const SizedBox(height: 4,),
+              const SizedBox(
+                height: 4,
+              ),
               TextField(
                 controller: _passwordController,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(labelText: "Password"),
                 obscureText: true,
               ),
-              
-              const SizedBox(height: 4,),
-
+              const SizedBox(
+                height: 4,
+              ),
               ElevatedButton(
                 onPressed: () => handleEmailSignIn(),
                 child: const Text("Login"),
@@ -52,12 +54,14 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: const Text("Register"),
               ),
-              
               Row(
                 children: [
                   ElevatedButton(
-                    child: Image.network("https://cdn-icons-png.flaticon.com/512/61/61045.png", width: 50,),
-                    onPressed: (){
+                    child: Image.network(
+                      "https://cdn-icons-png.flaticon.com/512/61/61045.png",
+                      width: 50,
+                    ),
+                    onPressed: () {
                       handleFacebookSignIn();
                     },
                   ),
@@ -70,17 +74,16 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               )
             ],
-            ),
           ),
-        )
-      ),
+        ),
+      )),
     );
   }
 
-  Future handleFacebookSignIn() async {
+  void handleFacebookSignIn() {
     final sp = context.read<SignInProvider>();
-    await sp.signInWithFacebook().then((value){
-      if (sp.hasError == true){
+    sp.signInWithFacebook().then((value) {
+      if (sp.hasError == true) {
         debugPrint("Error de fb auth: ${sp.errorCode.toString()}");
       }else{
         sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
@@ -90,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Future handleGoogleSignIn() async {
+  void handleGoogleSignIn() async {
     final sp = context.read<SignInProvider>();
     await sp.signInWithGoogle().then((value){
       if(sp.hasError){
@@ -103,10 +106,10 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Future handleEmailSignIn()async{
+ void handleEmailSignIn()async{
     final sp = context.read<SignInProvider>();
-    await sp.signInWithEmail(_emailController, _passwordController).then((value){
-      if(sp.hasError == true){
+    sp.signInWithEmail(_emailController, _passwordController).then((value) {
+      if (sp.hasError == true) {
         debugPrint("Error Email auth:  ${sp.errorCode}");
       }else{
         sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
@@ -120,4 +123,3 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
   }
 }
-
