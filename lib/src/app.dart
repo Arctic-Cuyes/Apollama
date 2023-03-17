@@ -18,38 +18,38 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  
-  final navigatorKey = GlobalKey<NavigatorState>();
-  bool? isSignedIn;
-
-  @override
-  void initState()  {
-    final sp = context.read<SignInProvider>();
-    Timer(const Duration(seconds: 2), () { 
-      setState(() {
-        isSignedIn = sp.isSignedIn;
-      });
-    });
-    super.initState();
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
+    final sp = context.read<SignInProvider>();
     return ValueListenableBuilder<ThemeMode>(
-        valueListenable: MyApp.themeNotifier,
-        builder: (context, currentMode, _) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'ZonaHub',
-            //Customize light theme
-            theme: customLightTheme(),
-            //Customize dark theme with primarySwatch amber
-            darkTheme: customDarkTheme(),
-            themeMode: currentMode,
-          
-            //IGNORAR RECOMENDACIÓN DE USAR CONST
-            home: isSignedIn == true ? Root() : LoginPage(),
-          );
-        });
+      valueListenable: MyApp.themeNotifier,
+      builder: (context, currentMode, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'ZonaHub',
+          //Customize light theme
+          theme: customLightTheme(),
+          //Customize dark theme with primarySwatch amber
+          darkTheme: customDarkTheme(),
+          themeMode: currentMode,
+          home: FutureBuilder<void>(
+            future: sp.checkSignInUser(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+               if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Muestra mientras se obtiene el valor de isSignedIn
+                  return Container(color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.grey[800] : Colors.white,);
+                } else {
+                  if (sp.isSignedIn == true) {
+                    return Root();
+                  } else {
+                    return LoginPage();
+                  }
+              }
+            },
+          ),
+        );
+      },
+    );
   }
 }
