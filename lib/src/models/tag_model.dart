@@ -2,7 +2,7 @@ class Tag {
   Tag({this.id, required this.name});
   Tag.fromJson(Map<String, dynamic> json)
       : this(
-          id: json['id']! as String? ?? '',
+          id: json['id'] as String? ?? '',
           name: json['name']! as String,
         );
   late String? id;
