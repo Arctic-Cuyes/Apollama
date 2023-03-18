@@ -29,7 +29,6 @@ class Comment {
 
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
       'author': JsonDocumentReference(author.path).toJson(),
       'content': content,
       'createdAt': createdAt,

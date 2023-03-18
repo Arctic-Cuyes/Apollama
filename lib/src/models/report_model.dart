@@ -27,7 +27,6 @@ class Report {
 
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
       'type': JsonDocumentReference(type.path).toJson(),
       'user': JsonDocumentReference(user.path).toJson(),
     };

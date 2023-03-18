@@ -31,6 +31,7 @@ class PostService {
         post.authorData!.id = post.author!.id;
         return post;
       }));
+      print(posts);
       return posts;
     });
   }

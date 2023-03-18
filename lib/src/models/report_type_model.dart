@@ -15,7 +15,6 @@ class ReportType {
 
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
       'description': description,
     };
   }

@@ -73,7 +73,6 @@ class Post {
 
   Map<String, Object?> toJson() {
     return {
-      'id': id,
       if (author != null)
         'author': JsonDocumentReference(author!.path).toJson(),
       'title': title,

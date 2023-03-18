@@ -18,7 +18,6 @@ class Community {
 
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
       'name': name,
       if (description != null) 'description': description,
     };
