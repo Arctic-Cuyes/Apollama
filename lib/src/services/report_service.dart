@@ -4,15 +4,19 @@ import 'package:zona_hub/src/services/report_type_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class ReportService {
-  final CollectionReference reportsRef =
-      FirebaseFirestore.instance.collection('reports');
+  final reportsRef =
+      FirebaseFirestore.instance.collection('reports').withConverter<Report>(
+            fromFirestore: (snapshots, _) =>
+                Report.fromJson(snapshots.data() as Map<String, dynamic>),
+            toFirestore: (report, _) => report.toJson(),
+          );
   final reportTypeService = ReportTypeService();
   final userService = UserService();
 
   Stream<List<Report>> getReports() {
     return reportsRef.snapshots().asyncMap((snapshot) async {
       final reports = await Future.wait(snapshot.docs.map((doc) async {
-        final report = Report.fromJson(doc.data() as Map<String, dynamic>);
+        final report = doc.data();
         report.id = doc.id;
         report.typeData =
             await reportTypeService.getReportTypeDataFromDocRef(report.type);
@@ -27,7 +31,7 @@ class ReportService {
   }
 
   Future<void> createReport(Report report) async {
-    await reportsRef.add(report.toJson());
+    await reportsRef.add(report);
   }
 
   Future<void> updateReport(Report report) async {

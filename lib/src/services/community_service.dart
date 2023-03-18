@@ -2,14 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zona_hub/src/models/community_model.dart';
 
 class CommunityService {
-  final CollectionReference communitiesRef =
-      FirebaseFirestore.instance.collection('communities');
+  final communitiesRef = FirebaseFirestore.instance
+      .collection('communities')
+      .withConverter<Community>(
+          fromFirestore: (snapshots, _) =>
+              Community.fromJson(snapshots.data() as Map<String, dynamic>),
+          toFirestore: (community, _) => community.toJson());
 
   Stream<List<Community>> getCommunities() {
     return communitiesRef.snapshots().asyncMap((snapshot) async {
       final communities = await Future.wait(snapshot.docs.map((doc) async {
-        final community =
-            Community.fromJson(doc.data() as Map<String, dynamic>);
+        final community = doc.data();
         community.id = doc.id;
         return community;
       }));
@@ -18,7 +21,7 @@ class CommunityService {
   }
 
   Future<void> createCommunity(Community community) async {
-    await communitiesRef.add(community.toJson());
+    await communitiesRef.add(community);
   }
 
   Future<void> updateCommunity(Community community) async {

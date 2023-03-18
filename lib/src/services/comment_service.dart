@@ -3,14 +3,18 @@ import 'package:zona_hub/src/models/comment_model.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class CommentService {
-  final CollectionReference commentsRef =
-      FirebaseFirestore.instance.collection('comments');
+  final commentsRef =
+      FirebaseFirestore.instance.collection('comments').withConverter<Comment>(
+            fromFirestore: (snapshots, _) =>
+                Comment.fromJson(snapshots.data() as Map<String, dynamic>),
+            toFirestore: (comment, _) => comment.toJson(),
+          );
   final UserService userService = UserService();
 
   Stream<List<Comment>> getComments() {
     return commentsRef.snapshots().asyncMap((snapshot) async {
       final comments = await Future.wait(snapshot.docs.map((doc) async {
-        final comment = Comment.fromJson(doc.data() as Map<String, dynamic>);
+        final comment = doc.data();
         comment.id = doc.id;
         comment.authorData =
             await userService.getUserDataFromDocRef(comment.author);
@@ -23,7 +27,7 @@ class CommentService {
 
   // create a comment and set the author to the current user
   // Future<void> createComment(Comment comment) async {
-  //   await commentsRef.add(comment.toJson());
+  //   await commentsRef.add(comment);
   // }
 
   // update a comment if the current user is the author
