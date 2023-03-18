@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:zona_hub/src/services/custom_markers_service.dart';
+import 'package:zona_hub/src/services/Map/custom_markers_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
-import '../../services/gps_service.dart';
+import '../../services/Map/gps_service.dart';
 import 'marker_examples.dart';
 
 class MapController extends ChangeNotifier {
