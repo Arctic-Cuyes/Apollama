@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:zona_hub/src/models/utils/json_document_reference.dart';
+import 'package:zona_hub/src/utils/json_document_reference.dart';
 
 class User {
   User({
