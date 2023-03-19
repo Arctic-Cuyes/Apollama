@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/services/custom_markers_service.dart';
+import 'package:zona_hub/src/services/lazy_markers_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/gps_service.dart';
 import 'marker_examples.dart';
@@ -16,8 +20,9 @@ class MapController extends ChangeNotifier {
   late CameraPosition _initialCameraPos;
   late final CustomMarkerIcons _markersService;
   late final GpsService _gpsService;
+  late final StreamSubscription _markersSubscription;
 
-  late final List<CustomMarker> fetchedMarkers;
+  late final List fetchedMarkers;
   final Map<MarkerId, Marker> _markers = {};
 
   late bool isDisposed;
@@ -52,14 +57,14 @@ class MapController extends ChangeNotifier {
   }
 
   void loadMarkers(BuildContext context) async {
-    fetchedMarkers = await asyncCustomMarkers();
+    fetchedMarkers = await getExampleMarkers();
     avisoMarker = await _markersService.avisoMarker;
     ayudaMarker = await _markersService.ayudaMarker;
     eventoMarker = await _markersService.eventoMarker;
     petMarker = await _markersService.petMarker;
     saludMarker = await _markersService.saludMarker;
 
-    for (CustomMarker item in fetchedMarkers) {
+    for (var item in fetchedMarkers) {
       // ignore: use_build_context_synchronously
       addMarker(item, context);
     }
@@ -90,13 +95,14 @@ class MapController extends ChangeNotifier {
   }
 
   void addMarker(CustomMarker cMarker, BuildContext context) async {
-    final id = _markers.length;
-    cMarker.id = id;
+    // final id = _markers.length;
+    // cMarker.documentID = id;
+    final id = cMarker.id;
     final markerId = MarkerId(id.toString());
     final icon = assignIcon(cMarker.category);
     final newMarker = Marker(
       markerId: markerId,
-      position: cMarker.location,
+      position: LatLng(cMarker.location.latitude, cMarker.location.longitude),
       icon: icon,
       draggable: true,
       onTap: () {
@@ -110,9 +116,20 @@ class MapController extends ChangeNotifier {
   }
 
   void addExampleMarker(BuildContext context) async {
-    CustomMarker additional = await asyncAdditionalCustom();
+    // List additional = customMarkers;
+    // for (CustomMarker item in additional) {
+    //   CollectionReference exampleMarkers =
+    //       FirebaseFirestore.instance.collection('example_markers');
+    //   await exampleMarkers.add({
+    //     'location': item.location.data,
+    //     'desc': item.address,
+    //     'category': item.category,
+    //     'title': item.title
+    //   });
+    // }
+    debugPrint("Subida de nuevos archivos finalizado");
     // ignore: use_build_context_synchronously
-    addMarker(additional, context);
+    // addMarker(additional, context);
   }
 
   @override

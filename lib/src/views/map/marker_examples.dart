@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+final geo = Geoflutterfire();
 
 class CustomMarker {
   CustomMarker({
@@ -9,22 +13,22 @@ class CustomMarker {
     required this.category,
   });
 
-  int id;
+  dynamic id;
   final String title;
   final String address;
-  final LatLng location;
+  final GeoFirePoint location;
   final int category;
 }
 
-const _locations = [
-  LatLng(-8.128258, -79.0341047),
-  LatLng(-8.130043, -79.043245),
-  LatLng(-8.132877, -79.040018),
-  LatLng(-8.132070, -79.038752),
-  LatLng(-8.131847, -79.037786),
+List _locations = [
+  geo.point(latitude: -8.128258, longitude: -79.0341047),
+  geo.point(latitude: -8.130043, longitude: -79.043245),
+  geo.point(latitude: -8.132877, longitude: -79.040018),
+  geo.point(latitude: -8.132070, longitude: -79.038752),
+  geo.point(latitude: -8.131847, longitude: -79.037786),
 ];
 
-final _customMarkers = [
+final customMarkers = [
   CustomMarker(
     id: 1,
     title: 'Marcos',
@@ -65,7 +69,7 @@ final _customMarkers = [
 Future<List<CustomMarker>> asyncCustomMarkers() {
   return Future.delayed(
     const Duration(seconds: 3),
-    () => _customMarkers,
+    () => customMarkers,
   );
 }
 
