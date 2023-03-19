@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:zona_hub/src/views/auth/login.dart';
+import 'package:zona_hub/src/views/auth/welcome.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
 import 'package:zona_hub/src/views/root.dart';
 
@@ -150,7 +151,7 @@ class DrawerOptions extends StatelessWidget {
           //Lógica para abrir página de opción seleccionada
           if(index == 3){ //Logout
             sp.userSignOut();
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomeView()));
           }else{
             Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
           }
