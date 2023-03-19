@@ -71,19 +71,6 @@ class ProfileSummary extends StatefulWidget {
 
 class _ProfileSummaryState extends State<ProfileSummary> {
   
-  //final user = FirebaseAuth.instance.currentUser!;
-  // Future getData()async{
-  //   final sp = context.read<SignInProvider>();
-  //   sp.getDataFromSP();
-  // }
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   getData();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(

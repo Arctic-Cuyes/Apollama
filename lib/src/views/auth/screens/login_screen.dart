@@ -26,20 +26,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String _texto = "Iniciar Sesión";
 
-  Future handleEmailSignIn() async {
+  
+ void handleEmailSignIn()async{
+    openDialogLoader();
     final sp = context.read<SignInProvider>();
-    await sp.signInWithEmail(_emailController, _passwordController).then((value){
-      if(sp.hasError == true){
+    sp.signInWithEmail(_emailController, _passwordController).then((value) {
+      if (sp.hasError == true) {
+        Navigator.of(context).pop(); // Close loader 
         debugPrint("Error Email auth:  ${sp.errorCode}");
-        setState(() {
-          _texto = "Iniciar Sesión";
-        });
       }else{
         sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
+          handleAfterSignIn();
         }));   
       }
-    });
+    })
+    ;
+  }
+  //Puede ir en utils
+  openDialogLoader(){
+    showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder: (_){
+        return const Center(child: CircularProgressIndicator(),);
+      }
+    );
+  }
+  handleAfterSignIn(){
+    Navigator.of(context).pop(); // Close loader 
+    // Go to root page
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
   }
 
   @override

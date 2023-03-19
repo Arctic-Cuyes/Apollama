@@ -28,7 +28,7 @@ class _PagesLoginState extends State<PagesLogin> {
           PageIcon(
             source: GlobalConstansImages.googleSVG, 
             onPressed: () {
-              print("Google");
+              handleGoogleSignIn();
             }),
         ],
       ),
@@ -36,17 +36,51 @@ class _PagesLoginState extends State<PagesLogin> {
   }
 
   
-  Future handleFacebookSignIn() async {
+  
+  void handleFacebookSignIn() {
+    openDialogLoader();
     final sp = context.read<SignInProvider>();
-    await sp.signInWithFacebook().then((value){
-      if (sp.hasError == true){
+    sp.signInWithFacebook().then((value) {
+      if (sp.hasError == true) {
+        Navigator.of(context).pop(); // Close loader 
         debugPrint("Error de fb auth: ${sp.errorCode.toString()}");
       }else{
         sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
+          handleAfterSignIn();
         }));   
       }
     });
+  }
+
+  void handleGoogleSignIn() async {
+    openDialogLoader();
+    final sp = context.read<SignInProvider>();
+    await sp.signInWithGoogle().then((value){
+      if(sp.hasError){
+        Navigator.of(context).pop(); // Close loader 
+        debugPrint(sp.errorCode);
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          handleAfterSignIn();
+        }));       
+      }
+    });
+  }
+
+  //Puede ir en utils
+  openDialogLoader(){
+    showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder: (_){
+        return const Center(child: CircularProgressIndicator(),);
+      }
+    );
+  }
+  handleAfterSignIn(){
+    Navigator.of(context).pop(); // Close loader 
+    // Go to root page
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
   }
 
 }
