@@ -4,6 +4,7 @@ import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
+import 'package:zona_hub/src/services/Auth/sign_up_provider.dart';
 import '../firebase_options.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:flutter/foundation.dart';
@@ -26,6 +27,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SignInProvider()),
+        ChangeNotifierProvider(create: (context) => SignUpProvider()),
       ], 
       child: MyApp(),
     )

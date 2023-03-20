@@ -51,8 +51,9 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.2.6
   connectivity_plus: ^3.0.3
   geoflutterfire: ^3.0.3
+  flutter_svg: ^2.0.4
 
-dependency_overrides: 
+dependency_overrides:
   flutter_lints: ^2.0.1 #modificado
   cloud_firestore: ^4.3.1 #modificado
 
@@ -66,6 +67,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -81,6 +83,8 @@ flutter:
   assets:
     - assets/
     - assets/markers/
+    - assets/images/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

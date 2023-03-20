@@ -6,7 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zona_hub/src/components/drawer.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
-import 'package:zona_hub/src/services/connectivity_service.dart';
+import 'package:zona_hub/src/services/Internet/connectivity_service.dart';
 import 'package:zona_hub/src/views/permissions/permission.dart';
 import 'home/home.dart';
 import 'map/map.dart';

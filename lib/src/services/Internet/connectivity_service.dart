@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:zona_hub/src/components/warnings/internet_conn.dart';
+import 'package:zona_hub/src/components/warnings/snackbar.dart';
 
 class InternetValidationService {
   final conn = Connectivity();
@@ -27,7 +27,16 @@ class InternetValidationService {
 
   void showConnectionSnackbar(BuildContext context, ConnectivityResult result) {
     if (!isConnected(result)) {
-      ScaffoldMessenger.of(context).showSnackBar(showConnectionWarningFlash());
+        showSnackBar(
+          context: context,
+          icon: const Icon(Icons.wifi_off,
+            size: 15,
+            color: Colors.white,
+          ),
+          text: "Sin conexión a internet", 
+          duration: const Duration(minutes: 2), 
+        );
+      
     } else {
       ScaffoldMessenger.of(context).clearSnackBars();
     }

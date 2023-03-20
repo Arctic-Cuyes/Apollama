@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
-import 'package:zona_hub/src/views/auth/login.dart';
+import 'package:zona_hub/src/views/auth/welcome.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
 import 'package:zona_hub/src/views/root.dart';
 
@@ -25,36 +24,38 @@ class DrawerComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(15, 4, 15, 0),
-        child: Column(
-          children: [
-            // Profile summary and dark mode icon
-            Flex(
-                direction: Axis.horizontal,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const ProfileSummary(),
-                  //Theme mode icon
-                  IconButton(
-                    onPressed: () {
-                      MyApp.themeNotifier.value =
-                          (MyApp.themeNotifier.value == ThemeMode.light)
-                              ? ThemeMode.dark
-                              : ThemeMode.light;
-                    },
-                    icon: Icon(MyApp.themeNotifier.value == ThemeMode.light
-                        ? Icons.light_mode
-                        : Icons.dark_mode
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(15, 4, 15, 0),
+          child: Column(
+            children: [
+              // Profile summary and dark mode icon
+              Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const ProfileSummary(),
+                    //Theme mode icon
+                    IconButton(
+                      onPressed: () {
+                        MyApp.themeNotifier.value =
+                            (MyApp.themeNotifier.value == ThemeMode.light)
+                                ? ThemeMode.dark
+                                : ThemeMode.light;
+                      },
+                      icon: Icon(MyApp.themeNotifier.value == ThemeMode.light
+                          ? Icons.light_mode
+                          : Icons.dark_mode
+                      ),
                     ),
-                  ),
-                ]
-              ),
-              const Divider(color: Colors.grey, thickness: 1,),
-              //Options
-              const DrawerOptions()
-          ],
+                  ]
+                ),
+                const Divider(color: Colors.grey, thickness: 1,),
+                //Options
+                const DrawerOptions()
+            ],
+          ),
         ),
       ),
     );
@@ -127,6 +128,7 @@ class DrawerOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     final sp = context.read<SignInProvider>();
     return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: options.length,
       itemBuilder: (BuildContext context, int index) {
@@ -137,7 +139,7 @@ class DrawerOptions extends StatelessWidget {
           //Lógica para abrir página de opción seleccionada
           if(index == 3){ //Logout
             sp.userSignOut();
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomeView()));
           }else{
             Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
           }
