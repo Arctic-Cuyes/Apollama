@@ -29,10 +29,13 @@ Future<List> getExampleMarkers() async {
   return exampleMarkers;
 }
 
-Stream<List<DocumentSnapshot>> _getStreamNearMarkers() {
-  var center = geo.point(latitude: -8.118274, longitude: -79.032745);
+Stream<List<DocumentSnapshot>> getStreamNearMarkers(CameraPosition cameraPos) {
+  var center = geo.point(
+    latitude: cameraPos.target.latitude,
+    longitude: cameraPos.target.longitude,
+  );
   var collectionReference = db.collection('example_markers');
-  double radius = 50;
+  double radius = 4.5;
   String field = 'location';
   Stream<List<DocumentSnapshot>> stream = geo
       .collection(collectionRef: collectionReference)
@@ -40,22 +43,23 @@ Stream<List<DocumentSnapshot>> _getStreamNearMarkers() {
   return stream;
 }
 
-StreamSubscription<List<DocumentSnapshot>> getNearMarkers(List exampleMarkers) {
-  return _getStreamNearMarkers().listen((List<DocumentSnapshot> documentList) {
-    for (var item in documentList) {
-      CustomMarker marker = CustomMarker(
-        id: item.reference.id,
-        title: item.get("title"),
-        address: item.get("desc"),
-        category: item.get("category"),
-        location: geo.point(
-            latitude: item.get("location")["geopoint"].latitude,
-            longitude: item.get("location")["geopoint"].longitude),
-      );
-      exampleMarkers.add(marker);
-    }
-  });
-}
+// StreamSubscription<List<DocumentSnapshot>> getNearMarkers(List exampleMarkers) {
+//   return getStreamNearMarkers().listen((List<DocumentSnapshot> documentList) {
+//     exampleMarkers.clear();
+//     for (var item in documentList) {
+//       CustomMarker marker = CustomMarker(
+//         id: item.reference.id,
+//         title: item.get("title"),
+//         address: item.get("desc"),
+//         category: item.get("category"),
+//         location: geo.point(
+//             latitude: item.get("location")["geopoint"].latitude,
+//             longitude: item.get("location")["geopoint"].longitude),
+//       );
+//       exampleMarkers.add(marker);
+//     }
+//   });
+// }
 
 bool checkCircunferenceFunc(LatLng center, LatLng point, {num radius = 0.05}) {
   num x_h = point.latitude - center.latitude;

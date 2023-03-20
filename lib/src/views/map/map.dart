@@ -28,14 +28,26 @@ class _MapPage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
-            return Consumer<MapController>(
-              builder: (context, controller, _) {
-                debugPrint("Se construye el mapa");
-                return GoogleMapWidget(
-                  controller: controller,
-                  snapshot: snapshot,
-                );
-              },
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Consumer<MapController>(
+                  builder: (context, controller, _) {
+                    debugPrint("Se construye el mapa");
+                    return GoogleMapWidget(
+                      controller: controller,
+                      snapshot: snapshot,
+                    );
+                  },
+                ),
+                const IgnorePointer(
+                  child: Icon(
+                    Icons.gps_fixed,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                )
+              ],
             );
           } else {
             return const Center(
@@ -44,22 +56,11 @@ class _MapPage extends StatelessWidget {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        onPressed: () => Provider.of<MapController>(context, listen: false)
-            .addExampleMarker(context),
-        child: const Icon(
-          Icons.add,
-          color: Colors.black,
-        ),
-      ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }
 
-class GoogleMapWidget extends StatelessWidget {
+class GoogleMapWidget extends StatefulWidget {
   final MapController controller;
   final AsyncSnapshot<CameraPosition> snapshot;
 
@@ -70,16 +71,30 @@ class GoogleMapWidget extends StatelessWidget {
   });
 
   @override
+  State<GoogleMapWidget> createState() => _GoogleMapWidgetState();
+}
+
+class _GoogleMapWidgetState extends State<GoogleMapWidget> {
+  int i = 0;
+  @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      markers: controller.markers,
-      initialCameraPosition: snapshot.data!,
+      markers: widget.controller.markers,
+      initialCameraPosition: widget.snapshot.data!,
       myLocationButtonEnabled: true,
       myLocationEnabled: true,
       mapType: MapType.normal,
       compassEnabled: true,
       zoomControlsEnabled: false,
       onTap: (_) => debugPrint("Presionado en mapa"),
+      onCameraMove: (position) {
+        i++;
+        if (i == 75) {
+          i = 0;
+          debugPrint(position.toString());
+          widget.controller.addNewCameraPos(position);
+        }
+      },
     );
   }
 }
