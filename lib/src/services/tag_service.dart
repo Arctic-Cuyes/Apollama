@@ -35,4 +35,8 @@ class TagService {
   DocumentReference getTagDocRefFromId(String id) {
     return tagRef.doc(id);
   }
+
+  Tag getTagFromId(String id) {
+    return tagRef.doc(id).get() as Tag;
+  }
 }
