@@ -3,12 +3,20 @@ import 'package:zona_hub/src/models/comment_model.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class CommentService {
-  final commentsRef =
-      FirebaseFirestore.instance.collection('comments').withConverter<Comment>(
-            fromFirestore: (snapshots, _) =>
-                Comment.fromJson(snapshots.data() as Map<String, dynamic>),
-            toFirestore: (comment, _) => comment.toJson(),
-          );
+  final String postId;
+  late CollectionReference<Comment> commentsRef;
+  CommentService({required this.postId}) {
+    commentsRef = FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('comments')
+        .withConverter<Comment>(
+          fromFirestore: (snapshots, _) =>
+              Comment.fromJson(snapshots.data() as Map<String, dynamic>),
+          toFirestore: (comment, _) => comment.toJson(),
+        );
+  }
+
   final UserService userService = UserService();
 
   Stream<List<Comment>> getComments() {
@@ -17,8 +25,8 @@ class CommentService {
         final comment = doc.data();
         comment.id = doc.id;
         comment.authorData =
-            await userService.getUserDataFromDocRef(comment.author);
-        comment.authorData.id = comment.author.id;
+            await userService.getUserDataFromDocRef(comment.author!);
+        comment.authorData.id = comment.author!.id;
         return comment;
       }));
       return comments;
