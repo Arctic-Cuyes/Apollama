@@ -29,7 +29,7 @@ class Comment {
 
   Map<String, dynamic> toJson() {
     return {
-      'author': JsonDocumentReference(author.path).toJson(),
+      'author': author,
       'content': content,
       'createdAt': createdAt,
     };

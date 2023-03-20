@@ -73,8 +73,7 @@ class Post {
 
   Map<String, Object?> toJson() {
     return {
-      if (author != null)
-        'author': JsonDocumentReference(author!.path).toJson(),
+      if (author != null) 'author': author,
       'title': title,
       'description': description,
       if (location != null) 'location': location,
@@ -82,16 +81,10 @@ class Post {
       'imageUrl': imageUrl,
       'ups': ups ?? 0,
       'downs': downs ?? 0,
-      'comments': comments
-          ?.map((ref) => JsonDocumentReference(ref.path).toJson())
-          .toList(),
-      'tags':
-          tags?.map((ref) => JsonDocumentReference(ref.path).toJson()).toList(),
-      if (community != null)
-        'community': JsonDocumentReference(community!.path).toJson(),
-      'reports': reports
-          ?.map((ref) => JsonDocumentReference(ref.path).toJson())
-          .toList(),
-    };
+      'comments': comments ?? [],
+      'tags': tags,
+      if (community != null) 'community': community,
+      'reports': reports ?? [],
+    }; 
   }
 }

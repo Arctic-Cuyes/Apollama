@@ -55,15 +55,9 @@ class User {
       'avatarUrl': avatarUrl,
       'age': age,
       'location': location,
-      'upPosts': upPosts
-          ?.map((ref) => JsonDocumentReference(ref.path).toJson())
-          .toList(),
-      'downPosts': downPosts
-          ?.map((ref) => JsonDocumentReference(ref.path).toJson())
-          .toList(),
-      'communities': communities
-          ?.map((ref) => JsonDocumentReference(ref.path).toJson())
-          .toList(),
+      'upPosts': upPosts ?? [],
+      'downPosts': downPosts ?? [],
+      'communities': communities ?? [],
       'createdAt': createdAt,
     };
   }
