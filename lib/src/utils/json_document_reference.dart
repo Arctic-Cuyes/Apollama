@@ -9,5 +9,4 @@ class JsonDocumentReference {
     return FirebaseFirestore.instance.doc(path);
   }
 
-  Map<String, dynamic> toJson() => {'path': path};
 }
