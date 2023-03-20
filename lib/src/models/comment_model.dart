@@ -1,29 +1,34 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zona_hub/src/models/user_model.dart';
+import 'package:zona_hub/src/utils/json_document_reference.dart';
 
 class Comment {
   Comment({
-    required this.id,
+    this.id,
     required this.author,
     required this.content,
     required this.createdAt,
   });
 
-  Comment.fromJson(Map<String, Object?> json)
+  Comment.fromJson(Map<String, dynamic> json)
       : this(
-          id: json['id']! as String,
-          author: json['author']! as User,
+          id: json['id'] as String? ?? '',
+          author: JsonDocumentReference(
+                  (json['author'] as DocumentReference<Map<String, dynamic>>)
+                      .path)
+              .toDocumentReference(),
           content: json['content']! as String,
           createdAt: json['createdAt']! as String,
         );
 
-  final String id;
-  final User author;
+  late String? id;
+  final DocumentReference<Map<String, dynamic>> author;
+  late User authorData;
   final String content;
   final String createdAt;
 
-  Map<String, Object> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'author': author,
       'content': content,
       'createdAt': createdAt,

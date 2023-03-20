@@ -1,56 +1,63 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:zona_hub/src/models/community_model.dart';
-import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/utils/json_document_reference.dart';
 
 class User {
   User({
-    required this.id,
+    this.id,
     required this.name,
     required this.email,
-    required this.avatarUrl,
-    required this.age,
-    required this.location,
-    required this.upPosts,
-    required this.downPosts,
-    required this.communities,
-    required this.createdAt,
+    this.avatarUrl,
+    this.age,
+    this.location,
+    this.upPosts,
+    this.downPosts,
+    this.communities,
+    this.createdAt,
   });
 
-  User.fromJson(Map<String, Object?> json)
-      : this(
-          id: json['id']! as String,
-          name: json['name']! as String,
-          email: json['email']! as String,
-          avatarUrl: json['avatarUrl']! as String,
-          age: json['age']! as String,
-          location: json['location']! as GeoPoint,
-          upPosts: json['upPosts']! as List<Post>,
-          downPosts: json['downPosts']! as List<Post>,
-          communities: json['communities']! as List<Community>,
-          createdAt: json['createdAt']! as String,
-        );
-  final String id;
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] as String?,
+      name: json['name'] as String,
+      email: json['email'] as String,
+      avatarUrl: json['avatarUrl'] as String? ??
+          'https://cdn-icons-png.flaticon.com/512/1050/1050915.png',
+      age: json['age'] as int?,
+      location: json['location'] as Map<String, dynamic>?,
+      upPosts: (json['upPosts'] as List<dynamic>?)
+          ?.map((ref) => JsonDocumentReference(ref.path).toDocumentReference())
+          .toList(),
+      downPosts: (json['downPosts'] as List<dynamic>?)
+          ?.map((ref) => JsonDocumentReference(ref.path).toDocumentReference())
+          .toList(),
+      communities: (json['communities'] as List<dynamic>?)
+          ?.map((ref) => JsonDocumentReference(ref.path).toDocumentReference())
+          .toList(),
+      createdAt: json['createdAt'] as String?,
+    );
+  }
+
+  String? id;
   final String name;
   final String email;
-  final String avatarUrl;
-  final String age;
-  final GeoPoint location;
-  final List<Post> upPosts;
-  final List<Post> downPosts;
-  final List<Community> communities;
-  final String createdAt;
+  final String? avatarUrl;
+  final int? age;
+  final Map<String, dynamic>? location;
+  final List<DocumentReference<Map<String, dynamic>>>? upPosts;
+  final List<DocumentReference<Map<String, dynamic>>>? downPosts;
+  final List<DocumentReference<Map<String, dynamic>>>? communities;
+  final String? createdAt;
 
-  Map<String, Object> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
       'email': email,
       'avatarUrl': avatarUrl,
       'age': age,
       'location': location,
-      'upPosts': upPosts,
-      'downPosts': downPosts,
-      'communities': communities,
+      'upPosts': upPosts ?? [],
+      'downPosts': downPosts ?? [],
+      'communities': communities ?? [],
       'createdAt': createdAt,
     };
   }
