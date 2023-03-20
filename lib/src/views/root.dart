@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zona_hub/src/components/drawer.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
+import 'package:zona_hub/src/services/Internet/connectivity_service.dart';
 import 'package:zona_hub/src/views/permissions/permission.dart';
 import 'home/home.dart';
 import 'map/map.dart';
@@ -11,9 +15,9 @@ import 'package:provider/provider.dart';
 
 class Root extends StatefulWidget {
   const Root({super.key});
-  
+
   static SignInProvider user = SignInProvider();
-  
+
   @override
   State<Root> createState() => _RootState();
 }
@@ -21,6 +25,8 @@ class Root extends StatefulWidget {
 class _RootState extends State<Root> {
   int currentPage = 0;
   PermissionStatus? _status;
+  late final InternetValidationService _interService;
+  late final StreamSubscription<ConnectivityResult> _internetSubscription;
   //Here goes the views Pages Home(), Map(), Profile(), etc.
   List<Widget> pages = const [
     HomePage(),
@@ -42,7 +48,7 @@ class _RootState extends State<Root> {
 
   //Data from Shared Preferences (logged user)
 
-  Future getData()async{
+  Future getData() async {
     final sp = context.read<SignInProvider>();
     sp.getDataFromSP();
     Root.user = sp;
@@ -53,8 +59,21 @@ class _RootState extends State<Root> {
     debugPrint("Se construye Root");
     // TODO: implement initState
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((_) => _requestPermission());
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _interService = InternetValidationService();
+      _internetSubscription = _interService.subscription.listen((result) {
+        _interService.showConnectionSnackbar(context, result);
+      });
+      _requestPermission();
+    });
     getData();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _internetSubscription.cancel();
+    super.dispose();
   }
 
   @override

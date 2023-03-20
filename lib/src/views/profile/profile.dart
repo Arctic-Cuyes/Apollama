@@ -36,8 +36,16 @@ class _ProfilePageState extends State<ProfilePage> {
           )
         ],
       ),
-      body:const Center(
-         child: Text("Profile page")
+      body: Container(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                
+              ]
+            ),
+          ]
+        ),
       ),
     );
   }
