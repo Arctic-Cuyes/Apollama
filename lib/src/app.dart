@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:zona_hub/src/styles/custom_themes.dart';
-import 'package:zona_hub/src/views/auth/login.dart';
 import 'package:zona_hub/src/views/auth/welcome.dart';
 import 'package:zona_hub/src/views/root.dart';
 

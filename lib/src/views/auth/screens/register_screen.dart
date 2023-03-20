@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/forms/pages_login.dart';
 import 'package:zona_hub/src/components/forms/text_field.dart';
 import 'package:zona_hub/src/components/global/button.dart';
+import 'package:zona_hub/src/components/warnings/snackbar.dart';
+import 'package:zona_hub/src/services/Auth/sign_up_provider.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final su = context.read<SignUpProvider>(); 
     return Container(
       // color: GlobalColors.whiteColor,
       child: Center(
@@ -75,6 +78,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ButtonPrincipal(
                 text: _texto, 
                 onPressed: () {
+                  su.signUp(_nameController, _emailController, _passwordController).then((value) {
+                    if(su.hasError){
+                      debugPrint("Error de registro: ${su.errorCode}");
+                    }else{
+                      handleEmailSignIn();
+                    }
+                    }
+                  );
                   setState(() {
                     _texto = "Conectando...";
                   });
@@ -124,4 +135,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
+   void handleEmailSignIn()async{
+    openDialogLoader();
+    final sp = context.read<SignInProvider>();
+    sp.signInWithEmail(_emailController, _passwordController).then((value) {
+      if (sp.hasError == true) {
+        Navigator.of(context).pop(); // Close loader 
+        _texto = "Registrarse";
+        showSnackBar(context: context, text: sp.errorCode!);
+      }else{
+        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+          handleAfterSignIn();
+        }));   
+      }
+    });
+  }
+  //Puede ir en utils
+  openDialogLoader(){
+    showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder: (_){
+        return const Center(child: CircularProgressIndicator(),);
+      }
+    );
+  }
+  handleAfterSignIn(){
+    Navigator.of(context).pop(); // Close loader 
+    // Go to root page
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
+  }
+
 }

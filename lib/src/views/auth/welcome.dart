@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/global/button.dart';
 import 'package:zona_hub/src/constants/images.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
-import 'package:zona_hub/src/views/auth/login.dart';
 import 'package:zona_hub/src/views/auth/screens/login_screen.dart';
 import 'package:zona_hub/src/views/auth/screens/register_screen.dart';
 

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zona_hub/src/utils/json_document_reference.dart';
 
-class User {
-  User({
+class UserModel {
+  UserModel({
     this.id,
     required this.name,
     required this.email,
@@ -15,8 +15,8 @@ class User {
     this.createdAt,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       id: json['id'] as String?,
       name: json['name'] as String,
       email: json['email'] as String,
