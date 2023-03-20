@@ -6,8 +6,9 @@ import 'package:zona_hub/src/models/user_model.dart';
 class Report {
   Report({
     this.id,
-    required this.user,
+    this.author,
     required this.type,
+    this.createdAt,
   });
   Report.fromJson(Map<String, dynamic> json)
       : this(
@@ -15,20 +16,23 @@ class Report {
             type: JsonDocumentReference(
               (json['type'] as DocumentReference<Map<String, dynamic>>).path,
             ).toDocumentReference(),
-            user: JsonDocumentReference(
-                    (json['user'] as DocumentReference<Map<String, dynamic>>)
+            createdAt: json['createdAt'] as DateTime? ?? DateTime.now(),
+            author: JsonDocumentReference(
+                    (json['author'] as DocumentReference<Map<String, dynamic>>)
                         .path)
                 .toDocumentReference());
   late String? id;
   final DocumentReference<Map<String, dynamic>> type;
   late ReportType typeData;
-  final DocumentReference<Map<String, dynamic>> user;
-  late UserModel? userData;
+  final DocumentReference<Map<String, dynamic>>? author;
+  late UserModel? authorData;
+  late DateTime? createdAt;
 
   Map<String, dynamic> toJson() {
     return {
       'type': type,
-      'user': user,
+      'author': author,
+      'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
 }
