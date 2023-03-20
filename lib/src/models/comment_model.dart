@@ -23,7 +23,7 @@ class Comment {
 
   late String? id;
   final DocumentReference<Map<String, dynamic>> author;
-  late User authorData;
+  late UserModel authorData;
   final String content;
   final String createdAt;
 

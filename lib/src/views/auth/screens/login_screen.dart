@@ -41,8 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
           handleAfterSignIn();
         }));   
       }
-    })
-    ;
+    });
   }
   //Puede ir en utils
   openDialogLoader(){

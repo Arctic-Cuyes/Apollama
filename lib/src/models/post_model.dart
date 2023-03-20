@@ -58,7 +58,7 @@ class Post {
 
   late String? id;
   late DocumentReference<Map<String, dynamic>>? author;
-  late User? authorData;
+  late UserModel? authorData;
   final String title;
   final String description;
   final Map<String, dynamic>? location;

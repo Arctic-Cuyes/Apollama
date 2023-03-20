@@ -23,7 +23,7 @@ class Report {
   final DocumentReference<Map<String, dynamic>> type;
   late ReportType typeData;
   final DocumentReference<Map<String, dynamic>> user;
-  late User? userData;
+  late UserModel? userData;
 
   Map<String, dynamic> toJson() {
     return {
