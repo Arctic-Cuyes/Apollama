@@ -17,7 +17,6 @@ class MapPageProvider extends StatelessWidget {
 
 class _MapPage extends StatelessWidget {
   const _MapPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     debugPrint("Se construye pagina de mapa");
@@ -75,7 +74,9 @@ class GoogleMapWidget extends StatefulWidget {
 }
 
 class _GoogleMapWidgetState extends State<GoogleMapWidget> {
+  CameraPosition? _currentCameraPos;
   int i = 0;
+
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
@@ -85,15 +86,16 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       myLocationEnabled: true,
       mapType: MapType.normal,
       compassEnabled: true,
+      minMaxZoomPreference: const MinMaxZoomPreference(10, 17.5),
       zoomControlsEnabled: false,
       onTap: (_) => debugPrint("Presionado en mapa"),
-      onCameraMove: (position) {
-        i++;
-        if (i == 75) {
-          i = 0;
-          debugPrint(position.toString());
-          widget.controller.addNewCameraPos(position);
+      onCameraIdle: () {
+        if (_currentCameraPos != null) {
+          widget.controller.addNewCameraPos(_currentCameraPos!);
         }
+      },
+      onCameraMove: (position) {
+        _currentCameraPos = position;
       },
     );
   }

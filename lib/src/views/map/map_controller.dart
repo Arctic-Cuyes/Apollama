@@ -19,10 +19,11 @@ class MapController extends ChangeNotifier {
   late final BitmapDescriptor saludMarker;
   late final BitmapDescriptor petMarker;
 
-  late CameraPosition _initialCameraPos;
-  late final CustomMarkerIcons _markersService;
+  late CameraPosition _currentCameraPos;
+  late final CustomMarkerIcons _markersIconsService;
   late final GpsService _gpsService;
   late final StreamSubscription _markersSubscription;
+  StreamSubscription? _nearMarkersFetch;
   late final StreamController<CameraPosition> _cameraPosController;
 
   late final List fetchedMarkers;
@@ -32,7 +33,7 @@ class MapController extends ChangeNotifier {
   late final Geoflutterfire geo;
 
   MapController(BuildContext context) {
-    _markersService = CustomMarkerIcons();
+    _markersIconsService = CustomMarkerIcons();
     _gpsService = GpsService();
     isDisposed = false;
     _cameraPosController = StreamController();
@@ -46,30 +47,30 @@ class MapController extends ChangeNotifier {
   Future<CameraPosition> get initialCameraPos async {
     Position? initialPosition = await _gpsService.determinePosition();
     if (initialPosition != null) {
-      _initialCameraPos = CameraPosition(
+      _currentCameraPos = CameraPosition(
           target: LatLng(initialPosition.latitude, initialPosition.longitude),
           zoom: 15);
     } else {
       initialPosition = await _gpsService.determineLastPosition();
       if (initialPosition != null) {
-        _initialCameraPos = CameraPosition(
+        _currentCameraPos = CameraPosition(
             target: LatLng(initialPosition.latitude, initialPosition.longitude),
             zoom: 15);
       } else {
-        _initialCameraPos =
+        _currentCameraPos =
             const CameraPosition(target: LatLng(0, 0), zoom: 0.0);
       }
     }
-    addNewCameraPos(_initialCameraPos);
-    return _initialCameraPos;
+    addNewCameraPos(_currentCameraPos);
+    return _currentCameraPos;
   }
 
   void loadMarkers(BuildContext context) async {
-    avisoMarker = await _markersService.avisoMarker;
-    ayudaMarker = await _markersService.ayudaMarker;
-    eventoMarker = await _markersService.eventoMarker;
-    petMarker = await _markersService.petMarker;
-    saludMarker = await _markersService.saludMarker;
+    avisoMarker = await _markersIconsService.avisoMarker;
+    ayudaMarker = await _markersIconsService.ayudaMarker;
+    eventoMarker = await _markersIconsService.eventoMarker;
+    petMarker = await _markersIconsService.petMarker;
+    saludMarker = await _markersIconsService.saludMarker;
 
     _markersSubscription = _markersListener(context);
   }
@@ -113,7 +114,6 @@ class MapController extends ChangeNotifier {
     );
 
     _markers[markerId] = newMarker;
-    notifyListeners();
   }
 
   // void addExampleMarker(BuildContext context) async {
@@ -133,9 +133,13 @@ class MapController extends ChangeNotifier {
   // }
 // Future<StreamSubscription<List<DocumentSnapshot>>>
   StreamSubscription<CameraPosition> _markersListener(BuildContext context) {
-    return _cameraPosController.stream.listen((cameraPos) {
-      getStreamNearMarkers(cameraPos)
-          .listen((List<DocumentSnapshot> documentList) {
+    return _cameraPosController.stream.listen((
+      cameraPos,
+    ) {
+      _nearMarkersFetch?.cancel();
+      _nearMarkersFetch = getStreamNearMarkers(cameraPos).listen((
+        List<DocumentSnapshot> documentList,
+      ) {
         fetchedMarkers.clear();
         for (var item in documentList) {
           CustomMarker marker = CustomMarker(
@@ -153,7 +157,7 @@ class MapController extends ChangeNotifier {
         for (var item in fetchedMarkers) {
           addMarker(item, context);
         }
-        debugPrint("tamaño de fetchedMarkers: ${fetchedMarkers.length}");
+        notifyListeners();
       });
     });
   }
@@ -173,6 +177,7 @@ class MapController extends ChangeNotifier {
   void dispose() {
     isDisposed = true;
     _markersSubscription.cancel();
+    _nearMarkersFetch?.cancel();
     _cameraPosController.close();
     super.dispose();
   }
