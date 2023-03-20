@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:zona_hub/src/components/warnings/snackbar.dart';
 import 'package:zona_hub/src/constants/images.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,7 @@ class _PagesLoginState extends State<PagesLogin> {
     sp.signInWithFacebook().then((value) {
       if (sp.hasError == true) {
         Navigator.of(context).pop(); // Close loader 
-        debugPrint("Error de fb auth: ${sp.errorCode.toString()}");
+        showSnackBar(context: context, text: sp.errorCode!);
       }else{
         sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
           handleAfterSignIn();
@@ -58,7 +59,7 @@ class _PagesLoginState extends State<PagesLogin> {
     await sp.signInWithGoogle().then((value){
       if(sp.hasError){
         Navigator.of(context).pop(); // Close loader 
-        debugPrint(sp.errorCode);
+        showSnackBar(context: context, text: sp.errorCode!);
       }else{
         sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
           handleAfterSignIn();
