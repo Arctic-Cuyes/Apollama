@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:zona_hub/src/services/Map/custom_markers_service.dart';
+import 'package:zona_hub/src/constants/custom_marker_images.dart';
 import 'package:zona_hub/src/services/lazy_markers_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/Map/gps_service.dart';
