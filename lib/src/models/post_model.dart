@@ -14,10 +14,8 @@ class Post {
     required this.imageUrl,
     this.ups = 0,
     this.downs = 0,
-    this.comments,
     this.tags,
     this.community,
-    this.reports,
   });
 
   Post.fromJson(Map<String, dynamic> json)
@@ -36,11 +34,6 @@ class Post {
           imageUrl: json['imageUrl'] as String? ?? '',
           ups: json['ups'] as int? ?? 0,
           downs: json['downs'] as int? ?? 0,
-          comments: (json['comments'] as List<dynamic>?)
-                  ?.map((ref) =>
-                      JsonDocumentReference(ref.path).toDocumentReference())
-                  .toList() ??
-              [],
           tags: (json['tags'] as List<dynamic>?)
                   ?.map((ref) =>
                       JsonDocumentReference(ref.path).toDocumentReference())
@@ -49,11 +42,6 @@ class Post {
           community: json['community'] != null
               ? JsonDocumentReference(json['community']).toDocumentReference()
               : null,
-          reports: (json['reports'] as List<dynamic>?)
-                  ?.map((ref) =>
-                      JsonDocumentReference(ref.path).toDocumentReference())
-                  .toList() ??
-              [],
         );
 
   late String? id;
@@ -66,10 +54,8 @@ class Post {
   final String imageUrl;
   final int? ups;
   final int? downs;
-  final List<DocumentReference<Map<String, dynamic>>>? comments;
   final List<DocumentReference<Map<String, dynamic>>>? tags;
   final DocumentReference<Map<String, dynamic>>? community;
-  final List<DocumentReference<Map<String, dynamic>>>? reports;
 
   Map<String, Object?> toJson() {
     return {
@@ -81,10 +67,8 @@ class Post {
       'imageUrl': imageUrl,
       'ups': ups ?? 0,
       'downs': downs ?? 0,
-      'comments': comments ?? [],
       'tags': tags,
       if (community != null) 'community': community,
-      'reports': reports ?? [],
-    }; 
+    };
   }
 }
