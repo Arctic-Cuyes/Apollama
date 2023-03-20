@@ -1,72 +1,90 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:zona_hub/src/models/comment_model.dart';
-import 'package:zona_hub/src/models/community_model.dart';
-import 'package:zona_hub/src/models/report_model.dart';
-import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
+import 'package:zona_hub/src/utils/json_document_reference.dart';
 
 class Post {
-  Post(
-      {required this.id,
-      required this.author,
-      required this.title,
-      required this.description,
-      required this.location,
-      required this.createdAt,
-      required this.images,
-      required this.ups,
-      required this.downs,
-      required this.comments,
-      required this.tags,
-      required this.community,
-      required this.reports});
+  Post({
+    this.id,
+    this.author,
+    this.authorData,
+    required this.title,
+    required this.description,
+    this.location,
+    this.createdAt,
+    required this.imageUrl,
+    this.ups = 0,
+    this.downs = 0,
+    this.comments,
+    this.tags,
+    this.community,
+    this.reports,
+  });
 
-  Post.fromJson(Map<String, Object?> json)
+  Post.fromJson(Map<String, dynamic> json)
       : this(
-          id: json['id'] as String,
-          author: json['author'] as User,
-          title: json['title'] as String,
-          description: json['description'] as String,
-          location: json['location'] as GeoPoint,
-          createdAt: json['createdAt'] as String,
-          images: json['images'] as List<String>,
-          ups: json['ups'] as int,
-          downs: json['downs'] as int,
-          comments: json['comments'] as List<Comment>,
-          tags: json['tags'] as List<Tag>,
-          community: json['community'] as Community,
-          reports: json['reports'] as List<Report>,
+          id: json['id'] as String?,
+          author: json['author'] != null
+              ? JsonDocumentReference((json['author']
+                          as DocumentReference<Map<String, dynamic>>)
+                      .path)
+                  .toDocumentReference()
+              : null,
+          title: json['title'] as String? ?? '',
+          description: json['description'] as String? ?? '',
+          location: json['location'] as Map<String, dynamic>?,
+          createdAt: json['createdAt'] as String?,
+          imageUrl: json['imageUrl'] as String? ?? '',
+          ups: json['ups'] as int? ?? 0,
+          downs: json['downs'] as int? ?? 0,
+          comments: (json['comments'] as List<dynamic>?)
+                  ?.map((ref) =>
+                      JsonDocumentReference(ref.path).toDocumentReference())
+                  .toList() ??
+              [],
+          tags: (json['tags'] as List<dynamic>?)
+                  ?.map((ref) =>
+                      JsonDocumentReference(ref.path).toDocumentReference())
+                  .toList() ??
+              [],
+          community: json['community'] != null
+              ? JsonDocumentReference(json['community']).toDocumentReference()
+              : null,
+          reports: (json['reports'] as List<dynamic>?)
+                  ?.map((ref) =>
+                      JsonDocumentReference(ref.path).toDocumentReference())
+                  .toList() ??
+              [],
         );
 
-  final String id;
-  final User author;
+  late String? id;
+  late DocumentReference<Map<String, dynamic>>? author;
+  late User? authorData;
   final String title;
   final String description;
-  final GeoPoint location;
-  final String createdAt;
-  final List<String> images;
-  final int ups;
-  final int downs;
-  final List<Comment> comments;
-  final List<Tag> tags;
-  final Community community;
-  final List<Report> reports;
+  final Map<String, dynamic>? location;
+  final String? createdAt;
+  final String imageUrl;
+  final int? ups;
+  final int? downs;
+  final List<DocumentReference<Map<String, dynamic>>>? comments;
+  final List<DocumentReference<Map<String, dynamic>>>? tags;
+  final DocumentReference<Map<String, dynamic>>? community;
+  final List<DocumentReference<Map<String, dynamic>>>? reports;
 
-  Map<String, Object> toJson() {
+  Map<String, Object?> toJson() {
     return {
-      'id': id,
-      'author': author,
+      if (author != null) 'author': author,
       'title': title,
       'description': description,
-      'location': location,
+      if (location != null) 'location': location,
       'createdAt': createdAt,
-      'images': images,
-      'ups': ups,
-      'downs': downs,
-      'comments': comments,
+      'imageUrl': imageUrl,
+      'ups': ups ?? 0,
+      'downs': downs ?? 0,
+      'comments': comments ?? [],
       'tags': tags,
-      'community': community,
-      'reports': reports,
-    };
+      if (community != null) 'community': community,
+      'reports': reports ?? [],
+    }; 
   }
 }

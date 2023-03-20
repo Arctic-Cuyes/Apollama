@@ -1,16 +1,15 @@
 class Tag {
-  Tag({required this.id, required this.name});
-  Tag.fromJson(Map<String, Object?> json)
+  Tag({this.id, required this.name});
+  Tag.fromJson(Map<String, dynamic> json)
       : this(
-          id: json['id']! as String,
+          id: json['id'] as String? ?? '',
           name: json['name']! as String,
         );
-  final String id;
+  late String? id;
   final String name;
 
-  Map<String, Object> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
     };
   }
