@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/forms/pages_login.dart';
 import 'package:zona_hub/src/components/forms/text_field.dart';
 import 'package:zona_hub/src/components/global/button.dart';
+import 'package:zona_hub/src/services/Auth/sign_up_provider.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final su = context.read<SignUpProvider>(); 
     return Container(
       // color: GlobalColors.whiteColor,
       child: Center(
@@ -75,6 +77,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ButtonPrincipal(
                 text: _texto, 
                 onPressed: () {
+                  su.signUp(_nameController, _emailController, _passwordController).then((value) {
+                    if(su.hasError){
+                      debugPrint("Error de registro: ${su.errorCode}");
+                    }else{
+                      debugPrint("Iniciando sesión");
+                    }
+                    }
+                  );
                   setState(() {
                     _texto = "Conectando...";
                   });

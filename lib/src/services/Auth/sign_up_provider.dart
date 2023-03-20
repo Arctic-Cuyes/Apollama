@@ -13,14 +13,17 @@ class SignUpProvider extends ChangeNotifier{
   
 
   Future signUp (nameController, emailController, passwordController) async {
+    debugPrint("Email: ${emailController.text.toString()}");
     try {
-      await firebaseAuth.createUserWithEmailAndPassword(
-        email: emailController, 
-        password: passwordController,
+      UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(),
       );
-      User newUser = firebaseAuth.currentUser!;
-      newUser.updateDisplayName(nameController);
+      User newUser = userCredential.user!;
+      newUser.updateDisplayName(nameController.text.trim());
       //Guardar en base de datos
+      _hasError = false;
+      notifyListeners();
     } on FirebaseAuthException catch (e) {
       _hasError = true;
       _errorCode = e.code;
