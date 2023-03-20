@@ -5,9 +5,9 @@ import 'package:zona_hub/src/utils/json_document_reference.dart';
 class Comment {
   Comment({
     this.id,
-    required this.author,
+    this.author,
     required this.content,
-    required this.createdAt,
+    this.createdAt,
   });
 
   Comment.fromJson(Map<String, dynamic> json)
@@ -22,16 +22,16 @@ class Comment {
         );
 
   late String? id;
-  final DocumentReference<Map<String, dynamic>> author;
+  final DocumentReference<Map<String, dynamic>>? author;
   late UserModel authorData;
   final String content;
-  final String createdAt;
+  late String? createdAt;
 
   Map<String, dynamic> toJson() {
     return {
       'author': author,
       'content': content,
-      'createdAt': createdAt,
+      'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
 }
