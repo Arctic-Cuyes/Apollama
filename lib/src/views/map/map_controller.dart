@@ -45,13 +45,13 @@ class MapController extends ChangeNotifier {
   Set<Marker> get markers => _markers.values.toSet();
 
   Future<CameraPosition> get initialCameraPos async {
-    Position? initialPosition = await _gpsService.determineLastPosition();
+    Position? initialPosition = await _gpsService.determinePosition();
     if (initialPosition != null) {
       _currentCameraPos = CameraPosition(
           target: LatLng(initialPosition.latitude, initialPosition.longitude),
           zoom: 15);
     } else {
-      initialPosition = await _gpsService.determinePosition();
+      initialPosition = await _gpsService.determineLastPosition();
       if (initialPosition != null) {
         _currentCameraPos = CameraPosition(
             target: LatLng(initialPosition.latitude, initialPosition.longitude),
