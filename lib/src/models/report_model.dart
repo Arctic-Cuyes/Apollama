@@ -24,7 +24,7 @@ class Report {
   late String? id;
   final DocumentReference<Map<String, dynamic>> type;
   late ReportType typeData;
-  final DocumentReference<Map<String, dynamic>>? author;
+  late DocumentReference<Map<String, dynamic>>? author;
   late UserModel? authorData;
   late DateTime? createdAt;
 
