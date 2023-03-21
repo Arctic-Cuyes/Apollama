@@ -101,16 +101,20 @@ class AuthMethods {
         password: passwordController.text.trim(),
       );
       User newUser = userCredential.user!;
-      await newUser
-          .updateDisplayName(nameController.text.trim())
-          .then((value) {});
-
+      
+      await newUser.updateDisplayName(nameController.text.trim());
+      //foto por defecto
+      await newUser.updatePhotoURL("https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png");
+  
       //Guardar en base de datos
-
-      if (!await UserService().userExistsById(newUser.uid)) {
-        AuthService()
-            .saveUserInFirestore(newUser, name: nameController.text.trim());
-      }
+      
+       if(!await UserService().userExistsById(newUser.uid)){
+          AuthService().saveUserInFirestore(
+            newUser, 
+            name: nameController.text.trim(),
+            photoURL: "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png",
+          );
+        }
 
       _hasError = false;
     } on FirebaseAuthException catch (e) {

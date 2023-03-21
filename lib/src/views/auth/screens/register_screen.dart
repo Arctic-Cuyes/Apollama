@@ -63,16 +63,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ButtonPrincipal(
                 text: _texto,
                 onPressed: () {
-                  auth
-                      .signUp(_nameController, _emailController,
-                          _passwordController)
-                      .then((value) {
+                  openDialogLoader();
+                  auth.signUp(_nameController, _emailController, _passwordController).then((value) {
                     if (auth.hasError) {
                       //Errores de registro por ej: email ya registrado, contraseña débil, etc.
                       showSnackBar(
                           context: context,
                           text: "Error de registro ${auth.errorCode}");
                       _texto = "Registrarse";
+                      Navigator.of(context).pop(); // close loader
                     } else {
                       handleEmailSignIn();
                     }
@@ -126,7 +125,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void handleEmailSignIn() async {
-    openDialogLoader();
     // final auth = SignInProvider();
     auth.signInWithEmail(_emailController, _passwordController).then((value) {
       if (auth.hasError == true) {
