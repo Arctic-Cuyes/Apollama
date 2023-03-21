@@ -56,9 +56,6 @@ class _RootState extends State<Root> {
       });
       _requestPermission();
     });
-
-   debugPrint("Can pop ????? ?? ?? ?? ${Navigator.of(context).canPop().toString()}");  
-
   }
 
   @override
