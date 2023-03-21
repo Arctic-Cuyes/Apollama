@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:zona_hub/src/components/warnings/snackbar.dart';
 import 'package:zona_hub/src/constants/images.dart';
-import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/views/root.dart';
 
 class PagesLogin extends StatefulWidget {
@@ -14,6 +13,7 @@ class PagesLogin extends StatefulWidget {
 }
 
 class _PagesLoginState extends State<PagesLogin> {
+  final auth = AuthMethods();
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -40,11 +40,11 @@ class _PagesLoginState extends State<PagesLogin> {
   
   void handleFacebookSignIn() {
     openDialogLoader();
-    final sp = context.read<SignInProvider>();
-    sp.signInWithFacebook().then((value) {
-      if (sp.hasError == true) {
+    
+    auth.signInWithFacebook().then((value) {
+      if (auth.hasError == true) {
         Navigator.of(context).pop(); // Close loader 
-        showSnackBar(context: context, text: sp.errorCode!);
+        showSnackBar(context: context, text: auth.errorCode!);
       }else{
         
           handleAfterSignIn();
@@ -55,11 +55,11 @@ class _PagesLoginState extends State<PagesLogin> {
 
   void handleGoogleSignIn() async {
     openDialogLoader();
-    final sp = context.read<SignInProvider>();
-    await sp.signInWithGoogle().then((value){
-      if(sp.hasError){
+    // final auth = context.read<SignInProvider>();
+    await auth.signInWithGoogle().then((value){
+      if(auth.hasError){
         Navigator.of(context).pop(); // Close loader 
-        showSnackBar(context: context, text: sp.errorCode!);
+        showSnackBar(context: context, text: auth.errorCode!);
       }else{
         
           handleAfterSignIn();

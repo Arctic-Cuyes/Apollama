@@ -5,10 +5,10 @@ import 'package:zona_hub/src/services/user_service.dart';
 class AuthService {
   final currentUser = FirebaseAuth.instance.currentUser!;
 
-   saveUserInFirestore(newUser){
+   saveUserInFirestore(newUser, {name = "User"}){
     UserModel user = UserModel(
         id: newUser.uid,
-        name: newUser.displayName!, 
+        name: newUser.displayName ?? name, 
         email: newUser.email!,
         createdAt: DateTime.now().toString(),
       );
