@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zona_hub/src/models/report_model.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/report_type_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class ReportService {
   final String postId;
   late CollectionReference<Report> reportsRef;
+  final AuthService authService = AuthService();
 
   ReportService({required this.postId}) {
     reportsRef = FirebaseFirestore.instance
@@ -41,15 +43,14 @@ class ReportService {
   }
 
   // create report and set the author to the current user
-  // Future<void> createReport(Report report) async {
-  //   await reportsRef.add(report);
-  // }
+  Future<void> createReport(Report report) async {
+    final user = await authService.getCurrentUser();
+    report.author = user.toDocumentReference();
+    await reportsRef.add(report);
+  }
 
-  // Future<void> updateReport(Report report) async {
-  //   await reportsRef.doc(report.id).update(report.toJson());
-  // }
-
-  // Future<void> deleteReportById(String id) async {
-  //   await reportsRef.doc(id).delete();
-  // }
+  Future<Report> getReportById(String id) async {
+    final report = await reportsRef.doc(id).get();
+    return report.data()!;
+  }
 }
