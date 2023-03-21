@@ -37,9 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
         _texto = "Iniciar Sesión";
         showSnackBar(context: context, text: sp.errorCode!);
       }else{
-        sp.setSignIn().then((value){
+       
           handleAfterSignIn();
-        });
+
       }
     });
   }

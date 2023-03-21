@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
@@ -12,32 +11,13 @@ class SignInProvider extends ChangeNotifier{
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FacebookAuth facebookAuth = FacebookAuth.instance;
   final GoogleSignIn googleAuth = GoogleSignIn();
-  //
-  bool _isSignedIn = false;
-  bool get isSignedIn => _isSignedIn;
 
   bool _hasError = false;
   bool get hasError => _hasError;
 
   String? _errorCode;
   String? get errorCode => _errorCode;
-  
-  SignInProvider(){
-    checkSignInUser();
-  }
 
-  Future checkSignInUser() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    _isSignedIn = sp.getBool("signed_in") ?? false; 
-    notifyListeners();
-  }
-
-  Future setSignIn() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.setBool("signed_in", true);
-    _isSignedIn = true;
-    notifyListeners();
-  }
   // Sign in with Facebook, google and email
     //sign in with Facebook
   Future<void> signInWithFacebook() async {
@@ -126,16 +106,5 @@ class SignInProvider extends ChangeNotifier{
     await firebaseAuth.signOut();
     await facebookAuth.logOut();
     await googleAuth.signOut();
-    _isSignedIn = false;
-    notifyListeners();
-    clearSotredData();
-  }
-
-  //
-
-  //clear data
-  Future clearSotredData() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.clear();
   }
 }

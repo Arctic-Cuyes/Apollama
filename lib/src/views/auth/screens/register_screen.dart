@@ -80,6 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onPressed: () {
                   su.signUp(_nameController, _emailController, _passwordController).then((value) {
                     if(su.hasError){
+                      //Errores de registro por ej: email ya registrado, contraseña débil, etc.
                       debugPrint("Error de registro: ${su.errorCode}");
                     }else{
                       handleEmailSignIn();
@@ -145,9 +146,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _texto = "Registrarse";
         showSnackBar(context: context, text: sp.errorCode!);
       }else{
-        sp.setSignIn().then((value){
+       
           handleAfterSignIn();
-        }); 
+       
       }
     });
   }
