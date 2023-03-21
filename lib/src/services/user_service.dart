@@ -35,10 +35,9 @@ class UserService {
   }
 
   // find user by id
-  Future<UserModel> findUserById(String id) async {
+  Future<UserModel> getUserById(String id) async {
     DocumentSnapshot userSnapshot = await usersRef.doc(id).get();
-    UserModel user =
-        UserModel.fromJson(userSnapshot.data() as Map<String, dynamic>);
+    UserModel user = userSnapshot.data() as UserModel;
     user.id = userSnapshot.id;
     return user;
   }
