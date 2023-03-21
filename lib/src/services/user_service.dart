@@ -3,7 +3,7 @@ import 'package:zona_hub/src/models/user_model.dart';
 
 class UserService {
   final usersRef =
-      FirebaseFirestore.instance.collection('Users').withConverter<UserModel>(
+      FirebaseFirestore.instance.collection('users').withConverter<UserModel>(
             fromFirestore: (snapshots, _) =>
                 UserModel.fromJson(snapshots.data() as Map<String, dynamic>),
             toFirestore: (user, _) => user.toJson(),
@@ -19,6 +19,11 @@ class UserService {
     await usersRef.add(user);
   }
 
+  // create user with a specified id
+  Future<void> createUserWithId(UserModel user) async {
+    await usersRef.doc(user.id).set(user);
+  }
+
   // update user
   Future<void> updateUser(UserModel user) async {
     await usersRef.doc(user.id).update(user.toJson());
@@ -27,5 +32,14 @@ class UserService {
   // delete user
   Future<void> deleteUser(String id) async {
     await usersRef.doc(id).delete();
+  }
+
+  // find user by id
+  Future<UserModel> findUserById(String id) async {
+    DocumentSnapshot userSnapshot = await usersRef.doc(id).get();
+    UserModel user =
+        UserModel.fromJson(userSnapshot.data() as Map<String, dynamic>);
+    user.id = userSnapshot.id;
+    return user;
   }
 }
