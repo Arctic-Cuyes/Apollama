@@ -21,7 +21,7 @@ class UserModel {
       name: json['name'] as String,
       email: json['email'] as String,
       avatarUrl: json['avatarUrl'] as String? ??
-          'https://cdn-icons-png.flaticon.com/512/1050/1050915.png',
+          'https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png',
       age: json['age'] as int?,
       location: json['location'] as Map<String, dynamic>?,
       upPosts: (json['upPosts'] as List<dynamic>?)
