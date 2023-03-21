@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 class Root extends StatefulWidget {
   const Root({super.key});
 
-  static SignInProvider user = SignInProvider();
+  // static SignInProvider user = SignInProvider();
 
   @override
   State<Root> createState() => _RootState();
@@ -48,11 +48,11 @@ class _RootState extends State<Root> {
 
   //Data from Shared Preferences (logged user)
 
-  Future getData() async {
-    final sp = context.read<SignInProvider>();
-    sp.getDataFromSP();
-    Root.user = sp;
-  }
+  // Future getData() async {
+  //   final sp = context.read<SignInProvider>();
+  //   sp.getDataFromSP();
+  //   Root.user = sp;
+  // }
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _RootState extends State<Root> {
       });
       _requestPermission();
     });
-    getData();
+    // getData();
   }
 
   @override

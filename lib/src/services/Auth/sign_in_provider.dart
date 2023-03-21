@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zona_hub/src/components/warnings/snackbar.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
+import 'package:zona_hub/src/services/user_service.dart';
 
 class SignInProvider extends ChangeNotifier{
   
@@ -21,21 +22,6 @@ class SignInProvider extends ChangeNotifier{
   String? _errorCode;
   String? get errorCode => _errorCode;
   
-  String? _provider;
-  String? get provider => _provider;
-  
-  String? _userID;
-  String? get userID => _userID;
-  
-  String? _email;
-  String? get email => _email;
-  
-  String? _name;
-  String? get name => _name;
-  
-  String? _imageURL;
-  String? get imageURL => _imageURL;
-
   SignInProvider(){
     checkSignInUser();
   }
@@ -59,17 +45,16 @@ class SignInProvider extends ChangeNotifier{
     
     if(result.status == LoginStatus.success){
       try {
-        final userData = await facebookAuth.getUserData();
+        //final userData = await facebookAuth.getUserData();
         
         final OAuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
-        await firebaseAuth.signInWithCredential(credential);
-        _name = userData['name'];
-        _email = userData['email'];
-        _imageURL = userData['picture']['data']['url'];
-        _userID = userData['id'];
+        final User user  = (await firebaseAuth.signInWithCredential(credential)).user!;
+          
+        if(!await UserService().userExistsById(user.uid)){
+          AuthService().saveUserInFirestore(user);
+        }
         _hasError = false;
-        _provider = "FACEBOOK";
-        notifyListeners();
+        notifyListeners(); 
       } on FirebaseAuthException catch (e) {
         _hasError = true;
         _errorCode = e.code;
@@ -100,13 +85,12 @@ class SignInProvider extends ChangeNotifier{
           );
         
         final User user  = (await firebaseAuth.signInWithCredential(credential)).user!;
-        _name = user.displayName ?? "user"; 
-        _email = user.email;
-        _imageURL = user.photoURL ?? "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png";
-        _userID = user.uid;
+        
+      
+        if(!await UserService().userExistsById(user.uid)){
+          AuthService().saveUserInFirestore(user);
+        }
         _hasError = false;
-        _provider = "GOOGLE";
-
         notifyListeners();
       } on FirebaseAuthException catch (e) {
         _errorCode = e.code;
@@ -125,15 +109,9 @@ class SignInProvider extends ChangeNotifier{
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
       );
-      final user = firebaseAuth.currentUser!;
-      //debugPrint("Post datos de email user: ${user.email} ${user.displayName} ${user.photoURL} $_userID");
-      _name = user.displayName ?? "user"; 
-      _email = user.email;
-      _imageURL = user.photoURL ?? "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png";
-      _userID = user.uid;
+  
       _hasError = false;
-      _provider = "EMAIL";
-      //debugPrint("Datos de email user: $_name $_email $_imageURL $_userID");
+      
       notifyListeners();
     } on FirebaseAuthException catch (e) {
       _hasError = true;
@@ -143,23 +121,6 @@ class SignInProvider extends ChangeNotifier{
     
   }
 
-  //Save data to shared preferences
-  Future saveDataToSP() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    await sp.setString('name', _name!);
-    await sp.setString('email', _email!);
-    await sp.setString('imageURL', _imageURL!);
-    await sp.setString('provider', _provider!);  
-    notifyListeners();
-  }
-  Future getDataFromSP() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    _name = sp.getString('name');
-    _email = sp.getString('email');
-    _imageURL = sp.getString('imageURL');
-    _provider = sp.getString("provider");
-    notifyListeners();  
-  }
   //signOut
   Future userSignOut() async {
     await firebaseAuth.signOut();

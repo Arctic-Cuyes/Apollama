@@ -46,9 +46,9 @@ class _PagesLoginState extends State<PagesLogin> {
         Navigator.of(context).pop(); // Close loader 
         showSnackBar(context: context, text: sp.errorCode!);
       }else{
-        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+        sp.setSignIn().then((value){
           handleAfterSignIn();
-        }));   
+        });
       }
     });
   }
@@ -61,9 +61,9 @@ class _PagesLoginState extends State<PagesLogin> {
         Navigator.of(context).pop(); // Close loader 
         showSnackBar(context: context, text: sp.errorCode!);
       }else{
-        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+        sp.setSignIn().then((value){
           handleAfterSignIn();
-        }));       
+        });     
       }
     });
   }

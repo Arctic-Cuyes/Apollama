@@ -145,9 +145,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _texto = "Registrarse";
         showSnackBar(context: context, text: sp.errorCode!);
       }else{
-        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+        sp.setSignIn().then((value){
           handleAfterSignIn();
-        }));   
+        }); 
       }
     });
   }
