@@ -4,14 +4,13 @@ import 'package:zona_hub/src/components/forms/text_field.dart';
 import 'package:zona_hub/src/components/global/button.dart';
 import 'package:zona_hub/src/components/warnings/snackbar.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
-import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/views/root.dart';
 
 class LoginScreen extends StatefulWidget {
-
+   
   const LoginScreen({super.key});
-
+  
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -26,20 +25,21 @@ class _LoginScreenState extends State<LoginScreen> {
   );
 
   String _texto = "Iniciar Sesión";
-
+  //Auth methods
+  final auth = AuthMethods();
   
  void handleEmailSignIn()async{
     openDialogLoader();
-    final sp = context.read<SignInProvider>();
-    sp.signInWithEmail(_emailController, _passwordController).then((value) {
-      if (sp.hasError == true) {
+    // final auth = context.read<SignInProvider>();
+    auth.signInWithEmail(_emailController, _passwordController).then((value) {
+      if (auth.hasError == true) {
         Navigator.of(context).pop(); // Close loader 
         _texto = "Iniciar Sesión";
-        showSnackBar(context: context, text: sp.errorCode!);
+        showSnackBar(context: context, text: auth.errorCode!);
       }else{
-        sp.saveDataToSP().then((value) => sp.setSignIn().then((value){
+       
           handleAfterSignIn();
-        }));   
+
       }
     });
   }

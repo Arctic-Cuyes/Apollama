@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/app.dart';
-import 'package:zona_hub/src/services/Auth/sign_in_provider.dart';
+import 'package:zona_hub/src/services/Auth/auth_methods.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/views/auth/welcome.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
-import 'package:zona_hub/src/views/root.dart';
 
 /*
   Sidebar that contains summary profile information and other
@@ -69,8 +69,7 @@ class ProfileSummary extends StatefulWidget {
   State<ProfileSummary> createState() => _ProfileSummaryState();
 }
 
-class _ProfileSummaryState extends State<ProfileSummary> {
-  
+class _ProfileSummaryState extends State<ProfileSummary> { 
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -92,8 +91,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
               ),
               child: ClipOval(
                   child: Image.network(
-                  //Cambiará según la base de datos, por el momento una imagen de internet
-                  Root.user.imageURL!,
+                  AuthService().currentUser.photoURL ?? "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png",
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
@@ -105,7 +103,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Text(
-            Root.user.name!,
+            AuthService().currentUser.displayName ?? "User",
             textAlign: TextAlign.center, 
             style: const TextStyle(
               fontSize: 20,
@@ -113,8 +111,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
             ),
           ),
         ),
-        const Text("+51 123 456 789"),
-        Text(Root.user.email!),
+        Text(AuthService().currentUser.email!),
       ]),
     );
   }
@@ -126,7 +123,7 @@ class DrawerOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sp = context.read<SignInProvider>();
+    final auth = AuthMethods();
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -138,7 +135,7 @@ class DrawerOptions extends StatelessWidget {
         onTap: (){
           //Lógica para abrir página de opción seleccionada
           if(index == 3){ //Logout
-            sp.userSignOut();
+            auth.userSignOut();
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomeView()));
           }else{
             Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
