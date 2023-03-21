@@ -38,11 +38,10 @@ class PostService {
   }
 
   // create a post and set the author to the current user
-  // Future<void> createPost(Post post) async {
-  //   final user =
-  //       User(id: 'JlZxZOy4WNkTU8jni4FN', name: 'random', email: 'hola');
-  //   post.author =
-  //       JsonDocumentReference('users/${user.id}').toDocumentReference();
-  //   await postsRef.add(post);
-  // }
+  Future<void> createPost(Post post) async {
+    final user = await authService.getCurrentUser();
+    post.author =
+        JsonDocumentReference('users/${user.id}').toDocumentReference();
+    await postsRef.add(post);
+  }
 }

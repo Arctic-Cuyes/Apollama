@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 
 class Recientes extends StatefulWidget {
@@ -12,6 +13,7 @@ class Recientes extends StatefulWidget {
 
 class _RecientesState extends State<Recientes> {
   final PostService postService = PostService();
+  final AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
