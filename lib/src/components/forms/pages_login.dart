@@ -21,98 +21,93 @@ class _PagesLoginState extends State<PagesLogin> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           PageIcon(
-            source: GlobalConstansImages.facebookSVG, 
-            onPressed: () {
-              handleFacebookSignIn();
-            }),
+              source: GlobalConstansImages.facebookSVG,
+              onPressed: () {
+                handleFacebookSignIn();
+              }),
           const SizedBox(width: 10.0),
           PageIcon(
-            source: GlobalConstansImages.googleSVG, 
-            onPressed: () {
-              handleGoogleSignIn();
-            }),
+              source: GlobalConstansImages.googleSVG,
+              onPressed: () {
+                handleGoogleSignIn();
+              }),
         ],
       ),
     );
   }
 
-  
-  
   void handleFacebookSignIn() {
     openDialogLoader();
-    
+
     auth.signInWithFacebook().then((value) {
       if (auth.hasError == true) {
-        Navigator.of(context).pop(); // Close loader 
+        Navigator.of(context).pop(); // Close loader
         showSnackBar(context: context, text: auth.errorCode!);
-      }else{
-        
-          handleAfterSignIn();
-     
+      } else {
+        handleAfterSignIn();
       }
     });
   }
 
-  void handleGoogleSignIn() async {
+  void handleGoogleSignIn() {
     openDialogLoader();
     // final auth = context.read<SignInProvider>();
-    await auth.signInWithGoogle().then((value){
-      if(auth.hasError){
-        Navigator.of(context).pop(); // Close loader 
+    auth.signInWithGoogle().then((value) {
+      if (auth.hasError) {
+        Navigator.of(context).pop(); // Close loader
         showSnackBar(context: context, text: auth.errorCode!);
-      }else{
-        
-          handleAfterSignIn();
-         
+      } else {
+        handleAfterSignIn();
       }
     });
   }
 
   //Puede ir en utils
-  openDialogLoader(){
+  openDialogLoader() {
     showDialog(
-      context: context, 
-      barrierDismissible: false,
-      builder: (_){
-        return const Center(child: CircularProgressIndicator(),);
-      }
+        context: context,
+        useRootNavigator: true,
+        barrierDismissible: false,
+        builder: (_) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+  }
+
+  handleAfterSignIn() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const Root()),
+      (route) => false,
     );
   }
-  handleAfterSignIn(){
-    Navigator.of(context).pop(); // Close loader 
-    // Go to root page
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Root()));
-  }
-
 }
 
-  
 class PageIcon extends StatelessWidget {
   final String source;
-  final VoidCallback onPressed; 
+  final VoidCallback onPressed;
 
   const PageIcon({super.key, required this.source, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        padding: const EdgeInsets.all(4.0),
-      ),
-      onPressed: onPressed,
-      child: SvgPicture.asset(
-        source,
-        width: 40.0,
-        height: 40.0,
-        // color: Colors.black,
-        semanticsLabel: 'Zona Hub',
-        placeholderBuilder: (BuildContext context) => Container(
-          padding: const EdgeInsets.all(30.0),
-          child: const CircularProgressIndicator(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.all(4.0),
         ),
-      )
-  
-    );
+        onPressed: onPressed,
+        child: SvgPicture.asset(
+          source,
+          width: 40.0,
+          height: 40.0,
+          // color: Colors.black,
+          semanticsLabel: 'Zona Hub',
+          placeholderBuilder: (BuildContext context) => Container(
+            padding: const EdgeInsets.all(30.0),
+            child: const CircularProgressIndicator(),
+          ),
+        ));
   }
 }
