@@ -5,8 +5,7 @@ import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class AuthMethods {
-  
-  //Instancias 
+  //Instancias
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FacebookAuth facebookAuth = FacebookAuth.instance;
   final GoogleSignIn googleAuth = GoogleSignIn();
@@ -18,69 +17,72 @@ class AuthMethods {
   String? get errorCode => _errorCode;
 
   // Sign in with Facebook, google and email
-    //sign in with Facebook
+  //sign in with Facebook
   Future<void> signInWithFacebook() async {
-     try {        
-      final LoginResult result = await facebookAuth.login(permissions: ["public_profile", "email", "user_friends"]);
-    
-      if(result.status == LoginStatus.success){
-     
-        final OAuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
-        final User user  = (await firebaseAuth.signInWithCredential(credential)).user!;
-          
-        if(!await UserService().userExistsById(user.uid)){
+    try {
+      final LoginResult result = await facebookAuth
+          .login(permissions: ["public_profile", "email", "user_friends"]);
+
+      if (result.status == LoginStatus.success) {
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(result.accessToken!.token);
+        final User user =
+            (await firebaseAuth.signInWithCredential(credential)).user!;
+
+        if (!await UserService().userExistsById(user.uid)) {
           AuthService().saveUserInFirestore(user);
         }
         _hasError = false;
-      }else{
+      } else {
         _hasError = true;
         _errorCode = "No se pudo autenticar con Facebook";
       }
     } on FirebaseAuthException catch (e) {
-        _hasError = true;
-        _errorCode = e.code;
-    } on Exception catch(e){
-        _hasError = true;
-        _errorCode = "Algo salió mal";
+      _hasError = true;
+      _errorCode = e.code;
+    } on Exception catch (_) {
+      _hasError = true;
+      _errorCode = "Algo salió mal";
     }
   }
-    //Sign in with Google
-  Future signInWithGoogle() async { 
-    //Excepción al cancelar signIn solo se lanza en depuración 
+
+  //Sign in with Google
+  Future signInWithGoogle() async {
+    //Excepción al cancelar signIn solo se lanza en depuración
     //https://stackoverflow.com/questions/51914691/flutter-platform-exception-upon-cancelling-google-sign-in-flow
     try {
-      final GoogleSignInAccount? googleSignInAccount = await googleAuth.signIn(); 
-      if (googleSignInAccount != null){
-        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-        final AuthCredential credential = 
-          GoogleAuthProvider.credential(
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleAuth.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
             accessToken: googleSignInAuthentication.accessToken,
-            idToken: googleSignInAuthentication.idToken
-          );
-        //Obteniendo usuario 
-        final User user  = (await firebaseAuth.signInWithCredential(credential)).user!;
-        
+            idToken: googleSignInAuthentication.idToken);
+        //Obteniendo usuario
+        final User user =
+            (await firebaseAuth.signInWithCredential(credential)).user!;
+
         //Guardar en firestore database si no existe
-        if(!await UserService().userExistsById(user.uid)){
+        if (!await UserService().userExistsById(user.uid)) {
           AuthService().saveUserInFirestore(user);
         }
         _hasError = false;
-     
-      }else{
+      } else {
         _hasError = true;
         _errorCode = "Inicio de sesiòn cancelado";
-       
       }
     } on FirebaseAuthException catch (e) {
-        _errorCode = e.code;
-        _hasError = true;
-      }
+      _errorCode = e.code;
+      _hasError = true;
+    }
   }
-    //Sign in with Email and password
-  Future signInWithEmail (emailController, passwordController) async {
+
+  //Sign in with Email and password
+  Future signInWithEmail(emailController, passwordController) async {
     try {
       await firebaseAuth.signInWithEmailAndPassword(
-        email: emailController.text.trim(), 
+        email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
       _hasError = false;
@@ -88,26 +90,27 @@ class AuthMethods {
       _hasError = true;
       _errorCode = e.code;
     }
-    
   }
 
   //Sign Up with Email and Password
-  Future signUp (nameController, emailController, passwordController) async {
+  Future signUp(nameController, emailController, passwordController) async {
     try {
-      UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(), 
+      UserCredential userCredential =
+          await firebaseAuth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
       User newUser = userCredential.user!;
-      await newUser.updateDisplayName(nameController.text.trim()).then((value){
-        
-      });
-  
+      await newUser
+          .updateDisplayName(nameController.text.trim())
+          .then((value) {});
+
       //Guardar en base de datos
-      
-       if(!await UserService().userExistsById(newUser.uid)){
-          AuthService().saveUserInFirestore(newUser, name: nameController.text.trim());
-        }
+
+      if (!await UserService().userExistsById(newUser.uid)) {
+        AuthService()
+            .saveUserInFirestore(newUser, name: nameController.text.trim());
+      }
 
       _hasError = false;
     } on FirebaseAuthException catch (e) {
@@ -115,7 +118,6 @@ class AuthMethods {
       _errorCode = e.code;
     }
   }
-
 
   //signOut
   Future userSignOut() async {

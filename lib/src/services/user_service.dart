@@ -19,6 +19,11 @@ class UserService {
     await usersRef.doc(user.id).set(user);
   }
 
+  // create user with a specified id
+  Future<void> createUserWithId(UserModel user) async {
+    await usersRef.doc(user.id).set(user);
+  }
+
   // update user
   Future<void> updateUser(UserModel user) async {
     await usersRef.doc(user.id).update(user.toJson());
@@ -30,6 +35,13 @@ class UserService {
   }
 
   // find user by id
+  Future<UserModel> getUserById(String id) async {
+    DocumentSnapshot userSnapshot = await usersRef.doc(id).get();
+    UserModel user = userSnapshot.data() as UserModel;
+    user.id = userSnapshot.id;
+    return user;
+  }
+
   Future<bool> userExistsById(String id) async {
     DocumentSnapshot userSnapshot = await usersRef.doc(id).get();
     return userSnapshot.data() != null ? true : false;
