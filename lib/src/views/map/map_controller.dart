@@ -1,7 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:zona_hub/src/services/Map/custom_markers_service.dart';
+import 'package:zona_hub/src/constants/custom_marker_images.dart';
+import 'package:zona_hub/src/services/lazy_markers_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/Map/gps_service.dart';
 import 'marker_examples.dart';
@@ -13,19 +19,26 @@ class MapController extends ChangeNotifier {
   late final BitmapDescriptor saludMarker;
   late final BitmapDescriptor petMarker;
 
-  late CameraPosition _initialCameraPos;
-  late final CustomMarkerIcons _markersService;
+  late CameraPosition _currentCameraPos;
+  late final CustomMarkerIcons _markersIconsService;
   late final GpsService _gpsService;
+  late final StreamSubscription _markersSubscription;
+  StreamSubscription? _nearMarkersFetch;
+  late final StreamController<CameraPosition> _cameraPosController;
 
-  late final List<CustomMarker> fetchedMarkers;
+  late final List fetchedMarkers;
   final Map<MarkerId, Marker> _markers = {};
 
   late bool isDisposed;
+  late final Geoflutterfire geo;
 
   MapController(BuildContext context) {
-    _markersService = CustomMarkerIcons();
+    _markersIconsService = CustomMarkerIcons();
     _gpsService = GpsService();
     isDisposed = false;
+    _cameraPosController = StreamController();
+    geo = Geoflutterfire();
+    fetchedMarkers = [];
     loadMarkers(context);
   }
 
@@ -34,39 +47,35 @@ class MapController extends ChangeNotifier {
   Future<CameraPosition> get initialCameraPos async {
     Position? initialPosition = await _gpsService.determinePosition();
     if (initialPosition != null) {
-      _initialCameraPos = CameraPosition(
+      _currentCameraPos = CameraPosition(
           target: LatLng(initialPosition.latitude, initialPosition.longitude),
           zoom: 15);
     } else {
       initialPosition = await _gpsService.determineLastPosition();
       if (initialPosition != null) {
-        _initialCameraPos = CameraPosition(
+        _currentCameraPos = CameraPosition(
             target: LatLng(initialPosition.latitude, initialPosition.longitude),
             zoom: 15);
       } else {
-        _initialCameraPos =
+        _currentCameraPos =
             const CameraPosition(target: LatLng(0, 0), zoom: 0.0);
       }
     }
-    return _initialCameraPos;
+    addNewCameraPos(_currentCameraPos);
+    return _currentCameraPos;
   }
 
   void loadMarkers(BuildContext context) async {
-    fetchedMarkers = await asyncCustomMarkers();
-    avisoMarker = await _markersService.avisoMarker;
-    ayudaMarker = await _markersService.ayudaMarker;
-    eventoMarker = await _markersService.eventoMarker;
-    petMarker = await _markersService.petMarker;
-    saludMarker = await _markersService.saludMarker;
+    avisoMarker = await _markersIconsService.avisoMarker;
+    ayudaMarker = await _markersIconsService.ayudaMarker;
+    eventoMarker = await _markersIconsService.eventoMarker;
+    petMarker = await _markersIconsService.petMarker;
+    saludMarker = await _markersIconsService.saludMarker;
 
-    for (CustomMarker item in fetchedMarkers) {
-      // ignore: use_build_context_synchronously
-      addMarker(item, context);
-    }
+    _markersSubscription = _markersListener(context);
   }
 
   BitmapDescriptor assignIcon(int categoria) {
-    //TODO: proper logic to assign icon according to category/tag marker
     late final BitmapDescriptor icon;
     switch (categoria) {
       case 1:
@@ -89,14 +98,13 @@ class MapController extends ChangeNotifier {
     return icon;
   }
 
-  void addMarker(CustomMarker cMarker, BuildContext context) async {
-    final id = _markers.length;
-    cMarker.id = id;
+  void addMarker(CustomMarker cMarker, BuildContext context) {
+    final id = cMarker.id;
     final markerId = MarkerId(id.toString());
     final icon = assignIcon(cMarker.category);
     final newMarker = Marker(
       markerId: markerId,
-      position: cMarker.location,
+      position: LatLng(cMarker.location.latitude, cMarker.location.longitude),
       icon: icon,
       draggable: true,
       onTap: () {
@@ -106,13 +114,58 @@ class MapController extends ChangeNotifier {
     );
 
     _markers[markerId] = newMarker;
-    notifyListeners();
   }
 
-  void addExampleMarker(BuildContext context) async {
-    CustomMarker additional = await asyncAdditionalCustom();
-    // ignore: use_build_context_synchronously
-    addMarker(additional, context);
+  // void addExampleMarker(BuildContext context) async {
+  //   List additional = customMarkers;
+  //   for (CustomMarker item in additional) {
+  //     CollectionReference exampleMarkers =
+  //         FirebaseFirestore.instance.collection('example_markers');
+  //     await exampleMarkers.add({
+  //       'location': item.location.data,
+  //       'desc': item.address,
+  //       'category': item.category,
+  //       'title': item.title
+  //     });
+  //   }
+  //   debugPrint("Subida de nuevos archivos finalizado");
+  //   addMarker(additional, context);
+  // }
+// Future<StreamSubscription<List<DocumentSnapshot>>>
+  StreamSubscription<CameraPosition> _markersListener(BuildContext context) {
+    return _cameraPosController.stream.listen((
+      cameraPos,
+    ) {
+      _nearMarkersFetch?.cancel();
+      _nearMarkersFetch = getStreamNearMarkers(cameraPos).listen((
+        List<DocumentSnapshot> documentList,
+      ) {
+        fetchedMarkers.clear();
+        for (var item in documentList) {
+          CustomMarker marker = CustomMarker(
+            id: item.reference.id,
+            title: item.get("title"),
+            address: item.get("desc"),
+            category: item.get("category"),
+            location: geo.point(
+                latitude: item.get("location")["geopoint"].latitude,
+                longitude: item.get("location")["geopoint"].longitude),
+          );
+          fetchedMarkers.add(marker);
+        }
+        _markers.clear();
+        for (var item in fetchedMarkers) {
+          addMarker(item, context);
+        }
+        notifyListeners();
+      });
+    });
+  }
+
+  addNewCameraPos(CameraPosition event) {
+    if (!_cameraPosController.isClosed) {
+      _cameraPosController.add(event);
+    }
   }
 
   @override
@@ -124,8 +177,10 @@ class MapController extends ChangeNotifier {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     isDisposed = true;
+    _markersSubscription.cancel();
+    _nearMarkersFetch?.cancel();
+    _cameraPosController.close();
     super.dispose();
   }
 }
