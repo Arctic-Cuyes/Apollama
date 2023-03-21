@@ -61,4 +61,8 @@ class UserModel {
       'createdAt': createdAt,
     };
   }
+
+  DocumentReference<Map<String, dynamic>> toDocumentReference() {
+    return FirebaseFirestore.instance.collection('users').doc(id);
+  }
 }
