@@ -4,8 +4,19 @@ import 'package:zona_hub/src/services/user_service.dart';
 
 class AuthService {
   final currentUser = FirebaseAuth.instance.currentUser!;
+  final UserService userService = UserService();
 
-   saveUserInFirestore(newUser, {name = "User", photoURL}){
+  Future<UserModel> getCurrentUser() async {
+    final UserModel userModel = await userService.getUserById(currentUser.uid);
+    return userModel;
+  }
+
+  Future<bool> isThisUserTheCurrentUser(String userId) async {
+    final user = await getCurrentUser();
+    return user.id == userId;
+  }
+
+  saveUserInFirestore(newUser, {name = "User", photoURL}){
     UserModel user = UserModel(
         id: newUser.uid,
         name: newUser.displayName ?? name, 
@@ -14,7 +25,5 @@ class AuthService {
         createdAt: DateTime.now().toString(),
       );
       UserService().createUser(user);
-  }
-
+   }
 }
-
