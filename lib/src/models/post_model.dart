@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:zona_hub/src/models/geo/geo_data.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/utils/json_document_reference.dart';
@@ -33,7 +34,9 @@ class Post {
               : null,
           title: json['title'] as String? ?? '',
           description: json['description'] as String? ?? '',
-          location: json['location'] as GeoPoint?,
+          location: json['location'] != null
+              ? GeoData.fromJson(json['location'] as Map<String, dynamic>)
+              : null,
           address: json['address'] as String?,
           createdAt: json['createdAt'] as DateTime?,
           imageUrl: json['imageUrl'] as String? ?? '',
@@ -58,7 +61,7 @@ class Post {
   late UserModel? authorData;
   final String title;
   final String description;
-  final GeoPoint? location;
+  final GeoData? location;
   final String? address;
   final DateTime? createdAt;
   final String imageUrl;
@@ -75,7 +78,7 @@ class Post {
       if (author != null) 'author': author,
       'title': title,
       'description': description,
-      if (location != null) 'location': location,
+      if (location != null) 'location': location!.toJson(),
       if (address != null) 'address': address,
       'createdAt': createdAt,
       'imageUrl': imageUrl,
