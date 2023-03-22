@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
+import 'package:zona_hub/src/views/post/post_new.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,7 +14,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: Scaffold(     
+      child: Scaffold(
         //AppBar de posts en la página principal
         appBar: AppBar(
           elevation: 0,
@@ -24,24 +25,42 @@ class _HomePageState extends State<HomePage> {
             child: HomeTab(),
           ),
         ),
-         body: 
-            const TabBarView (
-              children:  [
-               Recientes(),
-               Recientes(),
-               Recientes(),
-              ],
-            ),
-        floatingActionButton: 
-          FloatingActionButton(
-            onPressed: () {
-              //go to new_post page
-            },
-            child: const Icon(Icons.add),
-          )
-        ,
+        body: const TabBarView(
+          children: [
+            Recientes(),
+            Recientes(),
+            Recientes(),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _goToNewPostForm(context),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
+  }
+
+  void _goToNewPostForm(BuildContext context) {
+    Navigator.of(context).push(PageRouteBuilder(
+        pageBuilder: (_, __, ___) => NewPostForm(),
+        transitionDuration: const Duration(milliseconds: 300),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0, 2);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+          final tween = Tween(begin: begin, end: end);
+
+          final curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: curve,
+          );
+
+          return SlideTransition(
+            position: tween.animate(curvedAnimation),
+            child: child,
+          );
+        }));
   }
 }
 
@@ -53,27 +72,34 @@ class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children:  [
-         const Expanded(
+      children: [
+        const Expanded(
           flex: 5,
           child: TabBar(
-             tabs: [
-              Tab(text: "Recientes",),
-              Tab(text: "Popular",),
-              Tab(text: "Noticias",),
-             ],
+            tabs: [
+              Tab(
+                text: "Recientes",
+              ),
+              Tab(
+                text: "Popular",
+              ),
+              Tab(
+                text: "Noticias",
+              ),
+            ],
           ),
         ),
         //Filter Button
-        Expanded( 
+        Expanded(
           flex: 1,
           child: IconButton(
-            onPressed: (){
-              //Show tags multiple selection menu             
-            }, 
-            icon: const Icon(Icons.filter_list_rounded,
-            color: Colors.white,
-          )),
+              onPressed: () {
+                //Show tags multiple selection menu
+              },
+              icon: const Icon(
+                Icons.filter_list_rounded,
+                color: Colors.white,
+              )),
         ),
       ],
     );
