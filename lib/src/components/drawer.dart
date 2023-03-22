@@ -91,7 +91,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
               ),
               child: ClipOval(
                   child: Image.network(
-                  AuthService().currentUser.photoURL ?? "https://assets.stickpng.com/thumbs/585e4beacb11b227491c3399.png",
+                  AuthService().currentUser.photoURL!,
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,

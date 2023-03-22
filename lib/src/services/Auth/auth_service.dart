@@ -16,13 +16,14 @@ class AuthService {
     return user.id == userId;
   }
 
-  saveUserInFirestore(newUser, {name = "User"}) async {
+  saveUserInFirestore(newUser, {name = "User", photoURL}){
     UserModel user = UserModel(
-      id: newUser.uid,
-      name: newUser.displayName ?? name,
-      email: newUser.email!,
-      createdAt: DateTime.now().toString(),
-    );
-    await UserService().createUser(user);
-  }
+        id: newUser.uid,
+        name: newUser.displayName ?? name, 
+        email: newUser.email!,
+        avatarUrl: photoURL ?? newUser.photoURL,
+        createdAt: DateTime.now().toString(),
+      );
+      UserService().createUser(user);
+   }
 }
