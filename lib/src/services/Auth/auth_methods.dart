@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
@@ -26,11 +27,14 @@ class AuthMethods {
       if (result.status == LoginStatus.success) {
         final OAuthCredential credential =
             FacebookAuthProvider.credential(result.accessToken!.token);
-        final User user =
-            (await firebaseAuth.signInWithCredential(credential)).user!;
-
+        //Iniciar sesión en firebase auth
+        final User user = (await firebaseAuth.signInWithCredential(credential)).user!;
+        
         if (!await UserService().userExistsById(user.uid)) {
-          AuthService().saveUserInFirestore(user);
+          //Solo la primera vez, se instancia FacebookAuth para obtener url de la imagen y guardarla 
+          final userData = await facebookAuth.getUserData();
+          await user.updatePhotoURL(userData['picture']['data']['url']);
+          AuthService().saveUserInFirestore(user, photoURL: userData['picture']['data']['url']);
         }
         _hasError = false;
       } else {
