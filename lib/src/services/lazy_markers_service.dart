@@ -7,20 +7,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final geo = Geoflutterfire();
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-Stream<List<DocumentSnapshot>> getStreamNearMarkers(CameraPosition cameraPos) {
-  var center = geo.point(
-    latitude: cameraPos.target.latitude,
-    longitude: cameraPos.target.longitude,
-  );
-  var collectionReference = db.collection('posts');
-  double radius = 4.5;
-  String field = 'location';
-  Stream<List<DocumentSnapshot>> stream = geo
-      .collection(collectionRef: collectionReference)
-      .within(center: center, radius: radius, field: field);
+// Stream<List<DocumentSnapshot>> getStreamNearMarkers(CameraPosition cameraPos) {
+//   var center = geo.point(
+//     latitude: cameraPos.target.latitude,
+//     longitude: cameraPos.target.longitude,
+//   );
+//   var collectionReference = db.collection('posts');
+//   double radius = 4.5;
+//   String field = 'location';
+//   Stream<List<DocumentSnapshot>> stream = geo
+//       .collection(collectionRef: collectionReference)
+//       .within(center: center, radius: radius, field: field);
 
-  return stream;
-}
+//   return stream;
+// }
 
 // Future<List> getExampleMarkers() async {
 //   List exampleMarkers = [];
