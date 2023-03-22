@@ -18,7 +18,8 @@ class PostService {
   final TagService tagService = TagService();
 
   Stream<List<Post>> getPosts(
-      {PostQuery query = PostQuery.all, List<Tag> tags = const <Tag>[]}) {
+      {PostQuery query = PostQuery.beforeEndDate,
+      List<Tag> tags = const <Tag>[]}) {
     checkPostQueryParams(query: query, tags: tags);
     return postsRef
         .queryBy(query: query, tags: tags)
@@ -39,6 +40,9 @@ class PostService {
   Future<void> createPost(Post post) async {
     final user = await authService.getCurrentUser();
     post.author = user.toDocumentReference();
+    // set tags to the document reference of the tag
+    post.tags = post.tagsData!.map((tag) => tag.toDocumentReference()).toList();
+
     await postsRef.add(post);
   }
 }
