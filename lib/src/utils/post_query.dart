@@ -3,7 +3,7 @@ import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/services/tag_service.dart';
 
-enum PostQuery { all, mine, tags }
+enum PostQuery { all, mine, tags, beforeEndDate }
 
 final TagService tagService = TagService();
 
@@ -21,12 +21,16 @@ extension QueryDuplication on Query<Post> {
             arrayContainsAny: tags
                 .map((tag) => tagService.getTagDocRefFromId(tag.id!))
                 .toList());
+      case PostQuery.beforeEndDate:
+        return this
+            .where('endDate', isGreaterThanOrEqualTo: DateTime.now().toIso8601String());
     }
   }
 }
 
 void checkPostQueryParams(
-    {PostQuery query = PostQuery.all, List<Tag> tags = const <Tag>[]}) {
+    {PostQuery query = PostQuery.beforeEndDate,
+    List<Tag> tags = const <Tag>[]}) {
   if (query == PostQuery.tags && tags.isEmpty) {
     throw ArgumentError('Tags cannot be empty when query is PostQuery.tags');
   }
