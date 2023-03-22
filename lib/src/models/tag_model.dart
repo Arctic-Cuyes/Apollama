@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Tag {
   Tag({this.id, required this.name});
   Tag.fromJson(Map<String, dynamic> json)
@@ -12,5 +14,9 @@ class Tag {
     return {
       'name': name,
     };
+  }
+
+  DocumentReference<Map<String, dynamic>> toDocumentReference() {
+    return FirebaseFirestore.instance.collection('tags').doc(id);
   }
 }
