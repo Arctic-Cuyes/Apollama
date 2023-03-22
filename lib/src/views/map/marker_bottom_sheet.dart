@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/post/post.dart';
-import 'package:zona_hub/src/views/map/marker_examples.dart';
+import 'package:zona_hub/src/models/post_model.dart';
 
 class _MarkerBottomModal extends StatelessWidget {
-  final CustomMarker marker;
+  final Post marker;
   const _MarkerBottomModal({super.key, required this.marker});
 
   @override
@@ -24,7 +24,7 @@ class _MarkerBottomModal extends StatelessWidget {
             username: marker.title,
             imageUrl:
                 "https://www.hogarmania.com/archivos/201910/mascota-perdida-XxXx80.jpg",
-            postText: marker.address,
+            postText: marker.address ?? "No address",
           ),
         ),
       ),
@@ -32,7 +32,7 @@ class _MarkerBottomModal extends StatelessWidget {
   }
 }
 
-void showMarkerBottomSheet(BuildContext context, CustomMarker cMarker) {
+void showMarkerBottomSheet(BuildContext context, Post cMarker) {
   showModalBottomSheet<void>(
       context: context,
       useRootNavigator: false,

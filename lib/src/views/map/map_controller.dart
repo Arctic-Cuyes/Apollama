@@ -100,15 +100,17 @@ class MapController extends ChangeNotifier {
     return icon;
   }
 
-  void addMarker(dynamic cMarker, BuildContext context) {
+  void addMarker(Post cMarker, BuildContext context) {
+    print("add marker");
+    print(cMarker.toJson());
     final id = cMarker.id;
     final markerId = MarkerId(id.toString());
-    // final icon = assignIcon(cMarker.category);
+    final icon = assignIcon(1);
     final newMarker = Marker(
       markerId: markerId,
       position: LatLng(cMarker.location.geopoint.latitude,
           cMarker.location.geopoint.longitude),
-      // icon: icon,
+      icon: icon,
       draggable: true,
       onTap: () {
         debugPrint(markerId.toString());
@@ -145,19 +147,7 @@ class MapController extends ChangeNotifier {
       ) {
         fetchedMarkers.clear();
         for (var item in documentList) {
-          Post marker = Post(
-              id: item.reference.id,
-              title: item.get("title"),
-              // address: item.get("address"),
-              // tags: item.get("tags") as List<Do>,
-              location: GeoData(
-                geohash: item.get("location")["geohash"],
-                geopoint: GeoPoint(item.get("location")["geopoint"].latitude,
-                    item.get("location")["geopoint"].longitude),
-              ),
-              imageUrl: "aa",
-              description: "aa",
-              endDate: DateTime.now());
+          final marker = Post.fromJson(item.data() as Map<String, dynamic>);
           fetchedMarkers.add(marker);
         }
         _markers.clear();

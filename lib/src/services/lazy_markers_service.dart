@@ -17,9 +17,7 @@ Stream<List<DocumentSnapshot>> getStreamNearMarkers(CameraPosition cameraPos) {
   String field = 'location';
   Stream<List<DocumentSnapshot>> stream = geo
       .collection(collectionRef: collectionReference)
-      .within(center: center, radius: radius, field: field)
-      .where((event) => false)
-      .asyncMap((event) => null);
+      .within(center: center, radius: radius, field: field);
 
   return stream;
 }
