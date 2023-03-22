@@ -34,10 +34,9 @@ class AuthMethods {
           //Solo la primera vez, se instancia FacebookAuth para obtener url de la imagen y guardarla 
           final userData = await facebookAuth.getUserData();
           await user.updatePhotoURL(userData['picture']['data']['url']);
-          AuthService().saveUserInFirestore(user);
+          AuthService().saveUserInFirestore(user, photoURL: userData['picture']['data']['url']);
         }
         _hasError = false;
-        debugPrint("foto ->>>>>>>>>>> ${user.providerData}");
       } else {
         _hasError = true;
         _errorCode = "No se pudo autenticar con Facebook";
