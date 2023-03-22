@@ -12,12 +12,14 @@ Stream<List<DocumentSnapshot>> getStreamNearMarkers(CameraPosition cameraPos) {
     latitude: cameraPos.target.latitude,
     longitude: cameraPos.target.longitude,
   );
-  var collectionReference = db.collection('example_markers');
+  var collectionReference = db.collection('posts');
   double radius = 4.5;
   String field = 'location';
   Stream<List<DocumentSnapshot>> stream = geo
       .collection(collectionRef: collectionReference)
-      .within(center: center, radius: radius, field: field);
+      .within(center: center, radius: radius, field: field)
+      .where((event) => false)
+      .asyncMap((event) => null);
 
   return stream;
 }

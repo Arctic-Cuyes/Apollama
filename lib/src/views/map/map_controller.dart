@@ -7,6 +7,8 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
+import 'package:zona_hub/src/models/geo/geo_data.dart';
+import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/services/lazy_markers_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/Map/gps_service.dart';
@@ -98,14 +100,15 @@ class MapController extends ChangeNotifier {
     return icon;
   }
 
-  void addMarker(CustomMarker cMarker, BuildContext context) {
+  void addMarker(dynamic cMarker, BuildContext context) {
     final id = cMarker.id;
     final markerId = MarkerId(id.toString());
-    final icon = assignIcon(cMarker.category);
+    // final icon = assignIcon(cMarker.category);
     final newMarker = Marker(
       markerId: markerId,
-      position: LatLng(cMarker.location.latitude, cMarker.location.longitude),
-      icon: icon,
+      position: LatLng(cMarker.location.geopoint.latitude,
+          cMarker.location.geopoint.longitude),
+      // icon: icon,
       draggable: true,
       onTap: () {
         debugPrint(markerId.toString());
@@ -142,15 +145,19 @@ class MapController extends ChangeNotifier {
       ) {
         fetchedMarkers.clear();
         for (var item in documentList) {
-          CustomMarker marker = CustomMarker(
-            id: item.reference.id,
-            title: item.get("title"),
-            address: item.get("desc"),
-            category: item.get("category"),
-            location: geo.point(
-                latitude: item.get("location")["geopoint"].latitude,
-                longitude: item.get("location")["geopoint"].longitude),
-          );
+          Post marker = Post(
+              id: item.reference.id,
+              title: item.get("title"),
+              // address: item.get("address"),
+              // tags: item.get("tags") as List<Do>,
+              location: GeoData(
+                geohash: item.get("location")["geohash"],
+                geopoint: GeoPoint(item.get("location")["geopoint"].latitude,
+                    item.get("location")["geopoint"].longitude),
+              ),
+              imageUrl: "aa",
+              description: "aa",
+              endDate: DateTime.now());
           fetchedMarkers.add(marker);
         }
         _markers.clear();

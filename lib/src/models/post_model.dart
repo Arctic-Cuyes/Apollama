@@ -69,7 +69,7 @@ class Post {
   final int? downs;
   late List<DocumentReference<Map<String, dynamic>>>? tags;
   late List<Tag>? tagsData;
-  final DocumentReference<Map<String, dynamic>>? community;
+  final String community;
   final DateTime? beginDate;
   final DateTime endDate;
 
