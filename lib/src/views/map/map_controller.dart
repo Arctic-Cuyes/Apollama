@@ -1,14 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
 import 'package:zona_hub/src/models/post_model.dart';
-import 'package:zona_hub/src/services/lazy_markers_service.dart';
+import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/Map/gps_service.dart';
 
@@ -31,6 +30,8 @@ class MapController extends ChangeNotifier {
 
   late bool isDisposed;
   late final Geoflutterfire geo;
+
+  final PostService postService = PostService();
 
   MapController(BuildContext context) {
     _markersIconsService = CustomMarkerIcons();
@@ -99,6 +100,8 @@ class MapController extends ChangeNotifier {
   }
 
   void addMarker(Post cMarker, BuildContext context) {
+    debugPrint("add marker");
+    debugPrint(cMarker.toJson().toString());
     final id = cMarker.id;
     final markerId = MarkerId(id.toString());
     final icon = assignIcon(1);
@@ -117,26 +120,20 @@ class MapController extends ChangeNotifier {
     _markers[markerId] = newMarker;
   }
 
-  StreamSubscription<CameraPosition> _markersListener(BuildContext context) {
-    return _cameraPosController.stream.listen((
-      cameraPos,
-    ) {
-      _nearMarkersFetch?.cancel();
-      _nearMarkersFetch = getStreamNearMarkers(cameraPos).listen((
-        List<DocumentSnapshot> documentList,
-      ) {
-        fetchedMarkers.clear();
-        for (var item in documentList) {
-          final marker = item.data() as Post;
-          fetchedMarkers.add(marker);
-        }
-        _markers.clear();
-        for (var item in fetchedMarkers) {
-          addMarker(item, context);
-        }
-        notifyListeners();
-      });
+  StreamSubscription<dynamic> _markersListener(BuildContext context) {
+    _nearMarkersFetch = postService.getPosts().listen((List<Post> event) {
+      fetchedMarkers.clear();
+      for (var item in event) {
+        // final marker = Post.fromJson(item as Map<String, dynamic>);
+        fetchedMarkers.add(item);
+      }
+      _markers.clear();
+      for (var item in fetchedMarkers) {
+        addMarker(item, context);
+      }
+      notifyListeners();
     });
+    return _nearMarkersFetch!;
   }
 
   addNewCameraPos(CameraPosition event) {
