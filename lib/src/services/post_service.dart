@@ -42,7 +42,7 @@ class PostService {
   }
 
   Stream<List<Post>> getPostsAround(
-      {PostQuery query = PostQuery.beforeEndDate,
+      {PostQuery query = PostQuery.active,
       List<Tag> tags = const <Tag>[],
       required Position position}) {
     checkPostQueryParams(query: query, tags: tags);
@@ -55,7 +55,7 @@ class PostService {
     Stream<List<DocumentSnapshot>> stream = _geo
         .collection(collectionRef: queryRef)
         .within(
-            center: center, radius: 100, field: 'location', strictMode: true);
+            center: center, radius: 100, field: 'location', strictMode: false);
 
     return stream.asyncMap((List<DocumentSnapshot> documentList) async {
       List<Post> posts = [];
