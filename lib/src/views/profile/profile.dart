@@ -114,12 +114,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       //EDITAR PERFIL
-                      TextButton.icon(
-                        onPressed: (){
-
-                        }, 
-                        icon: const Icon(Icons.edit, size: 20,),
-                        label: const Text("Editar perfil")
+                      Offstage(
+                        offstage: !isMyProfile,
+                        child: TextButton.icon(
+                          onPressed: (){
+                      
+                          }, 
+                          icon: const Icon(Icons.edit, size: 20,),
+                          label: const Text("Editar perfil")
+                        ),
                       )
                     ]
                   ),

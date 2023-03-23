@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
