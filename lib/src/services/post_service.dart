@@ -1,4 +1,4 @@
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zona_hub/src/models/post_model.dart';
@@ -10,7 +10,7 @@ import 'package:zona_hub/src/services/user_service.dart';
 import 'package:zona_hub/src/utils/post_query.dart';
 
 class PostService {
-  final Geoflutterfire _geo = Geoflutterfire();
+  final GeoFlutterFire _geo = GeoFlutterFire();
   final postsRef = FirebaseFirestore.instance
       .collection('posts')
       .withConverter<Post>(
@@ -22,24 +22,24 @@ class PostService {
   final TagService tagService = TagService();
   final GpsService gpsService = GpsService();
 
-  // Stream<List<Post>> getPosts(
-  //     {PostQuery query = PostQuery.beforeEndDate,
-  //     List<Tag> tags = const <Tag>[]}) {
-  //   checkPostQueryParams(query: query, tags: tags);
-  //   return postsRef
-  //       .queryBy(query: query, tags: tags)
-  //       .snapshots()
-  //       .asyncMap((snapshot) async {
-  //     final posts = await Future.wait(snapshot.docs.map((doc) async {
-  //       final post = doc.data();
-  //       post.authorData = await userService.getUserDataFromDocRef(post.author!);
-  //       post.id = doc.id;
-  //       post.authorData!.id = post.author!.id;
-  //       return post;
-  //     }));
-  //     return posts;
-  //   });
-  // }
+  Stream<List<Post>> getPosts(
+      {PostQuery query = PostQuery.beforeEndDate,
+      List<Tag> tags = const <Tag>[]}) {
+    checkPostQueryParams(query: query, tags: tags);
+    return postsRef
+        .queryBy(query: query, tags: tags)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final posts = await Future.wait(snapshot.docs.map((doc) async {
+        final post = doc.data();
+        post.authorData = await userService.getUserDataFromDocRef(post.author!);
+        post.id = doc.id;
+        post.authorData!.id = post.author!.id;
+        return post;
+      }));
+      return posts;
+    });
+  }
 
   Stream<List<Post>> getPostsAround(
       {PostQuery query = PostQuery.beforeEndDate,
@@ -50,18 +50,15 @@ class PostService {
     GeoFirePoint center =
         _geo.point(latitude: position.latitude, longitude: position.longitude);
 
+    Query queryRef = postsRef.queryBy(query: query, tags: tags);
+
     Stream<List<DocumentSnapshot>> stream = _geo
-        .collectionWithConverter(
-            collectionRef: postsRef.queryBy(query: query, tags: tags)) //TODO: UPDATE TO GEOFLUTTERFIRE2
+        .collection(collectionRef: queryRef)
         .within(
-            center: center,
-            radius: 4,
-            field: 'location',
-            geopointFrom: (x) => x.location.geopoint);
+            center: center, radius: 100, field: 'location', strictMode: true);
 
     return stream.asyncMap((List<DocumentSnapshot> documentList) async {
       List<Post> posts = [];
-      // post near me
       for (DocumentSnapshot document in documentList) {
         Post post = document.data() as Post;
         post.authorData = await userService.getUserDataFromDocRef(post.author!);
@@ -69,7 +66,6 @@ class PostService {
         post.authorData!.id = post.author!.id;
         posts.add(post);
       }
-
       return posts;
     });
   }

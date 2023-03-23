@@ -23,7 +23,9 @@ extension QueryDuplication on Query<Post> {
                 .toList());
       case PostQuery.beforeEndDate:
         return this
-            .where('endDate', isGreaterThanOrEqualTo: DateTime.now().toIso8601String());
+            .where('endDate',
+                isGreaterThanOrEqualTo: DateTime.now().toIso8601String())
+            .orderBy('endDate', descending: true);
     }
   }
 }

@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
@@ -29,7 +29,7 @@ class MapController extends ChangeNotifier {
   final Map<MarkerId, Marker> _markers = {};
 
   late bool isDisposed;
-  late final Geoflutterfire geo;
+  late final GeoFlutterFire geo;
 
   final PostService postService = PostService();
 
@@ -38,7 +38,7 @@ class MapController extends ChangeNotifier {
     _gpsService = GpsService();
     isDisposed = false;
     _cameraPosController = StreamController();
-    geo = Geoflutterfire();
+    geo = GeoFlutterFire();
     fetchedMarkers = [];
     loadMarkers(context);
   }

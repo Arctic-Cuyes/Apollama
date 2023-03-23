@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-final geo = Geoflutterfire();
+final geo = GeoFlutterFire();
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 // Stream<List<DocumentSnapshot>> getStreamNearMarkers(CameraPosition cameraPos) {
