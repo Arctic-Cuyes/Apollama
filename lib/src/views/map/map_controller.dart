@@ -7,12 +7,10 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
-import 'package:zona_hub/src/models/geo/geo_data.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/services/lazy_markers_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/Map/gps_service.dart';
-import 'marker_examples.dart';
 
 class MapController extends ChangeNotifier {
   late final BitmapDescriptor avisoMarker;
@@ -101,8 +99,6 @@ class MapController extends ChangeNotifier {
   }
 
   void addMarker(Post cMarker, BuildContext context) {
-    print("add marker");
-    print(cMarker.toJson());
     final id = cMarker.id;
     final markerId = MarkerId(id.toString());
     final icon = assignIcon(1);
@@ -121,22 +117,6 @@ class MapController extends ChangeNotifier {
     _markers[markerId] = newMarker;
   }
 
-  // void addExampleMarker(BuildContext context) async {
-  //   List additional = customMarkers;
-  //   for (CustomMarker item in additional) {
-  //     CollectionReference exampleMarkers =
-  //         FirebaseFirestore.instance.collection('example_markers');
-  //     await exampleMarkers.add({
-  //       'location': item.location.data,
-  //       'desc': item.address,
-  //       'category': item.category,
-  //       'title': item.title
-  //     });
-  //   }
-  //   debugPrint("Subida de nuevos archivos finalizado");
-  //   addMarker(additional, context);
-  // }
-// Future<StreamSubscription<List<DocumentSnapshot>>>
   StreamSubscription<CameraPosition> _markersListener(BuildContext context) {
     return _cameraPosController.stream.listen((
       cameraPos,
@@ -147,7 +127,7 @@ class MapController extends ChangeNotifier {
       ) {
         fetchedMarkers.clear();
         for (var item in documentList) {
-          final marker = Post.fromJson(item.data() as Map<String, dynamic>);
+          final marker = item.data() as Post;
           fetchedMarkers.add(marker);
         }
         _markers.clear();
