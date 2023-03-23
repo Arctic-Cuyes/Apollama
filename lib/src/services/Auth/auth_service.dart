@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/services/user_service.dart';
+import 'package:intl/intl.dart';
 
 class AuthService {
   final currentUser = FirebaseAuth.instance.currentUser!;
@@ -22,7 +23,7 @@ class AuthService {
         name: newUser.displayName ?? name, 
         email: newUser.email!,
         avatarUrl: photoURL ?? newUser.photoURL,
-        createdAt: DateTime.now().toString(),
+        createdAt: DateFormat('dd-MM-yyyy hh:mm:ss').format(DateTime.now()).toString(),
       );
       UserService().createUser(user);
    }

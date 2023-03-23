@@ -11,11 +11,13 @@ import 'package:zona_hub/src/views/profile/profile.dart';
   options such as logout, saved posts, profile, configurations, etc.
 */
 
-const List<Map<String, dynamic>> options = [
-  {'icon': Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage()},
-  {'icon': Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage() },
-  {'icon': Icon(Icons.edit), 'option': 'Editar elemento', 'page': ProfilePage()},
-  {'icon': Icon(Icons.logout), 'option': 'Cerrar sesión',},
+final AuthService authService = AuthService();
+
+List<Map<String, dynamic>> options = [
+  {'icon': const Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
+  {'icon': const Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,) },
+  {'icon': const Icon(Icons.bookmark), 'option': 'Guardados', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
+  {'icon': const Icon(Icons.logout), 'option': 'Cerrar sesión',},
 ];
 
 class DrawerComponent extends StatelessWidget {
@@ -81,7 +83,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
         GestureDetector(
           onTap: (){
             //Go to profile main page
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(usuario: AuthService().getCurrentUser(), userID: AuthService().currentUser.uid,)));
           },
           child: Container(
               width: 80,
