@@ -9,6 +9,7 @@ class Post {
       {this.id,
       this.author,
       this.authorData,
+      this.active = true,
       required this.title,
       required this.description,
       this.address,
@@ -50,10 +51,12 @@ class Post {
               ? DateTime.parse(json['beginDate'])
               : null,
           endDate: DateTime.parse(json['endDate']),
+          active: json['active'] as bool? ?? true,
         );
 
   late String? id;
   late DocumentReference<Map<String, dynamic>>? author;
+  late bool active;
   late UserModel? authorData;
   final String title;
   final String description;
@@ -84,6 +87,7 @@ class Post {
       'community': community,
       if (beginDate != null) 'beginDate': beginDate!.toIso8601String(),
       'endDate': endDate.toIso8601String(),
+      'active': active,
     };
   }
 }

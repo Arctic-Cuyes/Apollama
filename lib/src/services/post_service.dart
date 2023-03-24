@@ -50,7 +50,7 @@ class PostService {
     GeoFirePoint center =
         _geo.point(latitude: position.latitude, longitude: position.longitude);
 
-    Stream<List<DocumentSnapshot>> stream = _geo
+    Stream<List<DocumentSnapshot<Post>>> stream = _geo
         .collectionWithConverter(
             collectionRef: postsRef.queryBy(query: query, tags: tags))
         .within(
@@ -59,13 +59,14 @@ class PostService {
             field: 'location',
             geopointFrom: (x) => x.location.geopoint);
 
-    return stream.asyncMap((List<DocumentSnapshot> documentList) async {
+    return stream.asyncMap((List<DocumentSnapshot<Post>> documentList) async {
       List<Post> posts = [];
-      for (DocumentSnapshot document in documentList) {
-        Post post = document.data() as Post;
+      for (DocumentSnapshot<Post> document in documentList) {
+        Post post = document.data()!;
         post.authorData = await userService.getUserDataFromDocRef(post.author!);
         post.id = document.id;
         post.authorData!.id = post.author!.id;
+        if (await thisPostMustBeInactive(post)) continue;
         posts.add(post);
       }
       return posts;
@@ -80,5 +81,20 @@ class PostService {
     post.tags = post.tagsData!.map((tag) => tag.toDocumentReference()).toList();
 
     await postsRef.add(post);
+  }
+
+  // set the post to inactive
+  Future<void> setPostInactive(Post post) async {
+    await postsRef.doc(post.id).update({'active': false});
+  }
+
+  // verify that endDate is after now, if not set the post to inactive
+  Future<bool> thisPostMustBeInactive(Post post) async {
+    if (post.endDate.isBefore(DateTime.now())) {
+      await setPostInactive(post);
+      print('Post ${post.id} is inactive');
+      return true;
+    }
+    return false;
   }
 }
