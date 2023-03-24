@@ -37,7 +37,8 @@ class _NewPostFormState extends State<NewPostForm> {
     super.dispose();
   }
 
-  bool _showError = false;
+  bool _errorOnChips = false;
+  bool _errorOnDates = false;
 
   String? _validateTextField(String? value) {
     if (value == null || value.isEmpty) {
@@ -57,8 +58,8 @@ class _NewPostFormState extends State<NewPostForm> {
     late DateTime begin;
     late DateTime end;
     if (_manyDays) {
-      begin = DateTime.parse(_beginDateController.text);
-      end = DateTime.parse(_endDateController.text);
+      begin = DateFormat('dd/MM/yyyy').parse(_beginDateController.text);
+      end = DateFormat('dd/MM/yyyy').parse(_endDateController.text);
       return end.isAfter(begin) || end.isAtSameMomentAs(begin);
     } else {
       return true;
@@ -135,7 +136,7 @@ class _NewPostFormState extends State<NewPostForm> {
                       icon: Icon(Icons.location_pin),
                       labelText: 'Dirección',
                     ),
-                    readOnly: true,
+                    readOnly: !true,
                     validator: _validateTextField,
                     onTap: () => _goToAddressAutoCompletePage(),
                   ),
@@ -168,6 +169,7 @@ class _NewPostFormState extends State<NewPostForm> {
                 children: [
                   TextFormField(
                       controller: _beginDateController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
                         icon: Icon(Icons.calendar_today_rounded, size: 16),
                         labelText: 'Inicio',
@@ -181,6 +183,7 @@ class _NewPostFormState extends State<NewPostForm> {
                   Visibility(
                     visible: _manyDays,
                     child: TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _endDateController,
                       decoration: const InputDecoration(
                         icon: Icon(Icons.calendar_today_rounded, size: 16),
@@ -193,6 +196,13 @@ class _NewPostFormState extends State<NewPostForm> {
                   )
                 ],
               ),
+              Visibility(
+                visible: _errorOnDates,
+                child: const Text(
+                  'La fecha de fin debe ser mayor a la fecha de inicio',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
               Row(
                 children: const [
                   Icon(Icons.tag),
@@ -201,9 +211,9 @@ class _NewPostFormState extends State<NewPostForm> {
               ),
               const TagChipsWidget(),
               Visibility(
-                visible: _showError,
+                visible: _errorOnChips,
                 child: const Text(
-                  'Debe seleccionar al menos un chip',
+                  'Debe seleccionar al menos una categoría',
                   style: TextStyle(color: Colors.red),
                 ),
               ),
@@ -215,11 +225,12 @@ class _NewPostFormState extends State<NewPostForm> {
                   ),
                   onPressed: () {
                     setState(() {
-                      _showError = _selectedChips.isEmpty;
+                      _errorOnChips = _selectedChips.isEmpty;
+                      _errorOnDates = !_areDatesCoherent();
                     });
                     if (_formKey.currentState!.validate() &&
-                        _selectedChips.isNotEmpty &&
-                        _areDatesCoherent()) {
+                        !_errorOnChips &&
+                        !_errorOnDates) {
                       debugPrint(_selectedChips.toString());
                       debugPrint('Formulario válido');
                     }
