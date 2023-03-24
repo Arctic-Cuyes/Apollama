@@ -1,6 +1,15 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:zona_hub/src/views/post/address_autocomplete.dart';
+
+final List<String> _chips = [
+  'Animales',
+  'Ayuda',
+  'Aviso',
+  'Salud',
+  'Social',
+];
+final List<String> _selectedChips = [];
 
 class NewPostForm extends StatefulWidget {
   const NewPostForm({super.key});
@@ -11,38 +20,25 @@ class NewPostForm extends StatefulWidget {
 
 class _NewPostFormState extends State<NewPostForm> {
   final _formKey = GlobalKey<FormState>();
-  final _textController1 = TextEditingController();
-  final _textController2 = TextEditingController();
-  final _textController3 = TextEditingController();
-  final List<String> _chips = [
-    'Chip 1',
-    'Chip 2',
-    'Chip 3',
-    'Chip 4',
-    'Chip 5',
-    'Chip 6'
-  ];
-  final List<String> _selectedChips = [];
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _beginDateController = TextEditingController();
+  final _endDateController = TextEditingController();
+  bool _manyDays = false;
 
   @override
   void dispose() {
-    _textController1.dispose();
-    _textController2.dispose();
-    _textController3.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _addressController.dispose();
+    _beginDateController.dispose();
+    _endDateController.dispose();
     super.dispose();
   }
 
-  void _handleChipSelected(String value) {
-    setState(() {
-      if (_selectedChips.contains(value)) {
-        _selectedChips.remove(value);
-      } else {
-        _selectedChips.add(value);
-      }
-    });
-  }
-
   bool _showError = false;
+
   String? _validateTextField(String? value) {
     if (value == null || value.isEmpty) {
       return 'Este campo es obligatorio';
@@ -50,69 +46,160 @@ class _NewPostFormState extends State<NewPostForm> {
     return null;
   }
 
+  String? _validateEndDateField(String? value) {
+    if (_manyDays && (value == null || value.isEmpty)) {
+      return 'Este campo es obligatorio';
+    }
+    return null;
+  }
+
+  bool _areDatesCoherent() {
+    late DateTime begin;
+    late DateTime end;
+    if (_manyDays) {
+      begin = DateTime.parse(_beginDateController.text);
+      end = DateTime.parse(_endDateController.text);
+      return end.isAfter(begin) || end.isAtSameMomentAs(begin);
+    } else {
+      return true;
+    }
+  }
+
+  void _datePickerOnTap(TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+        cancelText: "Cancelar",
+        confirmText: "Confirmar",
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate:
+            DateTime.now().subtract(const Duration(days: 7)), //DateTime.now()
+        lastDate: DateTime(2050));
+
+    if (pickedDate != null) {
+      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+
+      setState(() {
+        controller.text = formattedDate;
+      });
+    } else {
+      debugPrint("Date is not selected");
+    }
+  }
+
+  void _goToAddressAutoCompletePage() {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => AddressAutocompletePage()));
+  }
+
   @override
   Widget build(BuildContext context) {
+    debugPrint("Se construye formulario");
     return Scaffold(
       appBar: AppBar(title: const Text("Nueva Publicación")),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                controller: _textController1,
-                decoration: InputDecoration(
-                  labelText: 'Título',
-                ),
+                controller: _titleController,
+                maxLength: 40,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                decoration: const InputDecoration(
+                    icon: Icon(Icons.title),
+                    labelText: 'Título',
+                    hintText: "Resumen del tema"),
                 validator: _validateTextField,
               ),
               TextFormField(
-                controller: _textController2,
-                decoration: InputDecoration(
-                  labelText: 'Descripción',
-                ),
+                maxLength: 100,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                    icon: Icon(Icons.edit),
+                    labelText: 'Descripción',
+                    hintText: "Detalles sobre el tema"),
                 validator: _validateTextField,
               ),
-              TextFormField(
-                controller: _textController3,
-                decoration: InputDecoration(
-                  labelText: 'Dirección',
+              Hero(
+                tag: "address",
+                child: Material(
+                  child: TextFormField(
+                    controller: _addressController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.location_pin),
+                      labelText: 'Dirección',
+                    ),
+                    readOnly: true,
+                    validator: _validateTextField,
+                    onTap: () => _goToAddressAutoCompletePage(),
+                  ),
                 ),
-                validator: _validateTextField,
-              ),
-              TextFormField(
-                controller: _textController3,
-                decoration: InputDecoration(
-                  labelText: 'Dirección',
-                ),
-                validator: _validateTextField,
               ),
               const SizedBox(height: 16.0),
-              const Text('Chips'),
-              Wrap(
-                children: _chips.map((chip) {
-                  final isSelected = _selectedChips.contains(chip);
-                  final index = _selectedChips.indexOf(chip);
-                  final color = isSelected
-                      ? index == 0
-                          ? Colors.lightGreen.shade800
-                          : Colors.lightGreen.shade600
-                      : Colors.grey;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: FilterChip(
-                      label: Text(chip),
-                      selected: isSelected,
-                      selectedColor: color,
-                      onSelected: (isSelected) {
-                        _handleChipSelected(chip);
-                      },
-                    ),
-                  );
-                }).toList(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text("Fechas"),
+                  Row(
+                    children: [
+                      Checkbox(
+                        fillColor: const MaterialStatePropertyAll(Colors.amber),
+                        value: _manyDays,
+                        onChanged: (value) {
+                          setState(() {
+                            _manyDays = value!;
+                            _endDateController.text = "";
+                          });
+                        },
+                      ),
+                      const Text("Varios días")
+                    ],
+                  )
+                ],
               ),
+              Column(
+                children: [
+                  TextFormField(
+                      controller: _beginDateController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.calendar_today_rounded, size: 16),
+                        labelText: 'Inicio',
+                      ),
+                      validator: _validateTextField,
+                      readOnly: true,
+                      onTap: () => _datePickerOnTap(_beginDateController)),
+                  // const Spacer(
+                  //   flex: 1,
+                  // ),
+                  Visibility(
+                    visible: _manyDays,
+                    child: TextFormField(
+                      controller: _endDateController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.calendar_today_rounded, size: 16),
+                        labelText: 'Fin',
+                      ),
+                      validator: _validateEndDateField,
+                      readOnly: true,
+                      onTap: () => _datePickerOnTap(_endDateController),
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                children: const [
+                  Icon(Icons.tag),
+                  Text('Categorias'),
+                ],
+              ),
+              const TagChipsWidget(),
               Visibility(
                 visible: _showError,
                 child: const Text(
@@ -131,18 +218,65 @@ class _NewPostFormState extends State<NewPostForm> {
                       _showError = _selectedChips.isEmpty;
                     });
                     if (_formKey.currentState!.validate() &&
-                        _selectedChips.isNotEmpty) {
-                      print('${_selectedChips.toString()}');
-                      print('Formulario válido');
+                        _selectedChips.isNotEmpty &&
+                        _areDatesCoherent()) {
+                      debugPrint(_selectedChips.toString());
+                      debugPrint('Formulario válido');
                     }
                   },
-                  child: Text('Enviar'),
+                  child: const Text('Enviar'),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class TagChipsWidget extends StatefulWidget {
+  const TagChipsWidget({super.key});
+
+  @override
+  State<TagChipsWidget> createState() => _TagChipsWidgetState();
+}
+
+class _TagChipsWidgetState extends State<TagChipsWidget> {
+  void _handleChipSelected(String value) {
+    setState(() {
+      if (_selectedChips.contains(value)) {
+        _selectedChips.remove(value);
+      } else {
+        _selectedChips.add(value);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint("Se construye chips");
+    return Wrap(
+      children: _chips.map((chip) {
+        final isSelected = _selectedChips.contains(chip);
+        final index = _selectedChips.indexOf(chip);
+        final color = isSelected
+            ? index == 0
+                ? Colors.lightGreen.shade900
+                : Colors.lightGreen.shade500
+            : Colors.grey;
+        return Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: FilterChip(
+            label: Text(chip),
+            selected: isSelected,
+            selectedColor: color,
+            onSelected: (isSelected) {
+              _handleChipSelected(chip);
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 }
