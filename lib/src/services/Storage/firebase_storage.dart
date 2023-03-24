@@ -13,7 +13,7 @@ class Storage {
   final ImagePicker imagePicker = ImagePicker();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  uploadImage(ImageSource source) async {
+  uploadProfileImage(ImageSource source) async {
     XFile? file = await imagePicker.pickImage(source: source);
     if(file == null){return;};
 

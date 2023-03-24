@@ -140,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       GestureDetector(
                                         onTap: (){
                                             isMyProfile ? 
-                                              Storage().uploadImage(ImageSource.gallery) : 
+                                              Storage().uploadProfileImage(ImageSource.gallery) : 
                                                 openProfilePhoto(snapshot.data!.avatarUrl!);
                                             },
                                         child: Stack(children: [
