@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     auth.signInWithEmail(_emailController, _passwordController).then((value) {
       if (auth.hasError == true) {
         Navigator.of(context).pop(); // Close loader
-        print(auth.errorCode);
+
         // showSnackBar(context: context, text: auth.errorCode!);
         String errorMessage =
             FirebaseErrorCodeExceptions.getMessageFromErrorCode(auth.errorCode);
