@@ -51,8 +51,8 @@ dependencies:
   google_maps_flutter_android: ^2.4.9
   google_maps_flutter_platform_interface: ^2.2.6
   connectivity_plus: ^3.0.3
-  geoflutterfire: ^3.0.3
   flutter_svg: ^2.0.4
+  geoflutterfire: ^3.0.3
   intl: ^0.17.0
   image_picker: ^0.8.7
   firebase_storage: ^11.0.16
