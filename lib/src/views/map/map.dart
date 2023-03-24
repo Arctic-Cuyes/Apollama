@@ -86,7 +86,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       myLocationEnabled: true,
       mapType: MapType.normal,
       compassEnabled: true,
-      minMaxZoomPreference: const MinMaxZoomPreference(10, 17.5),
+      // minMaxZoomPreference: const MinMaxZoomPreference(10, 17.5),
       zoomControlsEnabled: false,
       onTap: (_) => debugPrint("Presionado en mapa"),
       onCameraIdle: () {
