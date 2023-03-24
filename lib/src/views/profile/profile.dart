@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
@@ -42,6 +41,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
   final AuthService authService = AuthService();
+  final Storage storage = Storage();
   late TabController _tabBarController;
   bool isMyProfile = false;
 
@@ -74,19 +74,44 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       barrierDismissible: true,
       builder: (_) {
         return Dialog(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.topLeft,
           elevation: 0,
           backgroundColor: Colors.transparent,
-            child: ClipOval(
-              child: Image.network(
-                url,
-                width: 320,
-                height: 320,
-                fit: BoxFit.cover,
-              ),
+          child: ClipOval(
+            child: Image.network(
+              url,
+              width: 320,
+              height: 320,
+              fit: BoxFit.cover,
+            ),
             ),
         );
       } 
+    );
+  }
+
+  openUpdatePhotoOptions(){
+    showModalBottomSheet(
+      context: context, 
+      constraints: const  BoxConstraints(
+        maxHeight: 120,
+      ),
+      builder: (_){
+        return Column(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title:  const Text("Tomar Foto"),
+              onTap: () => storage.uploadProfileImage(ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo),
+              title: const Text("Subir desde galería"),
+              onTap: () => storage.uploadProfileImage(ImageSource.gallery),
+            ),
+          ],
+        );
+      }
     );
   }
 
@@ -144,7 +169,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                     GestureDetector(
                                       onTap: (){
                                           isMyProfile ? 
-                                            Storage().uploadProfileImage(ImageSource.gallery) : 
+                                              openUpdatePhotoOptions() : 
                                               openProfilePhoto(snapshot.data!.avatarUrl!);
                                           },
                                       child: Stack(children: [
