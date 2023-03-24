@@ -22,7 +22,7 @@ class PostService {
   final TagService tagService = TagService();
   final GpsService gpsService = GpsService();
 
-  Future<Post> getPostSettled(DocumentSnapshot<Post> document) async {
+  Future<Post> _getPostSettled(DocumentSnapshot<Post> document) async {
     Post post = document.data()!;
     post.authorData = await userService.getUserDataFromDocRef(post.author!);
     post.id = document.id;
@@ -42,8 +42,8 @@ class PostService {
     return stream.asyncMap((List<DocumentSnapshot<Post>> documentList) async {
       List<Post> posts = [];
       for (DocumentSnapshot<Post> document in documentList) {
-        Post post = await getPostSettled(document);
-        if (await thisPostMustBeInactive(post)) continue;
+        Post post = await _getPostSettled(document);
+        if (await _thisPostMustBeInactive(post)) continue;
         posts.add(post);
       }
       return posts;
@@ -71,8 +71,8 @@ class PostService {
     return stream.asyncMap((List<DocumentSnapshot<Post>> documentList) async {
       List<Post> posts = [];
       for (DocumentSnapshot<Post> document in documentList) {
-        Post post = await getPostSettled(document);
-        if (await thisPostMustBeInactive(post)) continue;
+        Post post = await _getPostSettled(document);
+        if (await _thisPostMustBeInactive(post)) continue;
         posts.add(post);
       }
       return posts;
@@ -90,14 +90,14 @@ class PostService {
   }
 
   // set the post to inactive
-  Future<void> setPostInactive(Post post) async {
+  Future<void> _setPostInactive(Post post) async {
     await postsRef.doc(post.id).update({'active': false});
   }
 
   // verify that endDate is after now, if not set the post to inactive
-  Future<bool> thisPostMustBeInactive(Post post) async {
+  Future<bool> _thisPostMustBeInactive(Post post) async {
     if (post.endDate.isBefore(DateTime.now())) {
-      await setPostInactive(post);
+      await _setPostInactive(post);
       return true;
     }
     return false;
@@ -112,10 +112,7 @@ class PostService {
         .snapshots()
         .asyncMap((snapshot) async {
       final posts = await Future.wait(snapshot.docs.map((doc) async {
-        final post = doc.data();
-        post.authorData = await userService.getUserDataFromDocRef(post.author!);
-        post.id = doc.id;
-        post.authorData!.id = post.author!.id;
+        Post post = await _getPostSettled(doc);
         return post;
       }));
       return posts;
