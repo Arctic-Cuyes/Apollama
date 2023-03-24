@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
@@ -6,6 +7,7 @@ import 'package:zona_hub/src/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
+import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 
 class ProfileDropDown extends StatelessWidget {
@@ -56,6 +58,28 @@ class _ProfilePageState extends State<ProfilePage> {
         isMyProfile = value;
       });
     });
+  }
+
+  openProfilePhoto(String url){
+    showDialog(
+      context: context, 
+      barrierDismissible: true,
+      builder: (_) {
+        return Dialog(
+          alignment: Alignment.topCenter,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+            child: ClipOval(
+              child: Image.network(
+                url,
+                width: 320,
+                height: 320,
+                fit: BoxFit.cover,
+              ),
+            ),
+        );
+      } 
+    );
   }
 
   @override
@@ -113,25 +137,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Column(
                                     // crossAxisAlignment: CrossAxisAlignment.ce,
                                     children: [
-                                      Stack(children: [
-                                        ClipOval(
-                                          child: Image.network(
-                                            snapshot.data!.avatarUrl!,
-                                            width: 100,
-                                            height: 100,
-                                            fit: BoxFit.cover,
+                                      GestureDetector(
+                                        onTap: (){
+                                            isMyProfile ? 
+                                              Storage().uploadImage(ImageSource.gallery) : 
+                                                openProfilePhoto(snapshot.data!.avatarUrl!);
+                                            },
+                                        child: Stack(children: [
+                                          ClipOval(
+                                            child: Image.network(
+                                              snapshot.data!.avatarUrl!,
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
-                                        ),
-                                        isMyProfile
-                                            ? const Positioned(
-                                                bottom: 0,
-                                                left: 0,
-                                                child: Icon(
-                                                  Icons.add_a_photo,
-                                                  size: 20,
-                                                ))
-                                            : const SizedBox.shrink(),
-                                      ]),
+                                          isMyProfile
+                                              ? const Positioned(
+                                                  bottom: 0,
+                                                  left: 0,
+                                                  child: Icon(
+                                                    Icons.add_a_photo,
+                                                    size: 20,
+                                                  ))
+                                              : const SizedBox.shrink(),
+                                        ]),
+                                      ),
 
                                       const SizedBox(
                                         height: 10,
@@ -244,7 +275,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 )
               );
           }else{
-            return Container();
+            return const Center(child: CircularProgressIndicator(),);
           }
         }
       );
