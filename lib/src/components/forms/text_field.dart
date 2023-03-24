@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
 
  Widget buildTextField({
@@ -6,8 +6,15 @@ import 'package:zona_hub/src/styles/global.colors.dart';
     required TextEditingController controller,
     Widget? prefixedIcon,
     String? hintText,
+    FormFieldValidator<String>? validator,
+    ValueChanged<String>? onChanged,
+
   }) {
-    return TextField(
+    return TextFormField(
+      validator: validator,
+      onChanged: onChanged,
+
+
       controller: controller,
       // cursorColor: Colors.white,
       cursorWidth: 2,

@@ -92,6 +92,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
               child: ClipOval(
                   child: Image.network(
                   AuthService().currentUser.photoURL!,
+                  // "https://scontent.ftru2-1.fna.fbcdn.net/v/t1.6435-9/95334288_2379795025645267_8549237212774924288_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeH9Yr7NO0GvGYzZs4nmNUaSZpnloegd8HxmmeWh6B3wfKr5TlDQPR9eKDnXfgpi5nnGivH-coVchBzoiU5ttBkW&_nc_ohc=GftqGLKnLkgAX88Bvus&_nc_ht=scontent.ftru2-1.fna&oh=00_AfCSUbFMJOIjD01Ka0lVGCeLnq9rj-pTgK6wxnK6mcrAiQ&oe=64433515",
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
