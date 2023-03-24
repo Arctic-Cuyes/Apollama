@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
+import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 import 'package:zona_hub/src/services/tag_service.dart';
@@ -117,5 +118,92 @@ class PostService {
       }));
       return posts;
     });
+  }
+
+  // GET POST BY ID
+  Future<Post> getPostById(String id) async {
+    final post = await postsRef.doc(id).get();
+    return await _getPostSettled(post);
+  }
+
+  // up vote a post
+  Future<void> upVotePost(String postID) async {
+    // get the post
+    final post = await getPostById(postID);
+    // get the user from the auth service
+    final user = await authService.getCurrentUser();
+    // verify if the user already up voted the post
+    if (post.upVotes!.contains(user.toDocumentReference())) return;
+    // verify if the user already down voted the post
+    await _ifPostIsDownVotedRemoveDownVote(post, user);
+    // add the user to the up votes list
+    post.upVotes?.add(user.toDocumentReference());
+    // update the post
+    await postsRef.doc(post.id).update({'upVotes': post.upVotes});
+    // update the user
+    await userService.upVotePost(user, post);
+  }
+
+  // remove the up vote from a post
+  Future<void> removeUpVotePost(String postID) async {
+    // get the post
+    final post = await getPostById(postID);
+    // get the user from the auth service
+    final user = await authService.getCurrentUser();
+    // verify if the user already up voted the post
+    if (!post.upVotes!.contains(user.toDocumentReference())) return;
+    // remove the user from the up votes list
+    post.upVotes?.remove(user.toDocumentReference());
+    // update the post
+    await postsRef.doc(post.id).update({'upVotes': post.upVotes});
+    // update the user
+    await userService.removeUpVotePost(user, post);
+  }
+
+  // down vote a post
+  Future<void> downVotePost(String postID) async {
+    // get the post
+    final post = await getPostById(postID);
+    // get the user from the auth service
+    final user = await authService.getCurrentUser();
+    // verify if the user already down voted the post
+    if (post.downVotes!.contains(user.toDocumentReference())) return;
+    // verify if the user already up voted the post
+    await _ifPostIsUpVotedRemoveUpVote(post, user);
+    // add the user to the down votes list
+    post.downVotes?.add(user.toDocumentReference());
+    // update the post
+    await postsRef.doc(post.id).update({'downVotes': post.downVotes});
+    // update the user
+    await userService.downVotePost(user, post);
+  }
+
+  // remove the down vote from a post
+  Future<void> removeDownVotePost(String postID) async {
+    // get the post
+    final post = await getPostById(postID);
+    // get the user from the auth service
+    final user = await authService.getCurrentUser();
+    // verify if the user already down voted the post
+    if (!post.downVotes!.contains(user.toDocumentReference())) return;
+    // remove the user from the down votes list
+    post.downVotes?.remove(user.toDocumentReference());
+    // update the post
+    await postsRef.doc(post.id).update({'downVotes': post.downVotes});
+    // update the user
+    await userService.removeDownVotePost(user, post);
+  }
+
+  Future<void> _ifPostIsUpVotedRemoveUpVote(Post post, UserModel user) async {
+    if (post.upVotes!.contains(user.toDocumentReference())) {
+      await removeUpVotePost(post.id!);
+    }
+  }
+
+  Future<void> _ifPostIsDownVotedRemoveDownVote(
+      Post post, UserModel user) async {
+    if (post.downVotes!.contains(user.toDocumentReference())) {
+      await removeDownVotePost(post.id!);
+    }
   }
 }

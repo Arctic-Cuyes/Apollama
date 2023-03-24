@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 
 class UserService {
@@ -45,5 +46,45 @@ class UserService {
   Future<bool> userExistsById(String id) async {
     DocumentSnapshot userSnapshot = await usersRef.doc(id).get();
     return userSnapshot.data() != null ? true : false;
+  }
+
+  // up vote post
+  Future<void> upVotePost(UserModel user, Post post) async {
+    // add post to user's upvoted posts
+    user.upPosts?.add(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'upPosts': user.upPosts,
+    });
+  }
+
+  // remove upvote from post
+  Future<void> removeUpVotePost(UserModel user, Post post) async {
+    // remove post from user's upvoted posts
+    user.upPosts?.remove(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'upPosts': user.upPosts,
+    });
+  }
+
+  // down vote post
+  Future<void> downVotePost(UserModel user, Post post) async {
+    // add post to user's downvoted posts
+    user.downPosts?.add(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'downPosts': user.downPosts,
+    });
+  }
+
+  // remove downvote from post
+  Future<void> removeDownVotePost(UserModel user, Post post) async {
+    // remove post from user's downvoted posts
+    user.downPosts?.remove(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'downPosts': user.downPosts,
+    });
   }
 }
