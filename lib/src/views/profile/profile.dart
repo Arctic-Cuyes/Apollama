@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
@@ -6,6 +7,7 @@ import 'package:zona_hub/src/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
+import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 
 class ProfileDropDown extends StatelessWidget {
@@ -56,6 +58,28 @@ class _ProfilePageState extends State<ProfilePage> {
         isMyProfile = value;
       });
     });
+  }
+
+  openProfilePhoto(String url){
+    showDialog(
+      context: context, 
+      barrierDismissible: true,
+      builder: (_) {
+        return Dialog(
+          alignment: Alignment.topCenter,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+            child: ClipOval(
+              child: Image.network(
+                url,
+                width: 320,
+                height: 320,
+                fit: BoxFit.cover,
+              ),
+            ),
+        );
+      } 
+    );
   }
 
   @override
@@ -114,7 +138,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                     // crossAxisAlignment: CrossAxisAlignment.ce,
                                     children: [
                                       GestureDetector(
-                                        onTap: (){debugPrint(isMyProfile ? "Edit photo" : "Open photo");},
+                                        onTap: (){
+                                            isMyProfile ? 
+                                              Storage().uploadImage(ImageSource.gallery) : 
+                                                openProfilePhoto(snapshot.data!.avatarUrl!);
+                                            },
                                         child: Stack(children: [
                                           ClipOval(
                                             child: Image.network(
