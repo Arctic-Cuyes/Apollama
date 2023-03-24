@@ -22,21 +22,30 @@ class PostService {
   final TagService tagService = TagService();
   final GpsService gpsService = GpsService();
 
+  Future<Post> getPostSettled(DocumentSnapshot<Post> document) async {
+    Post post = document.data()!;
+    post.authorData = await userService.getUserDataFromDocRef(post.author!);
+    post.id = document.id;
+    post.authorData!.id = post.author!.id;
+    return post;
+  }
+
   Stream<List<Post>> getPosts(
-      {PostQuery query = PostQuery.beforeEndDate,
-      List<Tag> tags = const <Tag>[]}) {
+      {PostQuery query = PostQuery.active, List<Tag> tags = const <Tag>[]}) {
     checkPostQueryParams(query: query, tags: tags);
-    return postsRef
-        .queryBy(query: query, tags: tags)
-        .snapshots()
-        .asyncMap((snapshot) async {
-      final posts = await Future.wait(snapshot.docs.map((doc) async {
-        final post = doc.data();
-        post.authorData = await userService.getUserDataFromDocRef(post.author!);
-        post.id = doc.id;
-        post.authorData!.id = post.author!.id;
-        return post;
-      }));
+
+    Stream<List<DocumentSnapshot<Post>>> stream =
+        postsRef.queryBy(query: query, tags: tags).snapshots().map((snapshot) {
+      return snapshot.docs;
+    });
+
+    return stream.asyncMap((List<DocumentSnapshot<Post>> documentList) async {
+      List<Post> posts = [];
+      for (DocumentSnapshot<Post> document in documentList) {
+        Post post = await getPostSettled(document);
+        if (await thisPostMustBeInactive(post)) continue;
+        posts.add(post);
+      }
       return posts;
     });
   }
@@ -62,10 +71,7 @@ class PostService {
     return stream.asyncMap((List<DocumentSnapshot<Post>> documentList) async {
       List<Post> posts = [];
       for (DocumentSnapshot<Post> document in documentList) {
-        Post post = document.data()!;
-        post.authorData = await userService.getUserDataFromDocRef(post.author!);
-        post.id = document.id;
-        post.authorData!.id = post.author!.id;
+        Post post = await getPostSettled(document);
         if (await thisPostMustBeInactive(post)) continue;
         posts.add(post);
       }
@@ -92,7 +98,6 @@ class PostService {
   Future<bool> thisPostMustBeInactive(Post post) async {
     if (post.endDate.isBefore(DateTime.now())) {
       await setPostInactive(post);
-      print('Post ${post.id} is inactive');
       return true;
     }
     return false;
