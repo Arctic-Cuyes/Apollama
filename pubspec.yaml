@@ -54,6 +54,7 @@ dependencies:
   flutter_svg: ^2.0.4
   uuid: ^3.0.7
   http: ^0.13.5
+  intl: ^0.17.0
 
 dependency_overrides:
   flutter_lints: ^2.0.1 #modificado
