@@ -1,4 +1,4 @@
-import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zona_hub/src/models/post_model.dart';
@@ -10,7 +10,7 @@ import 'package:zona_hub/src/services/user_service.dart';
 import 'package:zona_hub/src/utils/post_query.dart';
 
 class PostService {
-  final GeoFlutterFire _geo = GeoFlutterFire();
+  final Geoflutterfire _geo = Geoflutterfire();
   final postsRef = FirebaseFirestore.instance
       .collection('posts')
       .withConverter<Post>(
@@ -50,12 +50,14 @@ class PostService {
     GeoFirePoint center =
         _geo.point(latitude: position.latitude, longitude: position.longitude);
 
-    Query queryRef = postsRef.queryBy(query: query, tags: tags);
-
     Stream<List<DocumentSnapshot>> stream = _geo
-        .collection(collectionRef: queryRef)
+        .collectionWithConverter(
+            collectionRef: postsRef.queryBy(query: query, tags: tags))
         .within(
-            center: center, radius: 100, field: 'location', strictMode: false);
+            center: center,
+            radius: 100,
+            field: 'location',
+            geopointFrom: (x) => x.location.geopoint);
 
     return stream.asyncMap((List<DocumentSnapshot> documentList) async {
       List<Post> posts = [];

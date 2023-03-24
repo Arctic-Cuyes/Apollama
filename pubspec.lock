@@ -304,14 +304,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  geoflutterfire2:
+  geoflutterfire:
     dependency: "direct main"
     description:
-      name: geoflutterfire2
-      sha256: "343a3ef87f81f39e64a2b82ee392efa93fa646475564853daca565afc38096bb"
+      name: geoflutterfire
+      sha256: e1eb5350145f61230e7cf8e241b143068b3c1d4ca84325f0bf9b357e7f2d5a89
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.15"
+    version: "3.0.3"
   geolocator:
     dependency: "direct main"
     description:
