@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class NewPostForm extends StatefulWidget {
@@ -8,91 +10,137 @@ class NewPostForm extends StatefulWidget {
 }
 
 class _NewPostFormState extends State<NewPostForm> {
-  final TextEditingController _controller1 = TextEditingController();
-  final TextEditingController _controller2 = TextEditingController();
-  final TextEditingController _controller3 = TextEditingController();
-  final List<String> _chipNames = [
-    "Aviso",
-    "Ayuda",
-    "Evento",
-    "Salud",
-    "Animales"
+  final _formKey = GlobalKey<FormState>();
+  final _textController1 = TextEditingController();
+  final _textController2 = TextEditingController();
+  final _textController3 = TextEditingController();
+  final List<String> _chips = [
+    'Chip 1',
+    'Chip 2',
+    'Chip 3',
+    'Chip 4',
+    'Chip 5',
+    'Chip 6'
   ];
   final List<String> _selectedChips = [];
 
-  void _onChipSelected(String name) {
+  @override
+  void dispose() {
+    _textController1.dispose();
+    _textController2.dispose();
+    _textController3.dispose();
+    super.dispose();
+  }
+
+  void _handleChipSelected(String value) {
     setState(() {
-      if (_selectedChips.contains(name)) {
-        _selectedChips.remove(name);
+      if (_selectedChips.contains(value)) {
+        _selectedChips.remove(value);
       } else {
-        _selectedChips.add(name);
+        _selectedChips.add(value);
       }
     });
   }
 
-  @override
-  void dispose() {
-    _controller1.dispose();
-    _controller2.dispose();
-    _controller3.dispose();
-    super.dispose();
+  bool _showError = false;
+  String? _validateTextField(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo es obligatorio';
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Formulario'),
-      ),
-      body: Padding(
+      appBar: AppBar(title: const Text("Nueva Publicación")),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _controller1,
-              decoration: InputDecoration(
-                labelText: 'Campo 1',
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _textController1,
+                decoration: InputDecoration(
+                  labelText: 'Título',
+                ),
+                validator: _validateTextField,
               ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _controller2,
-              decoration: InputDecoration(
-                labelText: 'Campo 2',
+              TextFormField(
+                controller: _textController2,
+                decoration: InputDecoration(
+                  labelText: 'Descripción',
+                ),
+                validator: _validateTextField,
               ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _controller3,
-              decoration: InputDecoration(
-                labelText: 'Campo 3',
+              TextFormField(
+                controller: _textController3,
+                decoration: InputDecoration(
+                  labelText: 'Dirección',
+                ),
+                validator: _validateTextField,
               ),
-            ),
-            SizedBox(height: 16),
-            Text('Selecciona algunos nombres:'),
-            Wrap(
-              spacing: 8,
-              children: _chipNames.map((name) {
-                return FilterChip(
-                  label: Text(name),
-                  selected: _selectedChips.contains(name),
-                  onSelected: (selected) => _onChipSelected(name),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Acción a realizar cuando se presione el botón
-                print('Campo 1: ${_controller1.text}');
-                print('Campo 2: ${_controller2.text}');
-                print('Campo 3: ${_controller3.text}');
-                print('Chips seleccionados: $_selectedChips');
-              },
-              child: Text('Enviar'),
-            ),
-          ],
+              TextFormField(
+                controller: _textController3,
+                decoration: InputDecoration(
+                  labelText: 'Dirección',
+                ),
+                validator: _validateTextField,
+              ),
+              const SizedBox(height: 16.0),
+              const Text('Chips'),
+              Wrap(
+                children: _chips.map((chip) {
+                  final isSelected = _selectedChips.contains(chip);
+                  final index = _selectedChips.indexOf(chip);
+                  final color = isSelected
+                      ? index == 0
+                          ? Colors.lightGreen.shade800
+                          : Colors.lightGreen.shade600
+                      : Colors.grey;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: FilterChip(
+                      label: Text(chip),
+                      selected: isSelected,
+                      selectedColor: color,
+                      onSelected: (isSelected) {
+                        _handleChipSelected(chip);
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+              Visibility(
+                visible: _showError,
+                child: const Text(
+                  'Debe seleccionar al menos un chip',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _showError = _selectedChips.isEmpty;
+                    });
+                    if (_formKey.currentState!.validate() &&
+                        _selectedChips.isNotEmpty) {
+                      print('${_selectedChips.toString()}');
+                      print('Formulario válido');
+                    }
+                  },
+                  child: Text('Enviar'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
