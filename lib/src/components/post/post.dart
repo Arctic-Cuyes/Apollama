@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
+import 'package:zona_hub/src/services/user_service.dart';
+import 'package:zona_hub/src/views/profile/profile.dart';
 
 //Small view of posts made by users
 class PostComponent extends StatefulWidget {
+  final String userID;
   final String userphoto;
   final String username;
   final String imageUrl;
@@ -9,6 +13,7 @@ class PostComponent extends StatefulWidget {
   
   const PostComponent(
       {Key? key,
+      required this.userID,
       required this.userphoto,
       required this.username,
       required this.imageUrl,
@@ -41,6 +46,10 @@ class _PostComponentState extends State<PostComponent> {
       comments++;
     });
   }
+  
+  void goToProfile(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(usuario: UserService().getUserById(widget.userID), userID: widget.userID)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,21 +59,28 @@ class _PostComponentState extends State<PostComponent> {
         children: [
           Row(
             children: [
-              ClipOval(
-                  child: Image.network(
-                  //Cambiará según la base de datos, por el momento una imagen de internet
-                  widget.userphoto,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                )
+              GestureDetector(
+                onTap: () => goToProfile(),
+                child: ClipOval(
+                    child: Image.network(
+                    //Cambiará según la base de datos, por el momento una imagen de internet
+                    widget.userphoto,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  )
+                ),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                      Text(widget.username, style: const TextStyle(fontSize: 16),),
+                      //Tap the name to go to profile
+                      GestureDetector(
+                        onTap: () => goToProfile(),
+                        child: Text(widget.username, style: const TextStyle(fontSize: 16),)
+                      ),
                       const Text("Hace un momento", style: TextStyle(fontSize: 11),)
                   ],
                 ),

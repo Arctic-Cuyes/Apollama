@@ -45,4 +45,21 @@ class PostService {
 
     await postsRef.add(post);
   }
+
+  // get a list of post by user id
+  Stream<List<Post>> getPostsByAuthorId(String authorId) {
+  return postsRef
+      .where('author', isEqualTo: FirebaseFirestore.instance.collection('users').doc(authorId))
+      .snapshots()
+      .asyncMap((snapshot) async {
+    final posts = await Future.wait(snapshot.docs.map((doc) async {
+      final post = doc.data();
+      post.authorData = await userService.getUserDataFromDocRef(post.author!);
+      post.id = doc.id;
+      post.authorData!.id = post.author!.id;
+      return post;
+    }));
+    return posts;
+  });
+}
 }
