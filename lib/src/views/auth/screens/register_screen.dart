@@ -5,6 +5,9 @@ import 'package:zona_hub/src/components/global/button.dart';
 import 'package:zona_hub/src/components/warnings/snackbar.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
+import 'package:zona_hub/src/utils/flash_error_message.dart';
+import 'package:zona_hub/src/utils/forms/firebase_error_code_exceptions.dart';
+import 'package:zona_hub/src/utils/forms/regex.dart';
 import 'package:zona_hub/src/views/root.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,12 +23,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController(text: "");
   final _passwordController = TextEditingController(text: "");
 
-  String _texto = "Registrarse";
+  final _formKey = GlobalKey<FormState>();
+
   final auth = AuthMethods();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Form(
+      key: _formKey,
       // color: GlobalColors.whiteColor,
       child: Center(
           child: Container(
@@ -44,13 +49,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _nameController,
               hintText: "Nombre de Usuario",
               prefixedIcon: const Icon(Icons.person),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "El nombre de usuario no puede estar vacío";
+                }
+                return null;
+              },
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 10.0),
             buildTextField(
               obscureText: false,
               controller: _emailController,
               hintText: "Correo Electrónico",
               prefixedIcon: const Icon(Icons.email),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "El correo electrónico no puede estar vacío";
+                }
+
+                if (!RegexValidator.isValidEmail(value)) {
+                  return "No es un correo electrónico válido";
+                }
+
+                return null;
+              },
             ),
             const SizedBox(height: 10.0),
             buildTextField(
@@ -58,41 +80,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               hintText: "Contraseña",
               prefixedIcon: const Icon(Icons.lock),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "La contraseña no puede estar vacío";
+                }
+
+                return null;
+              },
             ),
             const SizedBox(height: 10.0),
             ButtonPrincipal(
-                text: _texto,
+                text: "Registrarse",
                 onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  if (!_formKey.currentState!.validate()) {
+                    return;
+                  }
+
                   openDialogLoader();
                   auth.signUp(_nameController, _emailController, _passwordController).then((value) {
                     if (auth.hasError) {
-                      //Errores de registro por ej: email ya registrado, contraseña débil, etc.
-                      showSnackBar(
-                          context: context,
-                          text: "Error de registro ${auth.errorCode}");
-                      _texto = "Registrarse";
                       Navigator.of(context).pop(); // close loader
+                      String errorMessage =
+                          FirebaseErrorCodeExceptions.getMessageFromErrorCode(
+                              auth.errorCode);
+                      FlashMessage.showErrorMessage(errorMessage, context);
+
                     } else {
                       handleEmailSignIn();
                     }
                   });
-                  setState(() {
-                    _texto = "Conectando...";
-                  });
                 }),
-            // const SizedBox(height: 30.0),
-            // const Row(
-            //   children: [
-            //     Text(
-            //       "¿Aún no tienes cuenta?",
-            //       style: TextStyle(
-            //         fontSize: 15,
-            //         color: GlobalColors.blackColor,
-            //         fontWeight: FontWeight.w600,
-            //       )
-            //     ),
-            //   ],
-            // ),
+
             const SizedBox(height: 30.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -129,7 +148,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     auth.signInWithEmail(_emailController, _passwordController).then((value) {
       if (auth.hasError == true) {
         Navigator.of(context).pop(); // Close loader
-        _texto = "Registrarse";
         showSnackBar(context: context, text: auth.errorCode!);
       } else {
         handleAfterSignIn();

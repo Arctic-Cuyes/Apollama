@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // showSnackBar(context: context, text: auth.errorCode!);
         String errorMessage =
             FirebaseErrorCodeExceptions.getMessageFromErrorCode(auth.errorCode);
-        ShowError(errorMessage);
+        FlashMessage.showErrorMessage(errorMessage, context);
       } else {
         handleAfterSignIn();
       }
@@ -63,13 +63,6 @@ class _LoginScreenState extends State<LoginScreen> {
       MaterialPageRoute(builder: (context) => const Root()),
       (route) => false,
     );
-  }
-
-  ShowError(message) {
-    // Close Modal
-    // Navigator.of(context).pop();
-
-    FlashMessage.showErrorMessage(message, context);
   }
 
   @override
