@@ -20,8 +20,9 @@ class ProfileDropDown extends StatelessWidget {
           debugPrint(value);
         },
         items: const [
-          DropdownMenuItem(value: "Editar", child: Text("Editar Perfil")),
-          DropdownMenuItem(value: "Editar", child: Text("Editar Perfil")),
+          DropdownMenuItem(value: "1", child: Text("Editar Perfil")),
+          DropdownMenuItem(value: "2", child: Text("Cambiar Foto")),
+          DropdownMenuItem(value: "3", child: Text("Cerrar Sesión")),
         ],
         icon: const Icon(Icons.more_vert));
   }
@@ -69,10 +70,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   titleTextStyle: TextStyle(
                       overflow: TextOverflow.visible,
                       fontSize: 16,
-                      color: MyApp.themeNotifier.value == ThemeMode.dark 
+                      color: MyApp.themeNotifier.value == ThemeMode.dark
                           ? Colors.white
-                          : Colors.grey[500]
-                      ),
+                          : Colors.grey[500]),
                   leading: IconButton(
                     tooltip: "Atrás",
                     onPressed: () {
@@ -82,27 +82,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       Icons.arrow_back,
                     ),
                   ),
-                  title: //Buscar mis publicaciones
-                      Text(snapshot.data!.name.length > 30 ? snapshot.data!.name.substring(0,30) : snapshot.data!.name),
+                  title: Text(snapshot.data!.name.length > 30
+                      ? snapshot.data!.name.substring(0, 30)
+                      : snapshot.data!.name),
                   //AppBar buttons
                   actions: [
                     //Reportar perfil (solo se mostrará en perfil != auth.user)
-                   
                     isMyProfile
                         ? const ProfileDropDown()
                         : IconButton(
                             tooltip: "Reportar usuario",
                             onPressed: () {},
                             icon: const Icon(Icons.info)),
-
-                         Flexible(
-                      flex: 1,
-                      child: IconButton(
-                        tooltip: "Buscar",
-                        onPressed: () {},
-                        icon: const Icon(Icons.search),
-                      ),
-                    ),
                   ],
                 ),
                 body: SingleChildScrollView(
@@ -159,9 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ]),
                             //Información extra: fecha de creación de perfil, ubicación,
                             //  UBICACIÓN
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 10,),
                             ExtraInfo(
                                 icon: const Icon(Icons.my_location),
                                 text: snapshot.data!.location.toString()),
@@ -187,6 +176,25 @@ class _ProfilePageState extends State<ProfilePage> {
                           ]),
                         ),
                       ), //CARD DATOS DE USUARIO ENDS
+                      
+                      //CARD AÑADE UNA PUBLICACIÓN
+                     Offstage(
+                       offstage: !isMyProfile,
+                       child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10,0,0,0),
+                         child: Row(
+                          children: [
+                            FloatingActionButton(
+                              onPressed: (){
+                                //Go to create post page
+                              },
+                              child: const Icon(Icons.edit_square),
+                            ),
+                            const Text("   Crea una nueva publicación")
+                          ],
+                         ),
+                       ),
+                     ),
 
                       // UPS Y PUBLICACIONES DE PERFIL
 
@@ -195,14 +203,26 @@ class _ProfilePageState extends State<ProfilePage> {
                           length: 2,
                           child: Flex(
                             direction: Axis.vertical,
-                            children: const [
-                              SizedBox(
+                            children: [
+                              const SizedBox(
                                 height: 40,
                                 child: TabBar(
                                     indicatorSize: TabBarIndicatorSize.tab,
                                     tabs: [
-                                      Icon(Icons.book),
-                                      Icon(Icons.thumb_up)
+                                      ListTile(
+                                        horizontalTitleGap: 0,
+                                        minLeadingWidth: 20,
+                                        leading: Icon(Icons.fact_check, size: 20,),
+                                        contentPadding: EdgeInsets.all(0), 
+                                        title: Center(child: Text("Mis publicaciones", style: TextStyle(fontSize: 14,),)),
+                                      ),
+                                      ListTile(
+                                        horizontalTitleGap: 0,
+                                        minLeadingWidth: 20,
+                                      
+                                        leading: Icon(Icons.thumb_up, size: 20,), 
+                                        title: Center(child: Text("Me gusta", style: TextStyle(fontSize: 14),)),
+                                      ),
                                     ]),
                               ),
                               //Mostrar TabBarViews
@@ -210,8 +230,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 height: 720, 
                                 child: TabBarView(
                                   children: [
-                                    Posts(),
-                                    Posts(),
+                                    Posts(authorID: snapshot.data!.id!),
+                                    Posts(authorID: snapshot.data!.id!), // Liked posts
                                   ],
                                 ),
                               )
@@ -258,9 +278,10 @@ class _ExtraInfoState extends State<ExtraInfo> {
   }
 }
 
-// RENDERIZA EL LIST VIEW DE POSTS, FALTA ALGÚN FILTRO PARA OBTENER POR ID
+// LIST VIEW DE POSTS
 class Posts extends StatefulWidget {
-  const Posts({super.key});
+  final String authorID; 
+  const Posts({super.key, required this.authorID});
 
   @override
   State<Posts> createState() => _PostsState();
@@ -271,7 +292,7 @@ class _PostsState extends State<Posts> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Post>>(
-      stream: postService.getPosts(),
+      stream: postService.getPostsByAuthorId(widget.authorID),
       builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
         if (snapshot.hasError) {
           return const Text('Something went wrong');
@@ -279,6 +300,17 @@ class _PostsState extends State<Posts> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        if(snapshot.data!.isEmpty){
+          return Column(
+            children: const [
+              SizedBox(height: 150,),
+              Icon(Icons.edit_note_rounded, size: 150,),
+              Text("Tus publicaciones apareceran aquí", style: TextStyle(fontSize: 20),)
+            ],
+          );
+        }
+
         return ListView(
           children: snapshot.data!.map((Post post) {
             return PostComponent(
