@@ -41,6 +41,7 @@ dependencies:
   google_maps_flutter: ^2.2.5
   permission_handler: ^10.2.0
   shared_preferences: ^2.0.18
+
   #Authentication
   firebase_auth: ^4.2.10
   flutter_facebook_auth: ^5.0.8
@@ -53,7 +54,9 @@ dependencies:
   geoflutterfire: ^3.0.3
   flutter_svg: ^2.0.4
   intl: ^0.17.0
-  
+  image_picker: ^0.8.7
+  firebase_storage: ^11.0.16
+
 dependency_overrides:
   flutter_lints: ^2.0.1 #modificado
   cloud_firestore: ^4.3.1 #modificado

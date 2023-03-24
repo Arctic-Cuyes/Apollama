@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
@@ -113,25 +114,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Column(
                                     // crossAxisAlignment: CrossAxisAlignment.ce,
                                     children: [
-                                      Stack(children: [
-                                        ClipOval(
-                                          child: Image.network(
-                                            snapshot.data!.avatarUrl!,
-                                            width: 100,
-                                            height: 100,
-                                            fit: BoxFit.cover,
+                                      GestureDetector(
+                                        onTap: (){debugPrint(isMyProfile ? "Edit photo" : "Open photo");},
+                                        child: Stack(children: [
+                                          ClipOval(
+                                            child: Image.network(
+                                              snapshot.data!.avatarUrl!,
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
-                                        ),
-                                        isMyProfile
-                                            ? const Positioned(
-                                                bottom: 0,
-                                                left: 0,
-                                                child: Icon(
-                                                  Icons.add_a_photo,
-                                                  size: 20,
-                                                ))
-                                            : const SizedBox.shrink(),
-                                      ]),
+                                          isMyProfile
+                                              ? const Positioned(
+                                                  bottom: 0,
+                                                  left: 0,
+                                                  child: Icon(
+                                                    Icons.add_a_photo,
+                                                    size: 20,
+                                                  ))
+                                              : const SizedBox.shrink(),
+                                        ]),
+                                      ),
 
                                       const SizedBox(
                                         height: 10,
@@ -244,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 )
               );
           }else{
-            return Container();
+            return const Center(child: CircularProgressIndicator(),);
           }
         }
       );
