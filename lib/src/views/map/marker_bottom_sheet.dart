@@ -19,6 +19,7 @@ class _MarkerBottomModal extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(bottom: 5, left: 8, right: 8),
           child: PostComponent(
+            userID: "JlZxZOy4WNkTU8jni4FN", //Para probar
             userphoto:
                 "https://i.pinimg.com/564x/3b/cd/8c/3bcd8c2ae805e65d52cd07c1c396dc8a.jpg",
             username: marker.title,

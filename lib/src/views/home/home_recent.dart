@@ -43,6 +43,7 @@ class _RecientesState extends State<Recientes> {
                     return ListView(
                       children: snapshot.data!.map((Post post) {
                         return PostComponent(
+                          userID: post.author!.id,
                           postText: post.description,
                           imageUrl: post.imageUrl,
                           userphoto: post.authorData!.avatarUrl!,
