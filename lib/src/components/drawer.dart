@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
@@ -10,14 +11,7 @@ import 'package:zona_hub/src/views/profile/profile.dart';
   options such as logout, saved posts, profile, configurations, etc.
 */
 
-final AuthService authService = AuthService();
 
-List<Map<String, dynamic>> options = [
-  {'icon': const Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
-  {'icon': const Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,) },
-  {'icon': const Icon(Icons.bookmark), 'option': 'Guardados', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
-  {'icon': const Icon(Icons.logout), 'option': 'Cerrar sesión',},
-];
 
 class DrawerComponent extends StatelessWidget {
   const DrawerComponent({super.key});
@@ -54,7 +48,7 @@ class DrawerComponent extends StatelessWidget {
                 ),
                 const Divider(color: Colors.grey, thickness: 1,),
                 //Options
-                const DrawerOptions()
+                DrawerOptions()
             ],
           ),
         ),
@@ -119,30 +113,48 @@ class _ProfileSummaryState extends State<ProfileSummary> {
   }
 }
 
-// List of Options
-class DrawerOptions extends StatelessWidget {
+class DrawerOptions extends StatefulWidget {
   const DrawerOptions({super.key});
 
   @override
+  State<DrawerOptions> createState() => _DrawerOptionsState();
+}
+
+class _DrawerOptionsState extends State<DrawerOptions> {
+  @override
   Widget build(BuildContext context) {
+    final AuthService authService = AuthService();
+
+    List<Map<String, dynamic>> options = [
+      {'icon': const Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
+      {'icon': const Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,) },
+      {'icon': const Icon(Icons.bookmark), 'option': 'Guardados', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
+      {'icon': const Icon(Icons.logout), 'option': 'Cerrar sesión',},
+    ];
+
     final auth = AuthMethods();
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: options.length,
       itemBuilder: (BuildContext context, int index) {
-      return ListTile(
-        title: Text(options[index]['option']),
-        leading: options[index]['icon'],
-        onTap: (){
-          //Lógica para abrir página de opción seleccionada
-          if(index == 3){ //Logout
-            auth.userSignOut();
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomeView()));
-          }else{
-            Navigator.push(context, MaterialPageRoute(builder: (context) => options[index]['page']));
-          }
-        },
+        return ListTile(
+          title: Text(options[index]['option']),
+          leading: options[index]['icon'],
+          onTap: () {
+            //Lógica para abrir página de opción seleccionada
+            if (index == 3) {
+              //Logout
+              auth.userSignOut();
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => WelcomeView()));
+            } else {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => options[index]['page']));
+            }
+          },
         );
       },
     );
