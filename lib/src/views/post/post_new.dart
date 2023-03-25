@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:intl/intl.dart';
 import 'package:zona_hub/src/views/post/address_autocomplete.dart';
 
@@ -26,6 +27,16 @@ class _NewPostFormState extends State<NewPostForm> {
   final _beginDateController = TextEditingController();
   final _endDateController = TextEditingController();
   bool _manyDays = false;
+  Map _fakeLocation = {
+    "geohash": "6nxcc",
+    "geopoint": const LatLng(-8.108805, -79.028402),
+  };
+
+  @override
+  void initState() {
+    _addressController.text = "Ejemplo";
+    super.initState();
+  }
 
   @override
   void dispose() {
