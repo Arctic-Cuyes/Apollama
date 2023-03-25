@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Internet/connectivity_service.dart';
 import 'package:zona_hub/src/views/permissions/permission.dart';
 import 'home/home.dart';
@@ -55,6 +56,7 @@ class _RootState extends State<Root> {
         _interService.showConnectionSnackbar(context, result);
       });
       _requestPermission();
+      AuthService().getCurrentUser();
     });
   }
 

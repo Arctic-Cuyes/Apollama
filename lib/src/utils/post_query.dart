@@ -3,7 +3,7 @@ import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/services/tag_service.dart';
 
-enum PostQuery { all, mine, tags, beforeEndDate }
+enum PostQuery { all, mine, tags, beforeEndDate, active }
 
 final TagService tagService = TagService();
 
@@ -22,8 +22,10 @@ extension QueryDuplication on Query<Post> {
                 .map((tag) => tagService.getTagDocRefFromId(tag.id!))
                 .toList());
       case PostQuery.beforeEndDate:
-        return this
-            .where('endDate', isGreaterThanOrEqualTo: DateTime.now().toIso8601String());
+        return this.where('endDate',
+            isGreaterThanOrEqualTo: DateTime.now().toIso8601String());
+      case PostQuery.active:
+        return this.where('active', isEqualTo: true);
     }
   }
 }
