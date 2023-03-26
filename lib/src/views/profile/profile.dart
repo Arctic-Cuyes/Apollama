@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
               title:  const Text("Tomar Foto"),
-              onTap: () => storage.getImageURL(ImageSource.gallery).then((value) {
+              onTap: () => storage.getImageURL(ImageSource.camera).then((value) {
                 if(value != "0"){
                   setState(() {
                     newImage = value;
