@@ -37,6 +37,12 @@ class UserService {
       await currentUser.updateDisplayName(newName);
       await usersRef.doc(currentUser.uid).update({'name': newName});
    }
+  //Update only userAvatar
+  Future<void> updateUserAvatar(String avatarURL) async {
+      User currentUser = AuthService().currentUser;
+      await currentUser.updatePhotoURL(avatarURL);
+      await usersRef.doc(currentUser.uid).update({'avatarUrl': avatarURL});
+   }
 
   // delete user
   Future<void> deleteUser(String id) async {

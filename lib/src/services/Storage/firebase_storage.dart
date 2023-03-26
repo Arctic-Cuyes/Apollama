@@ -2,16 +2,19 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:zona_hub/src/models/user_model.dart';
-import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class Storage {
   final Reference firebaseStorage = FirebaseStorage.instance.ref(); 
   final ImagePicker imagePicker = ImagePicker();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  bool _hasError = false;
+  bool get hasError => _hasError;
+
+  String? _errorCode;
+  String? get errorCode => _errorCode;
 
    Future<String> getImageURL (ImageSource source) async {
     XFile? file = await imagePicker.pickImage(source: source);
@@ -24,7 +27,8 @@ class Storage {
         String photoURL = await referenceFile.getDownloadURL();
         return photoURL;
       } catch (e) {
-        debugPrint("ERROR AL SUBIR FOTO: ${e.toString()}");
+        _hasError = true;
+        _errorCode = e.toString();
       }
     }
     return "0";
@@ -33,26 +37,10 @@ class Storage {
   updateProfilePhoto(String photoURL) async {
 
     try {
-      await firebaseAuth.currentUser!.updatePhotoURL(photoURL);
-      
-      UserModel currenUser = await AuthService().getCurrentUser();
-      
-      UserModel newUser = UserModel(
-        id: currenUser.id,
-        name: currenUser.name,
-        email: currenUser.email,
-        avatarUrl: photoURL,
-        age: currenUser.age,
-        location: currenUser.location,
-        upPosts: currenUser.upPosts,
-        downPosts: currenUser.downPosts,
-        communities: currenUser.communities,
-        createdAt: currenUser.createdAt,
-      );
-
-      await UserService().updateUser(newUser);
+      await UserService().updateUserAvatar(photoURL);
     } catch (e) {
-      debugPrint(e.toString());
+      _hasError = true;
+      _errorCode = e.toString();
     }
   }
 }
