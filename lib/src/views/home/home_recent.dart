@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
+import 'package:zona_hub/src/utils/post_query.dart';
 
 class Recientes extends StatefulWidget {
   const Recientes({super.key});
@@ -19,19 +21,25 @@ class _RecientesState extends State<Recientes> {
   final GpsService gpsService = GpsService();
   @override
   Widget build(BuildContext context) {
+    // postService.upVotePost('Ds4y5VrxxJo6LkXZamxI');
     return RefreshIndicator(
         color: Colors.white,
         onRefresh: () async {
           setState(() {});
         },
         child: FutureBuilder(
-          future: gpsService.determinePosition(),
+          future: Future.wait(
+              [gpsService.determinePosition(), authService.getCurrentUser()]),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             // if has data return a stream builder
             if (snapshot.hasData) {
+              final Position position = snapshot.data[0] as Position;
+              final UserModel currentUser = snapshot.data[1] as UserModel;
               return StreamBuilder<List<Post>>(
                   stream: postService.getPostsAround(
-                      position: snapshot.data as Position),
+                      position: position,
+                      currentUser: currentUser,
+                      query: PostQuery.noVoted),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Post>> snapshot) {
                     if (snapshot.hasError) {
