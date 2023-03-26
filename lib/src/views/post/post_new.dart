@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:zona_hub/src/views/post/address_autocomplete.dart';
 
@@ -11,6 +15,7 @@ final List<String> _chips = [
   'Social',
 ];
 final List<String> _selectedChips = [];
+File? _currentImageFile;
 
 class NewPostForm extends StatefulWidget {
   const NewPostForm({super.key});
@@ -26,6 +31,7 @@ class _NewPostFormState extends State<NewPostForm> {
   final _addressController = TextEditingController();
   final _beginDateController = TextEditingController();
   final _endDateController = TextEditingController();
+
   bool _manyDays = false;
   Map _fakeLocation = {
     "geohash": "6nxcc",
@@ -84,7 +90,7 @@ class _NewPostFormState extends State<NewPostForm> {
         context: context,
         initialDate: DateTime.now(),
         firstDate:
-            DateTime.now().subtract(const Duration(days: 7)), //DateTime.now()
+            DateTime.now().subtract(const Duration(days: 5)), //DateTime.now()
         lastDate: DateTime(2050));
 
     if (pickedDate != null) {
@@ -188,9 +194,6 @@ class _NewPostFormState extends State<NewPostForm> {
                       validator: _validateTextField,
                       readOnly: true,
                       onTap: () => _datePickerOnTap(_beginDateController)),
-                  // const Spacer(
-                  //   flex: 1,
-                  // ),
                   Visibility(
                     visible: _manyDays,
                     child: TextFormField(
@@ -228,6 +231,7 @@ class _NewPostFormState extends State<NewPostForm> {
                   style: TextStyle(color: Colors.red),
                 ),
               ),
+              const ImagePostWidget(),
               const SizedBox(height: 16.0),
               Center(
                 child: ElevatedButton(
@@ -244,6 +248,7 @@ class _NewPostFormState extends State<NewPostForm> {
                         !_errorOnDates) {
                       debugPrint(_selectedChips.toString());
                       debugPrint('Formulario válido');
+                      debugPrint("Imagen  $_currentImageFile?.path");
                     }
                   },
                   child: const Text('Enviar'),
@@ -299,6 +304,101 @@ class _TagChipsWidgetState extends State<TagChipsWidget> {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+class ImagePostWidget extends StatefulWidget {
+  const ImagePostWidget({super.key});
+
+  @override
+  State<ImagePostWidget> createState() => _ImagePostWidgetState();
+}
+
+class _ImagePostWidgetState extends State<ImagePostWidget> {
+  final StreamController<File?> _imageStreamController =
+      StreamController.broadcast();
+
+  void _pickImage(ImageSource source) async {
+    ImagePicker imagePicker = ImagePicker();
+    XFile? xFile = await imagePicker.pickImage(source: source);
+    if (xFile != null) {
+      _currentImageFile = File(xFile.path);
+      _imageStreamController.add(_currentImageFile);
+    }
+  }
+
+  void _deleteImage() {
+    _currentImageFile = null;
+    _imageStreamController.add(_currentImageFile);
+  }
+
+  @override
+  void dispose() {
+    _imageStreamController.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text("Imagen"),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async => _pickImage(ImageSource.camera),
+                  icon: const Icon(Icons.camera_alt, size: 14),
+                  label: const Text("Cámara", style: TextStyle(fontSize: 14)),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton.icon(
+                  onPressed: () async => _pickImage(ImageSource.gallery),
+                  icon: const Icon(Icons.image, size: 14),
+                  label: const Text("Galería", style: TextStyle(fontSize: 14)),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StreamBuilder(
+          stream: _imageStreamController.stream,
+          initialData: null,
+          builder: (context, AsyncSnapshot<File?> snapshot) {
+            return SizedBox(
+                width: double.infinity,
+                child: snapshot.hasData
+                    ? Image.file(snapshot.data!)
+                    : Container(
+                        decoration: BoxDecoration(border: Border.all()),
+                        child: const Padding(
+                            padding: EdgeInsets.all(30),
+                            child: Icon(
+                              Icons.image_not_supported_outlined,
+                              size: 30,
+                            )),
+                      ));
+          },
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _deleteImage,
+              icon:
+                  const Icon(Icons.delete_sharp, size: 14, color: Colors.white),
+              label: const Text("Eliminar",
+                  style: TextStyle(fontSize: 14, color: Colors.white)),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
