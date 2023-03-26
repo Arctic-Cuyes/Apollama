@@ -8,11 +8,18 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
 import 'package:zona_hub/src/services/post_service.dart';
+import 'package:zona_hub/src/services/user_service.dart';
+
 
 String? newImage;
+String? newName;
 
-class ProfileDropDown extends StatelessWidget {
-  const ProfileDropDown({super.key});
+final _formKey = GlobalKey<FormState>();
+
+class ProfileDropDown extends StatelessWidget { 
+  const ProfileDropDown({super.key,});
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +27,14 @@ class ProfileDropDown extends StatelessWidget {
         elevation: 0,
         underline: const SizedBox.shrink(),
         onChanged: (value) {
-          debugPrint(value);
+          switch(value){
+            case '1':
+              
+              break;
+          }
         },
         items: const [
-          DropdownMenuItem(value: "1", child: Text("Editar Perfil")),
-          DropdownMenuItem(value: "2", child: Text("Cambiar Foto")),
-          DropdownMenuItem(value: "3", child: Text("Cerrar Sesión")),
+          DropdownMenuItem(value: "1", child: Text("Privacidad")),
         ],
         icon: const Icon(Icons.more_vert));
   }
@@ -133,6 +142,54 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     );
   }
 
+  openEditNameForm(){
+    TextEditingController nameController = TextEditingController(text: authService.currentUser.displayName);
+
+    showModalBottomSheet(
+      context: context, 
+      
+      builder: (_){
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      label: const Text("Nombre"),
+                      errorText: _formKey.currentState?.validate() == false ? "Campo obligatorio" : null,
+                    ),
+                    onChanged: (value) => _formKey.currentState?.validate(),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      if(value.characters.length < 5){
+                        return 'El nombre debe tener al menos 5 caracteres';
+                      }
+                      return null;
+                  },
+                  ),
+                ),
+                const SizedBox(height: 15,),
+                ElevatedButton(onPressed: (){
+                  if(_formKey.currentState?.validate() == true){
+                    UserService().updateUserName(nameController.text.trim());
+                    Navigator.pop(context);
+                    setState(() {
+                      newName = nameController.text.trim();
+                    });
+                  }
+                }, child: const Text("Actualizar"))
+            ],
+          ),
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -151,14 +208,39 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       Icons.arrow_back,
                     ),
                   ),
-                  title: Text(snapshot.data!.name.length > 30
+                  title: 
+                  newName != null ?
+                  Text(
+                    newName!.length > 30
+                      ? newName!.substring(0, 30)
+                      : newName!, 
+                      style: const TextStyle(fontSize: 18, overflow: TextOverflow.visible),
+                  )
+                  : 
+                  Text(
+                    snapshot.data!.name.length > 30
                       ? snapshot.data!.name.substring(0, 30)
-                      : snapshot.data!.name, style: const TextStyle(fontSize: 18, overflow: TextOverflow.visible),),
+                      : snapshot.data!.name, 
+                      style: const TextStyle(fontSize: 18, overflow: TextOverflow.visible),
+                    ),
                   //AppBar buttons
                   actions: [
                     //Reportar perfil (solo se mostrará en perfil != auth.user)
                     isMyProfile
-                        ? const ProfileDropDown()
+                        ? DropdownButton(
+                          elevation: 0,
+                          underline: const SizedBox.shrink(),
+                          onChanged: (value) {
+                            switch(value){
+                              case '1':
+                                openEditNameForm();
+                                break;
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem(value: "1", child: Text("Editar Nombre")),
+                          ],
+                          icon: const Icon(Icons.more_vert))
                         : IconButton(
                             tooltip: "Reportar usuario",
                             onPressed: () {},
@@ -215,7 +297,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                       height: 10,
                                     ),
                                     Text(
-                                      snapshot.data!.name,
+                                      newName ?? snapshot.data!.name,
                                       style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
@@ -410,7 +492,7 @@ class _PostsState extends State<Posts> {
               postText: post.description,
               imageUrl: post.imageUrl,
               userphoto: newImage ?? post.authorData!.avatarUrl!,
-              username: post.authorData!.name,
+              username: newName ?? post.authorData!.name,
             );
           }).toList(),
         );

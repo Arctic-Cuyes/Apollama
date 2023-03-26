@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zona_hub/src/models/user_model.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 
 class UserService {
   final usersRef =
@@ -28,6 +30,13 @@ class UserService {
   Future<void> updateUser(UserModel user) async {
     await usersRef.doc(user.id).update(user.toJson());
   }
+
+  //Update only user name
+  Future<void> updateUserName(String newName) async {
+      User currentUser = AuthService().currentUser;
+      await currentUser.updateDisplayName(newName);
+      await usersRef.doc(currentUser.uid).update({'name': newName});
+   }
 
   // delete user
   Future<void> deleteUser(String id) async {
