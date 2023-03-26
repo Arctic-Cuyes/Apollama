@@ -75,6 +75,8 @@ class _ProfileSummaryState extends State<ProfileSummary> {
         //User image in circle shape
         GestureDetector(
           onTap: (){
+            //Close drawer
+             Navigator.pop(context);
             //Go to profile main page
             Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(usuario: AuthService().getCurrentUser(), userID: AuthService().currentUser.uid,)));
           },
@@ -149,6 +151,7 @@ class _DrawerOptionsState extends State<DrawerOptions> {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => WelcomeView()));
             } else {
+              Navigator.pop(context); // Close drawer
               Navigator.push(
                   context,
                   MaterialPageRoute(
