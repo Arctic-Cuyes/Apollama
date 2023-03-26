@@ -13,16 +13,26 @@ class Storage {
   final ImagePicker imagePicker = ImagePicker();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  uploadProfileImage(ImageSource source) async {
+   Future<String> getImageURL (ImageSource source) async {
     XFile? file = await imagePicker.pickImage(source: source);
-    if(file == null){return;};
-
-    Reference referenceDirImages = firebaseStorage.child('profile_images'); 
-    Reference referenceFile = referenceDirImages.child(file.name);
+    if (file != null){
+      Reference referenceDirImages = firebaseStorage.child('profile_images'); 
+      Reference referenceFile = referenceDirImages.child(file.name);
     //Upload file
+      try {
+        await referenceFile.putFile(File(file.path));  
+        String photoURL = await referenceFile.getDownloadURL();
+        return photoURL;
+      } catch (e) {
+        debugPrint("ERROR AL SUBIR FOTO: ${e.toString()}");
+      }
+    }
+    return "0";
+  }
+
+  updateProfilePhoto(String photoURL) async {
+
     try {
-      await referenceFile.putFile(File(file.path));  
-      String photoURL = await referenceFile.getDownloadURL();
       await firebaseAuth.currentUser!.updatePhotoURL(photoURL);
       
       UserModel currenUser = await AuthService().getCurrentUser();
@@ -42,8 +52,7 @@ class Storage {
 
       await UserService().updateUser(newUser);
     } catch (e) {
-      debugPrint("ERROR AL SUBIR FOTO: ${e.toString()}");
+      debugPrint(e.toString());
     }
-    
   }
 }

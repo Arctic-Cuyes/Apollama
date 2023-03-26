@@ -9,6 +9,8 @@ import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 
+String? newImage;
+
 class ProfileDropDown extends StatelessWidget {
   const ProfileDropDown({super.key});
 
@@ -57,6 +59,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   @override
   void dispose() {
     _tabBarController.dispose();
+    newImage = null;
     super.dispose();
   }
 
@@ -102,12 +105,27 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
               title:  const Text("Tomar Foto"),
-              onTap: () => storage.uploadProfileImage(ImageSource.camera),
+              onTap: () => storage.getImageURL(ImageSource.gallery).then((value) {
+                if(value != "0"){
+                  setState(() {
+                    newImage = value;
+                  });
+                  storage.updateProfilePhoto(value);
+                }
+                
+              }),
             ),
             ListTile(
               leading: const Icon(Icons.photo),
               title: const Text("Subir desde galería"),
-              onTap: () => storage.uploadProfileImage(ImageSource.gallery),
+              onTap: () => storage.getImageURL(ImageSource.gallery).then((value) {
+                if(value != "0"){
+                  setState(() {
+                    newImage = value;
+                  });
+                  storage.updateProfilePhoto(value);
+                }
+              }),
             ),
           ],
         );
@@ -135,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   ),
                   title: Text(snapshot.data!.name.length > 30
                       ? snapshot.data!.name.substring(0, 30)
-                      : snapshot.data!.name),
+                      : snapshot.data!.name, style: const TextStyle(fontSize: 18, overflow: TextOverflow.visible),),
                   //AppBar buttons
                   actions: [
                     //Reportar perfil (solo se mostrará en perfil != auth.user)
@@ -175,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                       child: Stack(children: [
                                         ClipOval(
                                           child: Image.network(
-                                            snapshot.data!.avatarUrl!,
+                                            newImage ?? snapshot.data!.avatarUrl!,
                                             width: 100,
                                             height: 100,
                                             fit: BoxFit.cover,
@@ -391,7 +409,7 @@ class _PostsState extends State<Posts> {
               userID: post.authorData!.id!,
               postText: post.description,
               imageUrl: post.imageUrl,
-              userphoto: post.authorData!.avatarUrl!,
+              userphoto: newImage ?? post.authorData!.avatarUrl!,
               username: post.authorData!.name,
             );
           }).toList(),
