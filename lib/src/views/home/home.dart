@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zona_hub/src/components/filter/filter_chip.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,16 +11,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List selected = [1, 2, 3];
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(     
         //AppBar de posts en la página principal
         appBar: AppBar(
           elevation: 0,
           toolbarHeight: 0,
-          // shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(50))),
           bottom: const PreferredSize(
             preferredSize: Size.fromHeight(48),
             child: HomeTab(),
@@ -29,7 +31,7 @@ class _HomePageState extends State<HomePage> {
               children:  [
                Recientes(),
                Recientes(),
-               Recientes(),
+              // Recientes(),
               ],
             ),
         floatingActionButton: 
@@ -60,7 +62,7 @@ class HomeTab extends StatelessWidget {
              tabs: [
               Tab(text: "Recientes",),
               Tab(text: "Popular",),
-              Tab(text: "Noticias",),
+             // Tab(text: "Noticias",),
              ],
           ),
         ),
@@ -69,7 +71,25 @@ class HomeTab extends StatelessWidget {
           flex: 1,
           child: IconButton(
             onPressed: (){
-              //Show tags multiple selection menu             
+              //Show tags multiple selection menu 
+              showBottomSheet(
+                context: context,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.5,
+                  minWidth: double.infinity,
+                ), 
+                builder: (_){
+                return Column(
+                  children: [
+                    const Text("Selecciona una categoría", style: TextStyle(fontSize: 18),),
+                    Wrap(
+                      children: [
+                        FilterChipComponent(index: 1, label: Image.network(AuthService().currentUser.photoURL!, width: 50, height: 50,))
+                      ],
+                    )
+                  ],
+                );
+              });            
             }, 
             icon: const Icon(Icons.filter_list_rounded,
             color: Colors.white,
