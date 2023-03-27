@@ -22,6 +22,8 @@ class Post {
       this.tagsData,
       this.community,
       this.beginDate,
+      this.upVotes,
+      this.downVotes,
       required this.endDate});
 
   Post.fromJson(Map<String, dynamic> json)
@@ -52,6 +54,16 @@ class Post {
               : null,
           endDate: DateTime.parse(json['endDate']),
           active: json['active'] as bool? ?? true,
+          upVotes: (json['upVotes'] as List<dynamic>?)
+                  ?.map((ref) =>
+                      JsonDocumentReference(ref.path).toDocumentReference())
+                  .toList() ??
+              [],
+          downVotes: (json['downVotes'] as List<dynamic>?)
+                  ?.map((ref) =>
+                      JsonDocumentReference(ref.path).toDocumentReference())
+                  .toList() ??
+              [],
         );
 
   late String? id;
@@ -71,6 +83,8 @@ class Post {
   final String? community;
   final DateTime? beginDate;
   final DateTime endDate;
+  late List<DocumentReference<Map<String, dynamic>>>? upVotes;
+  late List<DocumentReference<Map<String, dynamic>>>? downVotes;
 
   Map<String, Object?> toJson() {
     return {
@@ -88,6 +102,12 @@ class Post {
       if (beginDate != null) 'beginDate': beginDate!.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'active': active,
+      'upVotes': upVotes,
+      'downVotes': downVotes,
     };
+  }
+
+  DocumentReference<Map<String, dynamic>> toDocumentReference() {
+    return FirebaseFirestore.instance.collection('posts').doc(id);
   }
 }
