@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 
 class UserService {
   final usersRef =
@@ -29,6 +31,21 @@ class UserService {
   Future<void> updateUser(UserModel user) async {
     await usersRef.doc(user.id).update(user.toJson());
   }
+
+  //Update only user name
+  Future<void> updateUserName(String newName) async {
+    User currentUser = AuthService().currentUser;
+    await currentUser.updateDisplayName(newName);
+    await usersRef.doc(currentUser.uid).update({'name': newName});
+  }
+
+  //Update only userAvatar
+  Future<void> updateUserAvatar(String avatarURL) async {
+    User currentUser = AuthService().currentUser;
+    await currentUser.updatePhotoURL(avatarURL);
+    await usersRef.doc(currentUser.uid).update({'avatarUrl': avatarURL});
+  }
+
 
   // delete user
   Future<void> deleteUser(String id) async {
@@ -85,6 +102,22 @@ class UserService {
     // update user
     await usersRef.doc(user.id).update({
       'downPosts': user.downPosts,
+    });
+  }
+
+  // get user's reacted posts by user id
+  Stream<List<Post>> getUserReactedPosts(String userId) {
+    return usersRef.doc(userId).snapshots().asyncMap((snapshot) async {
+      UserModel user = snapshot.data() as UserModel;
+      List<Post> posts = await Future.wait(user.upPosts!.map((postRef) async {
+        DocumentSnapshot postSnapshot = await postRef.get();
+        Post post = Post.fromJson(postSnapshot.data() as Map<String, dynamic>);
+        post.id = postSnapshot.id;
+        post.authorData = await getUserDataFromDocRef(post.author!);
+        post.authorData!.id = post.author!.id;
+        return post;
+      }));
+      return posts;
     });
   }
 }

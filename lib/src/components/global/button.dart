@@ -31,16 +31,16 @@ class _ButtonPrincipalState extends State<ButtonPrincipal> {
         style: ElevatedButton.styleFrom(
           // foregroundColor: Colors.white,
           backgroundColor: !widget.showBorders ? 
-            GlobalColors.mainColor :
-            Colors.transparent,
+            GlobalColors.blackColor :
+            Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0)
+            borderRadius: BorderRadius.circular(10.0)
           ),
           shadowColor: Colors.transparent,
 
           side: widget.showBorders ? 
             const BorderSide(
-              color: GlobalColors.mainColor,
+              color: GlobalColors.blackColor,
               width: 3.0
             ) : 
             BorderSide.none,
