@@ -8,7 +8,7 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   static final ValueNotifier<ThemeMode> themeNotifier =
-      ValueNotifier(ThemeMode.dark);
+      ValueNotifier(ThemeMode.light);
 
   @override
   State<MyApp> createState() => _MyAppState();

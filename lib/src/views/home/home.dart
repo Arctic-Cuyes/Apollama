@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/custom_filter_images.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
@@ -21,9 +22,11 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(     
         //AppBar de posts en la página principal
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           elevation: 0,
           toolbarHeight: 0,
           bottom: const PreferredSize(
+
             preferredSize: Size.fromHeight(48),
             child: HomeTab(),
           ),
@@ -130,7 +133,7 @@ class HomeTab extends StatelessWidget {
               });            
             }, 
             icon: const Icon(Icons.filter_list_rounded,
-            color: Colors.white,
+            color: Colors.black,
           )),
         ),
       ],

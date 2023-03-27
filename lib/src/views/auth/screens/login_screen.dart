@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_flushbar/flutter_flushbar.dart';
 import 'package:zona_hub/src/components/forms/pages_login.dart';
 import 'package:zona_hub/src/components/forms/text_field.dart';
 import 'package:zona_hub/src/components/global/button.dart';
-import 'package:zona_hub/src/components/warnings/snackbar.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/utils/flash_error_message.dart';
@@ -20,8 +18,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   // NOTA: Lo he puesto para probar xd
-  final _emailController = TextEditingController(text: "");
-  final _passwordController = TextEditingController(text: "");
+  final _emailController = TextEditingController(text: "willy_g29@outlook.com");
+  final _passwordController = TextEditingController(text: "842653179CwAg");
   final _formKey = GlobalKey<FormState>();
 
   //Auth methods

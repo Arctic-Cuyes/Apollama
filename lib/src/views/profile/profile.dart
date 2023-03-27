@@ -488,6 +488,7 @@ class _PostsState extends State<Posts> {
         return ListView(
           children: snapshot.data!.map((Post post) {
             return PostComponent(
+              title: post.title,
               userID: post.authorData!.id!,
               postText: post.description,
               imageUrl: post.imageUrl,
