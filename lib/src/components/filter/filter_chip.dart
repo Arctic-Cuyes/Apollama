@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:zona_hub/src/providers/filters_provider.dart';
 
 class FilterChipComponent extends StatefulWidget {
-  final int index;
-  final Widget label;
+  final String label;
+  final String markerIconPath;
+  final Color selectedColor;
 
   const FilterChipComponent({
     super.key,
-    required this.index,
     required this.label,
+    required this.markerIconPath,
+    required this.selectedColor,
   });
 
   @override
@@ -17,13 +21,21 @@ class FilterChipComponent extends StatefulWidget {
 class _FilterBoxState extends State<FilterChipComponent> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-      child: FilterChip(
-        selected: true ,
-        label: Text("Cualquier cosa"), 
-        avatar: widget.label,
-        onSelected: (bool selected) {debugPrint(widget.index.toString());},
+    final fp = context.watch<FilterProvider>();
+    return SizedBox(
+      height: 108,
+      width: 108,
+      child: Column(
+        children: [
+          FilterChip(
+            selectedColor: widget.selectedColor,
+            selected: fp.filters.contains(widget.label) ,
+            label: Text(widget.label, style: const TextStyle(overflow: TextOverflow.visible), softWrap: true,), 
+            //avatar: widget.label,
+            onSelected: (bool selected) { fp.toggleFilter(widget.label); },
+          ),
+          Image.asset(widget.markerIconPath, width: 64, height: 64,),
+        ],
       ),
     );
   }
