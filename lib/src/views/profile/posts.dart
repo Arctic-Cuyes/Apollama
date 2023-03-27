@@ -14,10 +14,16 @@ class Posts extends StatefulWidget {
 
 class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
   final PostService postService = PostService();
+  ScrollController controller = ScrollController();
 
   @override
   bool get wantKeepAlive => true;
-  
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -44,7 +50,7 @@ class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
         return RefreshIndicator(
           onRefresh: () async => setState((){}),
           child: ListView(
-            physics: const NeverScrollableScrollPhysics(),
+            controller: controller,
             children: snapshot.data!.map((Post post) {
               return PostComponent(
                 title: post.title,

@@ -14,10 +14,17 @@ class Interactions extends StatefulWidget {
 
 class _InteractionsState extends State<Interactions> with AutomaticKeepAliveClientMixin {
   final UserService userService = UserService();
+  ScrollController controller = ScrollController();
 
   @override
   bool get wantKeepAlive => true;
   
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -44,7 +51,7 @@ class _InteractionsState extends State<Interactions> with AutomaticKeepAliveClie
         return RefreshIndicator(
           onRefresh: () async => setState((){}),
           child: ListView(
-            physics: const NeverScrollableScrollPhysics(),
+            controller: controller,
             children: snapshot.data!.map((Post post) {
               return PostComponent(
                 title: post.title,

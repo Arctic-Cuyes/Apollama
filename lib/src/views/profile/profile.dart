@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -14,31 +15,6 @@ String? newImage;
 String? newName;
 
 final _formKey = GlobalKey<FormState>();
-
-class ProfileDropDown extends StatelessWidget { 
-  const ProfileDropDown({super.key,});
-
-  
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-        elevation: 0,
-        underline: const SizedBox.shrink(),
-        onChanged: (value) {
-          switch(value){
-            case '1':
-              
-              break;
-          }
-        },
-        items: const [
-          DropdownMenuItem(value: "1", child: Text("Privacidad")),
-        ],
-        icon: const Icon(Icons.more_vert));
-  }
-}
-
 
 class ProfilePage extends StatefulWidget {
   final String userID;
@@ -197,6 +173,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           if (snapshot.hasData) {
             return Scaffold(
                 appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                   automaticallyImplyLeading: false,
                   leading: IconButton(
                     tooltip: "Atrás",
@@ -227,7 +205,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     //Reportar perfil (solo se mostrará en perfil != auth.user)
                     isMyProfile
                         ? DropdownButton(
-                          elevation: 0,
                           underline: const SizedBox.shrink(),
                           onChanged: (value) {
                             switch(value){
@@ -365,6 +342,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         elevation: 0,
                         toolbarHeight: 0,
                         pinned: true,
+                        backgroundColor: MyApp.themeNotifier.value == ThemeMode.dark ? Colors.grey[800] : Colors.white,
                         bottom: PreferredSize(
                           preferredSize: const Size.fromHeight(58),
                           child: TabBar(

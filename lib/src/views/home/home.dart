@@ -1,10 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/custom_filter_images.dart';
-import 'package:zona_hub/src/constants/custom_marker_images.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
 
 class HomePage extends StatefulWidget {
@@ -88,10 +86,8 @@ class HomeTab extends StatelessWidget {
               //Show tags multiple selection menu 
               showBottomSheet(
                 backgroundColor: Colors.transparent,
-                clipBehavior: Clip.hardEdge,
                 context: context,
                 constraints: const BoxConstraints(
-                  minWidth: double.infinity,
                   maxHeight: 120
                 ), 
                 builder: (_){
@@ -105,13 +101,12 @@ class HomeTab extends StatelessWidget {
                 return BackdropFilter(
                   filter: ImageFilter.blur(
                     sigmaX: 20,
-                    sigmaY: 30
+                    sigmaY: 20
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      //const Text("Filtar publicaciones por", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),),
                       SizedBox(
                         height: 120,
                         child: ListView(
