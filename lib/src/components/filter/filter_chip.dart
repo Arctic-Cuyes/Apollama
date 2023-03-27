@@ -28,9 +28,10 @@ class _FilterBoxState extends State<FilterChipComponent> {
       child: Column(
         children: [
           FilterChip(
+            backgroundColor: Colors.grey[500],
             selectedColor: widget.selectedColor,
             selected: fp.filters.contains(widget.label) ,
-            label: Text(widget.label), 
+            label: Text(widget.label, style: const TextStyle(color: Colors.white),), 
             onSelected: (bool selected) { fp.toggleFilter(widget.label); },
           ),
           Image.asset(widget.markerIconPath, width: 64, height: 64,),

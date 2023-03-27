@@ -1,45 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:zona_hub/src/components/post/post.dart';
-import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
-import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
+import 'package:zona_hub/src/views/profile/interactions.dart';
+import 'package:zona_hub/src/views/profile/posts.dart';
 
 
 String? newImage;
 String? newName;
 
 final _formKey = GlobalKey<FormState>();
-
-class ProfileDropDown extends StatelessWidget { 
-  const ProfileDropDown({super.key,});
-
-  
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-        elevation: 0,
-        underline: const SizedBox.shrink(),
-        onChanged: (value) {
-          switch(value){
-            case '1':
-              
-              break;
-          }
-        },
-        items: const [
-          DropdownMenuItem(value: "1", child: Text("Privacidad")),
-        ],
-        icon: const Icon(Icons.more_vert));
-  }
-}
-
 
 class ProfilePage extends StatefulWidget {
   final String userID;
@@ -143,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   }
 
   openEditNameForm(){
-    TextEditingController nameController = TextEditingController(text: authService.currentUser.displayName);
+    TextEditingController nameController = TextEditingController(text: newName ?? authService.currentUser.displayName);
 
     showModalBottomSheet(
       context: context, 
@@ -198,6 +173,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           if (snapshot.hasData) {
             return Scaffold(
                 appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                   automaticallyImplyLeading: false,
                   leading: IconButton(
                     tooltip: "Atrás",
@@ -228,7 +205,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     //Reportar perfil (solo se mostrará en perfil != auth.user)
                     isMyProfile
                         ? DropdownButton(
-                          elevation: 0,
                           underline: const SizedBox.shrink(),
                           onChanged: (value) {
                             switch(value){
@@ -292,7 +268,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                             : const SizedBox.shrink(),
                                       ]),
                                     ),
-
+                  
                                     const SizedBox(
                                       height: 10,
                                     ),
@@ -322,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                     "Se unió el ${DateFormat("d 'de' MMMM 'del' yyyy", 'es').format(DateFormat('dd-MM-yyyy hh:mm:ss').parse(snapshot.data!.createdAt!))}",
                               ),
                               //NUMERO DE COMUNIDADES
-
+                  
                               Flex(direction: Axis.horizontal, children: const [
                                 ExtraInfo(
                                     icon: Icon(Icons.public),
@@ -361,11 +337,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           ),
                         ),
                       ),
-   
+                   
                       SliverAppBar(
                         elevation: 0,
                         toolbarHeight: 0,
                         pinned: true,
+                        backgroundColor: MyApp.themeNotifier.value == ThemeMode.dark ? Colors.grey[800] : Colors.white,
                         bottom: PreferredSize(
                           preferredSize: const Size.fromHeight(58),
                           child: TabBar(
@@ -411,7 +388,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           controller: _tabBarController,
                           children: [
                             Posts(authorID: snapshot.data!.id!),
-                            Posts(authorID: snapshot.data!.id!),
+                            Interactions(authorID: snapshot.data!.id!),
                           ],
                                
                         ),
@@ -448,56 +425,6 @@ class _ExtraInfoState extends State<ExtraInfo> {
           ),
         ],
       ),
-    );
-  }
-}
-
-// LIST VIEW DE POSTS
-class Posts extends StatefulWidget {
-  final String authorID; 
-  const Posts({super.key, required this.authorID});
-
-  @override
-  State<Posts> createState() => _PostsState();
-}
-
-class _PostsState extends State<Posts> {
-  final PostService postService = PostService();
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<Post>>(
-      stream: postService.getPostsByAuthorId(widget.authorID), // Por parámetro
-      builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
-        if (snapshot.hasError) {
-          return const Text('Something went wrong');
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if(snapshot.data!.isEmpty){
-          return Column(
-            children: const [
-              SizedBox(height: 150,),
-              Icon(Icons.edit_note_rounded, size: 150,),
-              Text("Tus publicaciones apareceran aquí", style: TextStyle(fontSize: 20),)
-            ],
-          );
-        }
-
-        return ListView(
-          children: snapshot.data!.map((Post post) {
-            return PostComponent(
-              title: post.title,
-              userID: post.authorData!.id!,
-              postText: post.description,
-              imageUrl: post.imageUrl,
-              userphoto: newImage ?? post.authorData!.avatarUrl!,
-              username: newName ?? post.authorData!.name,
-            );
-          }).toList(),
-        );
-      },
     );
   }
 }
