@@ -4,7 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 
 class SelectLocationWidget extends StatefulWidget {
-  const SelectLocationWidget({super.key});
+  final LatLng? lastCameraPos;
+  const SelectLocationWidget({super.key, required this.lastCameraPos});
 
   @override
   State<SelectLocationWidget> createState() => _SelectLocationWidgetState();
@@ -21,11 +22,23 @@ class _SelectLocationWidgetState extends State<SelectLocationWidget> {
     gpsService = GpsService();
   }
 
-  CameraPosition _getCameraPosition(Position pos) {
-    _currentCameraPos = CameraPosition(
-      target: LatLng(pos.latitude, pos.longitude),
-      zoom: 15,
-    );
+  Future<CameraPosition?> _getCameraPosition() async {
+    if (widget.lastCameraPos != null) {
+      _currentCameraPos = CameraPosition(
+        target: widget.lastCameraPos!,
+        zoom: 17.5,
+      );
+    } else {
+      Position? currentPos = await gpsService.determinePosition();
+      if (currentPos != null) {
+        _currentCameraPos = CameraPosition(
+          target: LatLng(currentPos.latitude, currentPos.longitude),
+          zoom: 15,
+        );
+      } else {
+        return null;
+      }
+    }
     return _currentCameraPos;
   }
 
@@ -54,14 +67,15 @@ class _SelectLocationWidgetState extends State<SelectLocationWidget> {
               ),
             )),
         body: FutureBuilder(
-          future: gpsService.determinePosition(),
-          builder: (BuildContext context, AsyncSnapshot<Position?> snapshot) {
+          future: _getCameraPosition(),
+          builder:
+              (BuildContext context, AsyncSnapshot<CameraPosition?> snapshot) {
             if (snapshot.hasData) {
               return Stack(
                 alignment: Alignment.center,
                 children: [
                   GoogleMap(
-                    initialCameraPosition: _getCameraPosition(snapshot.data!),
+                    initialCameraPosition: snapshot.data!,
                     myLocationButtonEnabled: true,
                     myLocationEnabled: true,
                     mapType: MapType.normal,
@@ -85,10 +99,11 @@ class _SelectLocationWidgetState extends State<SelectLocationWidget> {
                     bottom: 20,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
                           shape: const RoundedRectangleBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(16)))),
+                                  BorderRadius.all(Radius.circular(30)))),
                       onPressed: () => _selectLocation(),
                       icon: const Icon(Icons.location_pin),
                       label: const Text("Seleccionar ubicación"),

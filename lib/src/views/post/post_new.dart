@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dart_geohash/dart_geohash.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
@@ -103,8 +104,11 @@ class _NewPostFormState extends State<NewPostForm> {
   }
 
   Future<LatLng?> _goToSelectLocationPage() async {
-    final LatLng? locationOnMap = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const SelectLocationWidget()));
+    final LatLng? locationOnMap =
+        await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SelectLocationWidget(
+                  lastCameraPos: _currentLatLng,
+                )));
     return locationOnMap;
   }
 
@@ -114,8 +118,10 @@ class _NewPostFormState extends State<NewPostForm> {
       setState(() {
         if (addressDetail!.address.isNotEmpty) {
           _addressController.text = addressDetail!.address;
+          _warningOnAddress = false;
         } else {
           _addressController.text = addressDetail!.city;
+          _warningOnAddress = true;
         }
       });
     }
@@ -126,7 +132,9 @@ class _NewPostFormState extends State<NewPostForm> {
     debugPrint("Title: ${_titleController.text}");
     debugPrint("Desc: ${_descriptionController.text}");
     debugPrint("Address : ${_addressController.text}");
-    debugPrint("Address geohash: ${null}");
+    debugPrint("Address geohash: ${addressDetail!.geohash}");
+    debugPrint("DateTime: ${DateTime.now()}");
+    debugPrint("Comunnity: ${addressDetail!.city}");
     debugPrint("Address geopoint: ${_currentLatLng.toString()}");
     debugPrint(
         "Begin Date: ${_endDateController.text.isEmpty ? null : _beginDateController.text}");
@@ -175,28 +183,38 @@ class _NewPostFormState extends State<NewPostForm> {
                     hintText: "Detalles sobre el tema"),
                 validator: _validateTextField,
               ),
-              Hero(
-                tag: "address",
-                child: Material(
-                  child: TextFormField(
-                    controller: _addressController,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.location_pin),
-                      labelText: 'Dirección',
+              TextFormField(
+                controller: _addressController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.location_pin),
+                  labelText: 'Dirección',
+                ),
+                readOnly: true,
+                validator: _validateTextField,
+                onTap: () async {
+                  LatLng? value = await _goToSelectLocationPage();
+                  debugPrint("LatLng obtenido: $value");
+                  if (value != null) {
+                    _currentLatLng = value;
+                    _getAddress(_currentLatLng!);
+                  }
+                },
+              ),
+              Visibility(
+                visible: _warningOnAddress,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'No se ha podido obtener la dirección exacta. '
+                    'En el mapa se mostrará la ubicación de forma precisa.',
+                    softWrap: true,
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      color: Colors.amber,
                     ),
-                    readOnly: true,
-                    validator: _validateTextField,
-                    onTap: () async {
-                      LatLng? value = await _goToSelectLocationPage();
-                      debugPrint("LatLng obtenido: $value");
-                      if (value != null) {
-                        _currentLatLng = value;
-                        _getAddress(_currentLatLng!);
-                      }
-                    },
                   ),
                 ),
               ),
