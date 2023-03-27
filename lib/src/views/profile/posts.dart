@@ -12,23 +12,13 @@ class Posts extends StatefulWidget {
   State<Posts> createState() => _PostsState();
 }
 
-class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
+class _PostsState extends State<Posts> {
   final PostService postService = PostService();
-  ScrollController controller = ScrollController();
 
   @override
-  bool get wantKeepAlive => true;
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    controller.dispose();
-    super.dispose();
-  }
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     return StreamBuilder<List<Post>>(
-      stream: postService.getPostsByAuthorId(widget.authorID), 
+      stream: postService.getPostsByAuthorId("D749gqawBmeSPhJyx4fylIbUvWJ3"), 
       builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
         if (snapshot.hasError) {
           return const Text('Something went wrong');
@@ -50,7 +40,7 @@ class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
         return RefreshIndicator(
           onRefresh: () async => setState((){}),
           child: ListView(
-            controller: controller,
+            physics: const NeverScrollableScrollPhysics(),
             children: snapshot.data!.map((Post post) {
               return PostComponent(
                 title: post.title,

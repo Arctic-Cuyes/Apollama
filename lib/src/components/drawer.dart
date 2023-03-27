@@ -6,6 +6,7 @@ import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
+import 'package:zona_hub/src/views/activity/activity.dart';
 import 'package:zona_hub/src/views/auth/welcome.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
 
@@ -50,7 +51,7 @@ class DrawerComponent extends StatelessWidget {
                   )
                 ]
               ),
-              Divider(color: Colors.grey, thickness: 1,),
+              const Divider(color: Colors.grey, thickness: 1,),
               //Options
               DrawerOptions()
             ],
@@ -159,7 +160,7 @@ class _DrawerOptionsState extends State<DrawerOptions> {
 
     List<Map<String, dynamic>> options = [
       {'icon': const Icon(Icons.person_2_rounded), 'option': 'Perfil', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
-      {'icon': const Icon(Icons.settings), 'option': 'Configuración', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,) },
+      {'icon': const Icon(Icons.access_time_outlined), 'option': 'Actividad', 'page': Activity() },
       {'icon': const Icon(Icons.bookmark), 'option': 'Guardados', 'page': ProfilePage(usuario: authService.getCurrentUser(), userID: authService.currentUser.uid,)},
       {'icon': const Icon(Icons.logout), 'option': 'Cerrar sesión',},
     ];

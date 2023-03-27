@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zona_hub/src/app.dart';
@@ -7,7 +9,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
 import 'package:zona_hub/src/services/user_service.dart';
-import 'package:zona_hub/src/views/profile/interactions.dart';
 import 'package:zona_hub/src/views/profile/posts.dart';
 
 
@@ -36,8 +37,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     // TODO: implement initState
     super.initState();
     initializeDateFormatting('es');
-    checkIsMyProfile();
-    _tabBarController = TabController(length: 2, vsync: this);
+    Timer(const Duration(milliseconds: 10), () async {await checkIsMyProfile();}); 
+    _tabBarController = TabController(length: 1, vsync: this);
   }
 
   @override
@@ -164,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       }
     );
   }
-
+  final ScrollController nestedScrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -209,12 +210,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           onChanged: (value) {
                             switch(value){
                               case '1':
-                                openEditNameForm();
+                                //Open privacity settings
                                 break;
                             }
                           },
                           items: const [
-                            DropdownMenuItem(value: "1", child: Text("Editar Nombre")),
+                            DropdownMenuItem(value: "1", child: Text("Privacidad")),
                           ],
                           icon: const Icon(Icons.more_vert))
                         : IconButton(
@@ -223,105 +224,123 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                             icon: const Icon(Icons.info)),
                   ],
                 ),
-                body: NestedScrollView(
-                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                // These are the slivers that show up in the "outer" scroll view.
-                  return <Widget>[
-                    
-                      SliverToBoxAdapter(
-                        child: Card(
-                        elevation: 0,
-                        child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                        child: Column(children: [
-                          Flex(
-                              direction: Axis.horizontal,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                //photo, name and email
-                                Column(
-                                  // crossAxisAlignment: CrossAxisAlignment.ce,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: (){
-                                          isMyProfile ? 
-                                              openUpdatePhotoOptions() : 
-                                              openProfilePhoto(snapshot.data!.avatarUrl!);
-                                          },
-                                      child: Stack(children: [
-                                        ClipOval(
-                                          child: Image.network(
-                                            newImage ?? snapshot.data!.avatarUrl!,
-                                            width: 100,
-                                            height: 100,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        isMyProfile
-                                            ? const Positioned(
-                                                bottom: 0,
-                                                left: 0,
-                                                child: Icon(
-                                                  Icons.add_a_photo,
-                                                  size: 20,
-                                                ))
-                                            : const SizedBox.shrink(),
-                                      ]),
-                                    ),
-                  
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      newName ?? snapshot.data!.name,
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    //const SizedBox(height: 10,),
-                                    Text(snapshot.data!
-                                        .email), // El usuario decide si mostrar o no el email
-                                  ],
-                                ),
-                                ]
-                              ),
-                              //Información extra: fecha de creación de perfil, ubicación,
-                              //  UBICACIÓN
-                              const SizedBox(height: 10,),
-                              ExtraInfo(
-                                  icon: const Icon(Icons.my_location),
-                                  text: snapshot.data!.location.toString()),
-                              //FECHA DE REGISTRO
-                              ExtraInfo(
-                                icon: const Icon(Icons.waving_hand_outlined),
-                                text:
-                                    "Se unió el ${DateFormat("d 'de' MMMM 'del' yyyy", 'es').format(DateFormat('dd-MM-yyyy hh:mm:ss').parse(snapshot.data!.createdAt!))}",
-                              ),
-                              //NUMERO DE COMUNIDADES
-                  
-                              Flex(direction: Axis.horizontal, children: const [
-                                ExtraInfo(
-                                    icon: Icon(Icons.public),
-                                    text: "Comunidades 10"),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ExtraInfo(
-                                    icon: Icon(Icons.post_add),
-                                    text: "Publicaciones 1000")
-                              ]),
-                            ]),
-                            ),
-                          ),
-                      ),
-                      /// USER DATA CARD
+                body: RefreshIndicator(
+                  onRefresh: () async => setState((){}),
+                  child: NestedScrollView(
+                    controller: nestedScrollController,
+                    headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                  // These are the slivers that show up in the "outer" scroll view.
+                    return <Widget>[
                       
-                      // ************* Añade una publicación **********
-                      
-                      SliverToBoxAdapter(
-                        child: Offstage(
-                          offstage: !isMyProfile,
+                        SliverToBoxAdapter(
+                          child: Card(
+                          elevation: 0,
                           child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                          child: Column(children: [
+                            Stack(
+                              children: [
+                                Flex(
+                                  direction: Axis.horizontal,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    //photo, name and email
+                                    Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: (){
+                                              isMyProfile ? 
+                                                  openUpdatePhotoOptions() : 
+                                                  openProfilePhoto(snapshot.data!.avatarUrl!);
+                                              },
+                                          child: Stack(children: [
+                                            ClipOval(
+                                              child: Image.network(
+                                                newImage ?? snapshot.data!.avatarUrl!,
+                                                width: 100,
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            isMyProfile
+                                                ? const Positioned(
+                                                    bottom: 0,
+                                                    left: 0,
+                                                    child: Icon(
+                                                      Icons.add_a_photo,
+                                                      size: 20,
+                                                    ))
+                                                : const SizedBox.shrink(),
+                                          ]),
+                                        ),
+                                                      
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          newName ?? snapshot.data!.name,
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        //const SizedBox(height: 10,),
+                                        Text(snapshot.data!
+                                            .email), // El usuario decide si mostrar o no el email
+                                      ],
+                                    ),
+                                    ]
+                                  ),
+                                  Positioned(
+                                    right: 3,
+                                    top: -6,
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                          elevation: MaterialStateProperty.all(0),
+                                          backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                          padding: MaterialStateProperty.all(const EdgeInsets.all(1)),
+                                          overlayColor: MaterialStateProperty.all(Colors.grey[10])
+                                      ),
+                                      onPressed: () => openEditNameForm(),
+                                      child: Row(children: const [ Icon(Icons.edit, ), ]), 
+                                    )
+                                  )
+                              ]
+                            ),
+                                //Información extra: fecha de creación de perfil, ubicación,
+                                //  UBICACIÓN
+                                const SizedBox(height: 10,),
+                                ExtraInfo(
+                                    icon: const Icon(Icons.my_location),
+                                    text: snapshot.data!.location.toString()),
+                                //FECHA DE REGISTRO
+                                ExtraInfo(
+                                  icon: const Icon(Icons.waving_hand_outlined),
+                                  text:
+                                      "Se unió el ${DateFormat("d 'de' MMMM 'del' yyyy", 'es').format(DateFormat('dd-MM-yyyy hh:mm:ss').parse(snapshot.data!.createdAt!))}",
+                                ),
+                                //NUMERO DE COMUNIDADES
+                    
+                                Flex(direction: Axis.horizontal, children: const [
+                                  ExtraInfo(
+                                      icon: Icon(Icons.public),
+                                      text: "Comunidades 10"),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  ExtraInfo(
+                                      icon: Icon(Icons.post_add),
+                                      text: "Publicaciones 1000")
+                                ]),
+                              ]),
+                              ),
+                            ),
+                        ),
+                        /// USER DATA CARD
+                        
+                        // ************* Añade una publicación **********
+                        
+                        SliverToBoxAdapter(
+                          child: isMyProfile ? Padding(
                             padding: const EdgeInsets.fromLTRB(10,0,0,0),
                             child: Row(
                               children: [
@@ -334,68 +353,46 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                 const Text("   Crea una nueva publicación")
                               ],
                             ),
-                          ),
+                          ) : const SizedBox.shrink(),
                         ),
-                      ),
-                   
-                      SliverAppBar(
-                        elevation: 0,
-                        toolbarHeight: 0,
-                        pinned: true,
-                        backgroundColor: MyApp.themeNotifier.value == ThemeMode.dark ? Colors.grey[800] : Colors.white,
-                        bottom: PreferredSize(
-                          preferredSize: const Size.fromHeight(58),
-                          child: TabBar(
-                              controller: _tabBarController,
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              tabs: const [
-                                ListTile(
-                                  horizontalTitleGap: 0,
-                                  minLeadingWidth: 20,
-                                  leading: Icon(
-                                    Icons.fact_check,
-                                    size: 20,
-                                  ),
-                                  contentPadding: EdgeInsets.all(0),
-                                  title: Center(
-                                      child: Text(
-                                    "Mis publicaciones",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  )),
+                     
+                        SliverAppBar(
+                          elevation: 5,
+                          toolbarHeight: 0,
+                          pinned: true,
+                          backgroundColor: MyApp.themeNotifier.value == ThemeMode.dark ? Colors.grey[800] : Colors.white,
+                          bottom:  PreferredSize(
+                            preferredSize: const Size.fromHeight(64),
+                            child: ListTile(
+                              onTap: (){
+                                //Scroll to the top
+                                nestedScrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                              },
+                              horizontalTitleGap: 0,
+                              minLeadingWidth: 20,
+                              leading: const Icon(
+                                Icons.fact_check,
+                                size: 30,
+                              ),
+                              contentPadding: const EdgeInsets.only(left: 8),
+                              title: const Text(
+                                "  Publicaciones",
+                                style: TextStyle(
+                                  fontSize: 18,
                                 ),
-                                ListTile(
-                                  horizontalTitleGap: 0,
-                                  minLeadingWidth: 20,
-                                  leading: Icon(
-                                    Icons.thumb_up,
-                                    size: 20,
-                                  ),
-                                  title: Center(
-                                      child: Text(
-                                    "Me gusta",
-                                    style: TextStyle(fontSize: 14),
-                                  )),
-                                ),
-                              ]),
+                              ),
+                            ),
+                            ),
                           ),
-                        ),
-                  ];
-                
-                  },
-                  body: TabBarView(
-                          controller: _tabBarController,
-                          children: [
-                            Posts(authorID: snapshot.data!.id!),
-                            Interactions(authorID: snapshot.data!.id!),
-                          ],
-                               
-                        ),
+                    ];
+                  
+                    },
+                    body: Posts(authorID: snapshot.data!.id!),
+                  ),
                 ),
               );       
           }else{
-            return const Center(child: CircularProgressIndicator(),);
+            return Container(color: MyApp.themeNotifier.value == ThemeMode.light ? Colors.white : Colors.grey[800] ,child: const Center(child: CircularProgressIndicator(),));
           }
         }
       );
