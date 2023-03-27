@@ -73,7 +73,9 @@ class PostService {
       List<Post> posts = [];
       for (DocumentSnapshot<Post> document in documentList) {
         Post post = await _getPostSettled(document);
+        UserModel currentUser = await authService.getCurrentUser();
         if (await _thisPostMustBeInactive(post)) continue;
+        if (_thisPostIsAlreadyVoted(post, currentUser)) continue;
         posts.add(post);
       }
       return posts;
@@ -205,5 +207,13 @@ class PostService {
     if (post.downVotes!.contains(user.toDocumentReference())) {
       await removeDownVotePost(post.id!);
     }
+  }
+
+  bool _thisPostIsAlreadyVoted(Post post, UserModel user) {
+    if (post.upVotes!.contains(user.toDocumentReference()) ||
+        post.downVotes!.contains(user.toDocumentReference())) {
+      return true;
+    }
+    return false;
   }
 }

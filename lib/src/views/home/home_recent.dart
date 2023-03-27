@@ -21,7 +21,6 @@ class _RecientesState extends State<Recientes> {
   final GpsService gpsService = GpsService();
   @override
   Widget build(BuildContext context) {
-    // postService.upVotePost('Ds4y5VrxxJo6LkXZamxI');
     return RefreshIndicator(
         color: Colors.white,
         onRefresh: () async {
@@ -34,12 +33,11 @@ class _RecientesState extends State<Recientes> {
             // if has data return a stream builder
             if (snapshot.hasData) {
               final Position position = snapshot.data[0] as Position;
-              final UserModel currentUser = snapshot.data[1] as UserModel;
+              // final UserModel currentUser = snapshot.data[1] as UserModel;
               return StreamBuilder<List<Post>>(
                   stream: postService.getPostsAround(
-                      position: position,
-                      currentUser: currentUser,
-                      query: PostQuery.noVoted),
+                    position: position,
+                  ),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Post>> snapshot) {
                     if (snapshot.hasError) {
