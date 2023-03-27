@@ -13,10 +13,14 @@ class Recientes extends StatefulWidget {
   State<Recientes> createState() => _RecientesState();
 }
 
-class _RecientesState extends State<Recientes> {
+class _RecientesState extends State<Recientes> with AutomaticKeepAliveClientMixin {
   final PostService postService = PostService();
   final AuthService authService = AuthService();
   final GpsService gpsService = GpsService();
+  
+  @override
+  bool get wantKeepAlive => true;
+  
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(

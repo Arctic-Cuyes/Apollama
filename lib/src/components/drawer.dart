@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zona_hub/src/app.dart';
+import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
@@ -91,6 +93,7 @@ class _ProfileSummaryState extends State<ProfileSummary> {
         //User image in circle shape
           GestureDetector(
             onTap: (){
+              Navigator.pop(context);
               //Go to profile main page
               Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(usuario: AuthService().getCurrentUser(), userID: AuthService().currentUser.uid,)));
             },
@@ -178,6 +181,7 @@ class _DrawerOptionsState extends State<DrawerOptions> {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => WelcomeView()));
             } else {
+              Navigator.pop(context); // Close drawer
               Navigator.push(
                   context,
                   MaterialPageRoute(

@@ -4,7 +4,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Internet/connectivity_service.dart';
 import 'package:zona_hub/src/views/permissions/permission.dart';
@@ -58,6 +60,8 @@ class _RootState extends State<Root> {
       });
       _requestPermission();
       AuthService().getCurrentUser();
+      //Check user logged shared preferences
+      context.read<FilterProvider>().checkFilterPrefs();
     });
   }
 
