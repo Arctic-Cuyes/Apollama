@@ -3,19 +3,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 
 class FilterProvider extends  ChangeNotifier {
-  final String userId = AuthService().currentUser.uid;
-  late final SharedPreferences _prefs;
+  late String _userId;
+
+  late SharedPreferences _prefs;
   
   List<String> _filters = [];
   List<String> get filters => _filters;
 
-   FilterProvider(){
-    checkFilterPrefs();
-   }
-
    checkFilterPrefs () async {
+    _userId = AuthService().currentUser.uid;
     _prefs = await SharedPreferences.getInstance();
-    _filters = _prefs.getStringList('filters_$userId') ?? [];
+    _filters = _prefs.getStringList('filters_$_userId') ?? [];
     notifyListeners();
    }
 
@@ -26,7 +24,7 @@ class FilterProvider extends  ChangeNotifier {
     } else {
       _filters.add(filter);
     }
-    _prefs.setStringList('filters_$userId', _filters);
+    _prefs.setStringList('filters_$_userId', _filters);
     
     notifyListeners();
   }
