@@ -23,6 +23,7 @@ class _RecientesState extends State<Recientes> with AutomaticKeepAliveClientMixi
   
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return RefreshIndicator(
       color: Colors.white,
       onRefresh: () async {
