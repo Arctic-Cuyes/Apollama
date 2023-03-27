@@ -33,14 +33,10 @@ class _NewPostFormState extends State<NewPostForm> {
   final _endDateController = TextEditingController();
 
   bool _manyDays = false;
-  Map _fakeLocation = {
-    "geohash": "6nxcc",
-    "geopoint": const LatLng(-8.108805, -79.028402),
-  };
+  Map _currentAddress = {"place_id": "", "description": ""};
 
   @override
   void initState() {
-    _addressController.text = "Ejemplo";
     super.initState();
   }
 
@@ -104,10 +100,30 @@ class _NewPostFormState extends State<NewPostForm> {
     }
   }
 
-  void _goToAddressAutoCompletePage() {
-    Navigator.of(context).push(
+  Future<Map<String, String>> _goToAddressAutoCompletePage() async {
+    final Map<String, String> addressMap = await Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => AddressAutocompletePage()));
+    return addressMap;
   }
+
+  void _submit() async {
+    debugPrint('Formulario válido');
+    debugPrint("Title: ${_titleController.text}");
+    debugPrint("Desc: ${_descriptionController.text}");
+    debugPrint("Address place_id: ${_currentAddress["place_id"]}");
+    debugPrint("Address description: ${_currentAddress["description"]}");
+    debugPrint("Address : ${_addressController.text}");
+    debugPrint("Address geohash: ${null}");
+    debugPrint("Address geopoint: ${null}");
+    debugPrint(
+        "Begin Date: ${_endDateController.text.isEmpty ? null : _beginDateController.text}");
+    debugPrint(
+        "End Date: ${_endDateController.text.isEmpty ? _beginDateController.text : _endDateController.text}");
+    debugPrint(_selectedChips.toString());
+    debugPrint("Imagen  $_currentImageFile?.path");
+  }
+
+  void getGeopointFromAddress() {}
 
   @override
   Widget build(BuildContext context) {
@@ -125,10 +141,13 @@ class _NewPostFormState extends State<NewPostForm> {
                 controller: _titleController,
                 maxLength: 40,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                decoration: const InputDecoration(
-                    icon: Icon(Icons.title),
+                decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.title),
                     labelText: 'Título',
-                    hintText: "Resumen del tema"),
+                    hintText: "Resumen del tema",
+                    suffixIcon: IconButton(
+                        onPressed: () => _titleController.clear(),
+                        icon: const Icon(Icons.clear))),
                 validator: _validateTextField,
               ),
               TextFormField(
@@ -138,7 +157,7 @@ class _NewPostFormState extends State<NewPostForm> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: _descriptionController,
                 decoration: const InputDecoration(
-                    icon: Icon(Icons.edit),
+                    prefixIcon: Icon(Icons.edit),
                     labelText: 'Descripción',
                     hintText: "Detalles sobre el tema"),
                 validator: _validateTextField,
@@ -150,12 +169,22 @@ class _NewPostFormState extends State<NewPostForm> {
                     controller: _addressController,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: const InputDecoration(
-                      icon: Icon(Icons.location_pin),
+                      prefixIcon: Icon(Icons.location_pin),
                       labelText: 'Dirección',
                     ),
-                    readOnly: !true,
+                    readOnly: true,
                     validator: _validateTextField,
-                    onTap: () => _goToAddressAutoCompletePage(),
+                    onTap: () async {
+                      Map<String, String> value =
+                          await _goToAddressAutoCompletePage();
+                      if (value["place_id"]!.isNotEmpty) {
+                        _currentAddress = value;
+                        setState(() {
+                          _addressController.text =
+                              _currentAddress["description"]!;
+                        });
+                      }
+                    },
                   ),
                 ),
               ),
@@ -182,30 +211,39 @@ class _NewPostFormState extends State<NewPostForm> {
                   )
                 ],
               ),
-              Column(
+              Row(
                 children: [
-                  TextFormField(
-                      controller: _beginDateController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today_rounded, size: 16),
-                        labelText: 'Inicio',
-                      ),
-                      validator: _validateTextField,
-                      readOnly: true,
-                      onTap: () => _datePickerOnTap(_beginDateController)),
-                  Visibility(
-                    visible: _manyDays,
+                  Expanded(
+                    flex: 10,
                     child: TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      controller: _endDateController,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today_rounded, size: 16),
-                        labelText: 'Fin',
+                        controller: _beginDateController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: const InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.calendar_today_rounded, size: 16),
+                          labelText: 'Inicio',
+                        ),
+                        validator: _validateTextField,
+                        readOnly: true,
+                        onTap: () => _datePickerOnTap(_beginDateController)),
+                  ),
+                  const Spacer(flex: 1),
+                  Expanded(
+                    flex: 10,
+                    child: Visibility(
+                      visible: _manyDays,
+                      child: TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _endDateController,
+                        decoration: const InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.calendar_today_rounded, size: 16),
+                          labelText: 'Fin',
+                        ),
+                        validator: _validateEndDateField,
+                        readOnly: true,
+                        onTap: () => _datePickerOnTap(_endDateController),
                       ),
-                      validator: _validateEndDateField,
-                      readOnly: true,
-                      onTap: () => _datePickerOnTap(_endDateController),
                     ),
                   )
                 ],
@@ -239,16 +277,14 @@ class _NewPostFormState extends State<NewPostForm> {
                     backgroundColor: Colors.amber,
                   ),
                   onPressed: () {
-                    setState(() {
-                      _errorOnChips = _selectedChips.isEmpty;
-                      _errorOnDates = !_areDatesCoherent();
-                    });
-                    if (_formKey.currentState!.validate() &&
-                        !_errorOnChips &&
-                        !_errorOnDates) {
-                      debugPrint(_selectedChips.toString());
-                      debugPrint('Formulario válido');
-                      debugPrint("Imagen  $_currentImageFile?.path");
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        _errorOnChips = _selectedChips.isEmpty;
+                        _errorOnDates = !_areDatesCoherent();
+                      });
+                      if (!_errorOnChips && !_errorOnDates) {
+                        _submit();
+                      }
                     }
                   },
                   child: const Text('Enviar'),
