@@ -47,6 +47,7 @@ class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
             physics: const NeverScrollableScrollPhysics(),
             children: snapshot.data!.map((Post post) {
               return PostComponent(
+                title: post.title,
                 userID: post.authorData!.id!,
                 postText: post.description,
                 imageUrl: post.imageUrl,

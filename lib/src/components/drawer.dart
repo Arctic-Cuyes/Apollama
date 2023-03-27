@@ -5,6 +5,7 @@ import 'package:zona_hub/src/app.dart';
 import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_methods.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
+import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/views/auth/welcome.dart';
 import 'package:zona_hub/src/views/profile/profile.dart';
 
@@ -26,15 +27,15 @@ class DrawerComponent extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(15, 4, 15, 0),
           child: Column(
             children: [
-              // Profile summary and dark mode icon
-              Flex(
-                  direction: Axis.horizontal,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const ProfileSummary(),
-                    //Theme mode icon
-                    IconButton(
+              Stack(
+                children: [
+                  ProfileSummary(),
+                  //Theme mode icon
+                  Positioned(
+                    top: 10,
+                    right: 0,
+
+                    child: IconButton(
                       onPressed: () {
                         MyApp.themeNotifier.value =
                             (MyApp.themeNotifier.value == ThemeMode.light)
@@ -46,11 +47,12 @@ class DrawerComponent extends StatelessWidget {
                           : Icons.dark_mode
                       ),
                     ),
-                  ]
-                ),
-                const Divider(color: Colors.grey, thickness: 1,),
-                //Options
-                DrawerOptions()
+                  )
+                ]
+              ),
+              Divider(color: Colors.grey, thickness: 1,),
+              //Options
+              DrawerOptions()
             ],
           ),
         ),
@@ -69,50 +71,76 @@ class ProfileSummary extends StatefulWidget {
 class _ProfileSummaryState extends State<ProfileSummary> { 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.symmetric(
+        vertical: 15,
+        // horizontal: 10,
+      ),
+      width: double.infinity,
+      // decoration: BoxDecoration(
+      //   border: Border.all(
+      //     color: GlobalColors.mainColor,
+      //     width: 3,
+      //   ),
+      //   color: GlobalColors.mainColor.withOpacity(0.4),
+      //   borderRadius: BorderRadius.circular(10),
+      // ),
       child: Flex(
         direction: Axis.vertical, 
         crossAxisAlignment: CrossAxisAlignment.center, 
         children: [
         //User image in circle shape
-        GestureDetector(
-          onTap: (){
-            //Close drawer
-             Navigator.pop(context);
-            //Go to profile main page
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(usuario: AuthService().getCurrentUser(), userID: AuthService().currentUser.uid,)));
-          },
-          child: Container(
-              width: 80,
-              height: 80,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-              ),
-              child: ClipOval(
-                  child: Image.network(
-                  AuthService().currentUser.photoURL!,
-                  // "https://scontent.ftru2-1.fna.fbcdn.net/v/t1.6435-9/95334288_2379795025645267_8549237212774924288_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=09cbfe&_nc_eui2=AeH9Yr7NO0GvGYzZs4nmNUaSZpnloegd8HxmmeWh6B3wfKr5TlDQPR9eKDnXfgpi5nnGivH-coVchBzoiU5ttBkW&_nc_ohc=GftqGLKnLkgAX88Bvus&_nc_ht=scontent.ftru2-1.fna&oh=00_AfCSUbFMJOIjD01Ka0lVGCeLnq9rj-pTgK6wxnK6mcrAiQ&oe=64433515",
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
+          GestureDetector(
+            onTap: (){
+              Navigator.pop(context);
+              //Go to profile main page
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(usuario: AuthService().getCurrentUser(), userID: AuthService().currentUser.uid,)));
+            },
+            child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: GlobalColors.mainColor,
+                    width: 3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                    child: Image.network(
+                    AuthService().currentUser.photoURL!,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
                 )
-              )
-          ),
-        ),
-        //User name
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: Text(
-            AuthService().currentUser.displayName ?? "User",
-            textAlign: TextAlign.center, 
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-        Text(AuthService().currentUser.email!),
-      ]),
+          //User name
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Text(
+              AuthService().currentUser.displayName ?? "User",
+              textAlign: TextAlign.center, 
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Text(AuthService().currentUser.email!),
+        ]
+      ),
+
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Internet/connectivity_service.dart';
 import 'package:zona_hub/src/views/permissions/permission.dart';
+import 'package:zona_hub/src/views/profile/profile.dart';
 import 'home/home.dart';
 import 'map/map.dart';
 import 'notifications/notifications.dart';
@@ -64,6 +65,8 @@ class _RootState extends State<Root> {
     });
   }
 
+  
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -73,20 +76,40 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
+    // print(AuthService().currentUser.photoURL!,);
     return Scaffold(
       //Sidebar
       //Ingonar la recomendación de hacer constante el componente ya que contiene elementos que van a cambiar
       drawer: Drawer(child: DrawerComponent()),
       appBar: AppBar(
+        
+        backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text("Zona Hub"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              //Search logic
-            },
-          )
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            child: GestureDetector(
+              onTap: () => {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => 
+                    ProfilePage(usuario: 
+                      AuthService().getCurrentUser(), 
+                      userID: AuthService().currentUser.uid,
+                    )
+                  )
+                )
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                  child: Image.network(
+                  AuthService().currentUser.photoURL!,
+                ),
+              ),
+            )
+            
+            
+          ),
         ],
       ),
       body: pages[currentPage],

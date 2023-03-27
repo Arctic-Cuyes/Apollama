@@ -47,6 +47,7 @@ class _InteractionsState extends State<Interactions> with AutomaticKeepAliveClie
             physics: const NeverScrollableScrollPhysics(),
             children: snapshot.data!.map((Post post) {
               return PostComponent(
+                title: post.title,
                 userID: post.authorData!.id!,
                 postText: post.description,
                 imageUrl: post.imageUrl,
