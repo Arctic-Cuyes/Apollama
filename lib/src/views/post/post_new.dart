@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:zona_hub/src/views/post/address_autocomplete.dart';
+import 'package:zona_hub/src/services/reverse_geocode_service.dart';
+import 'package:zona_hub/src/views/post/select_location.dart';
 
 final List<String> _chips = [
   'Animales',
@@ -33,7 +34,11 @@ class _NewPostFormState extends State<NewPostForm> {
   final _endDateController = TextEditingController();
 
   bool _manyDays = false;
-  Map _currentAddress = {"place_id": "", "description": ""};
+  LatLng? _currentLatLng;
+  AddressDetail? addressDetail;
+  bool _errorOnChips = false;
+  bool _errorOnDates = false;
+  bool _warningOnAddress = false;
 
   @override
   void initState() {
@@ -49,9 +54,6 @@ class _NewPostFormState extends State<NewPostForm> {
     _endDateController.dispose();
     super.dispose();
   }
-
-  bool _errorOnChips = false;
-  bool _errorOnDates = false;
 
   String? _validateTextField(String? value) {
     if (value == null || value.isEmpty) {
@@ -100,27 +102,38 @@ class _NewPostFormState extends State<NewPostForm> {
     }
   }
 
-  Future<Map<String, String>> _goToAddressAutoCompletePage() async {
-    final Map<String, String> addressMap = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddressAutocompletePage()));
-    return addressMap;
+  Future<LatLng?> _goToSelectLocationPage() async {
+    final LatLng? locationOnMap = await Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const SelectLocationWidget()));
+    return locationOnMap;
+  }
+
+  void _getAddress(LatLng location) async {
+    addressDetail = await getHumanReadableAddress(location);
+    if (addressDetail != null) {
+      setState(() {
+        if (addressDetail!.address.isNotEmpty) {
+          _addressController.text = addressDetail!.address;
+        } else {
+          _addressController.text = addressDetail!.city;
+        }
+      });
+    }
   }
 
   void _submit() async {
     debugPrint('Formulario válido');
     debugPrint("Title: ${_titleController.text}");
     debugPrint("Desc: ${_descriptionController.text}");
-    debugPrint("Address place_id: ${_currentAddress["place_id"]}");
-    debugPrint("Address description: ${_currentAddress["description"]}");
     debugPrint("Address : ${_addressController.text}");
     debugPrint("Address geohash: ${null}");
-    debugPrint("Address geopoint: ${null}");
+    debugPrint("Address geopoint: ${_currentLatLng.toString()}");
     debugPrint(
         "Begin Date: ${_endDateController.text.isEmpty ? null : _beginDateController.text}");
     debugPrint(
         "End Date: ${_endDateController.text.isEmpty ? _beginDateController.text : _endDateController.text}");
     debugPrint(_selectedChips.toString());
-    debugPrint("Imagen  $_currentImageFile?.path");
+    debugPrint("Imagen  ${_currentImageFile?.path}");
   }
 
   void getGeopointFromAddress() {}
@@ -139,7 +152,7 @@ class _NewPostFormState extends State<NewPostForm> {
             children: [
               TextFormField(
                 controller: _titleController,
-                maxLength: 40,
+                maxLength: 50,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.title),
@@ -151,7 +164,7 @@ class _NewPostFormState extends State<NewPostForm> {
                 validator: _validateTextField,
               ),
               TextFormField(
-                maxLength: 100,
+                maxLength: 200,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -167,6 +180,8 @@ class _NewPostFormState extends State<NewPostForm> {
                 child: Material(
                   child: TextFormField(
                     controller: _addressController,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.location_pin),
@@ -175,14 +190,11 @@ class _NewPostFormState extends State<NewPostForm> {
                     readOnly: true,
                     validator: _validateTextField,
                     onTap: () async {
-                      Map<String, String> value =
-                          await _goToAddressAutoCompletePage();
-                      if (value["place_id"]!.isNotEmpty) {
-                        _currentAddress = value;
-                        setState(() {
-                          _addressController.text =
-                              _currentAddress["description"]!;
-                        });
+                      LatLng? value = await _goToSelectLocationPage();
+                      debugPrint("LatLng obtenido: $value");
+                      if (value != null) {
+                        _currentLatLng = value;
+                        _getAddress(_currentLatLng!);
                       }
                     },
                   ),
