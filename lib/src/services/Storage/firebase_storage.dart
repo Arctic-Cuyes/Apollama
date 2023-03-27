@@ -20,7 +20,7 @@ class Storage {
     XFile? file = await imagePicker.pickImage(source: source);
     if (file != null){
       Reference referenceDirImages = firebaseStorage.child('profile_images'); 
-      Reference referenceFile = referenceDirImages.child(file.name);
+      Reference referenceFile = referenceDirImages.child(firebaseAuth.currentUser!.uid);
     //Upload file
       try {
         await referenceFile.putFile(File(file.path));  
