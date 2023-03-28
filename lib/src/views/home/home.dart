@@ -98,8 +98,8 @@ class HomeTab extends StatelessWidget {
                 ];
                 return BackdropFilter(
                   filter: ImageFilter.blur(
-                    sigmaX: 20,
-                    sigmaY: 20
+                    sigmaX: 50,
+                    sigmaY: 50
                   ),
                   child: SizedBox(
                     width: double.infinity,
