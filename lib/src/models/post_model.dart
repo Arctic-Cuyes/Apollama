@@ -37,7 +37,7 @@ class Post {
           description: json['description'] as String? ?? '',
           location: GeoData.fromJson(json['location'] as Map<String, dynamic>),
           address: json['address'] as String?,
-          createdAt: json['createdAt'] as DateTime?,
+          createdAt: json['createdAt'].toDate() as DateTime?,
           imageUrl: json['imageUrl'] as String? ?? '',
           ups: json['ups'] as int? ?? 0,
           downs: json['downs'] as int? ?? 0,
