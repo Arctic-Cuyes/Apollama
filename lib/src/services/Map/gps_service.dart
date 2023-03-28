@@ -11,7 +11,7 @@ class GpsService {
     late Position? currentPos;
     try {
       currentPos = await Geolocator.getCurrentPosition();
-    } on LocationServiceDisabledException catch (ex) {
+    } catch (ex) {
       debugPrint(ex.toString());
       currentPos = null;
     }
