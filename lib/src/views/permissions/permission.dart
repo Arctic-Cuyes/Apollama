@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/views/permissions/permission_controller.dart';
 import 'package:zona_hub/src/views/root.dart';
 
@@ -136,7 +137,7 @@ class _CancelarButtonWidget extends StatelessWidget {
     return OutlinedButton(
         onPressed: () => Navigator.pop(context),
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.amber),
+          side: const BorderSide(color: Colors.blue),
           foregroundColor: Colors.black,
         ),
         child: Text(
@@ -159,13 +160,10 @@ class _ConfiguracionButtonWidget extends StatelessWidget {
         _fromSettings = await openAppSettings();
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.amber,
+        // backgroundColor: Colors.amber,
         padding: const EdgeInsets.symmetric(horizontal: 15),
       ),
-      child: const Text(
-        "Ir a configuraciones",
-        style: TextStyle(color: Colors.black),
-      ),
+      child: const Text("Ir a configuraciones"),
     );
   }
 }
@@ -182,9 +180,9 @@ class RequirePageWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.share_location_sharp,
-              color: Colors.amber.shade600,
+              color: Colors.blue,
               size: 64.0,
             ),
             const SizedBox(
@@ -192,7 +190,10 @@ class RequirePageWidget extends StatelessWidget {
             ),
             const Text(
               "Acceso a ubicación",
-              style: TextStyle(fontSize: 30),
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.blue,
+                  fontWeight: FontWeight.w500),
             ),
             const SizedBox(
               height: 20,
@@ -208,14 +209,11 @@ class RequirePageWidget extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _controller.request(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
+                // backgroundColor: Colors.amber,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
-              child: const Text(
-                "Permitir",
-                style: TextStyle(color: Colors.black, fontSize: 16),
-              ),
+              child: const Text("Permitir"),
             ),
           ],
         ),
