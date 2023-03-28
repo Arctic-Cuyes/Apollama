@@ -99,8 +99,7 @@ class _NewPostFormState extends State<NewPostForm> {
         confirmText: "Confirmar",
         context: context,
         initialDate: DateTime.now(),
-        firstDate:
-            DateTime.now().subtract(const Duration(days: 5)), //DateTime.now()
+        firstDate: DateTime.now(), //DateTime.now()
         lastDate: DateTime(2050));
 
     if (pickedDate != null) {
@@ -149,8 +148,11 @@ class _NewPostFormState extends State<NewPostForm> {
         useRootNavigator: true,
         barrierDismissible: false,
         builder: (_) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         });
   }
@@ -161,22 +163,55 @@ class _NewPostFormState extends State<NewPostForm> {
         useRootNavigator: true,
         barrierDismissible: false,
         builder: (_) {
-          return AlertDialog(
-              title: const Text("Publicado con éxito"),
-              content: const Icon(Icons.check, color: Colors.green, size: 64),
-              actionsPadding: const EdgeInsets.only(right: 20, bottom: 15),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5)),
+                child: Container(
+                  height: 210,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: const Icon(
+                            Icons.check_circle_outline_rounded,
+                            color: Colors.green,
+                            size: 80,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              const Text("¡Publicado exitosamente!",
+                                  style: TextStyle(fontSize: 18)),
+                              const SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15),
+                                ),
+                                child: const Text("Ok"),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const Text("Aceptar"),
-                )
-              ]);
+                )),
+          );
         });
   }
 
