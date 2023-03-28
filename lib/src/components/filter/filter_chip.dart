@@ -23,18 +23,20 @@ class _FilterBoxState extends State<FilterChipComponent> {
   Widget build(BuildContext context) {
     final fp = context.watch<FilterProvider>();
     return SizedBox(
-      height: 108,
-      width: 108,
+      height: 128,
+      width: 120,
       child: Column(
         children: [
           FilterChip(
+            avatar: CircleAvatar(backgroundColor: widget.selectedColor, child: Image.asset(widget.markerIconPath)),
+            checkmarkColor: Colors.white,
             backgroundColor: Colors.grey[500],
             selectedColor: widget.selectedColor,
             selected: fp.filters.contains(widget.label) ,
             label: Text(widget.label, style: const TextStyle(color: Colors.white),), 
             onSelected: (bool selected) { fp.toggleFilter(widget.label); },
           ),
-          Image.asset(widget.markerIconPath, width: 64, height: 64,),
+          Image.asset(widget.markerIconPath, width: 80, height: 80,),
         ],
       ),
     );
