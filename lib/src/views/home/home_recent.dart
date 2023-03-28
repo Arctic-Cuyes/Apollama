@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
@@ -37,7 +38,9 @@ class _RecientesState extends State<Recientes>
             if (snapshot.hasData) {
               return StreamBuilder<List<Post>>(
                   stream: postService.getPostsAround(
-                      position: snapshot.data as Position),
+                      position: snapshot.data as Position,
+                      // tags: <Tag>[Tag(name: 'eventos')],
+                  ),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Post>> snapshot) {
                     if (snapshot.hasError) {
