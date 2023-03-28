@@ -2,6 +2,7 @@
     package="com.example.zona_hub">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
    <application
         android:label="Zona Hub"
         android:name="${applicationName}"
