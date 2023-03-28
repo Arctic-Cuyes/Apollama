@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/custom_filter_images.dart';
+import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
 
 class HomePage extends StatefulWidget {
@@ -89,13 +90,6 @@ class HomeTab extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 context: context,
                 builder: (_){
-                final List<Map<String, dynamic>> tags = [
-                  {'tag': 'Animales', 'asset': CustomFilterIcon.pet, 'selectedColor': Colors.brown}, 
-                  {'tag': 'Ayuda', 'asset': CustomFilterIcon.ayuda, 'selectedColor': Colors.pink},
-                  {'tag': 'Avisos', 'asset': CustomFilterIcon.aviso, 'selectedColor': Colors.red}, 
-                  {'tag': 'Eventos', 'asset': CustomFilterIcon.evento, 'selectedColor': Colors.orange}, 
-                  {'tag': 'Salud', 'asset': CustomFilterIcon.salud, 'selectedColor': Colors.blue},
-                ];
                 return BackdropFilter(
                   filter: ImageFilter.blur(
                     sigmaX: 50,
@@ -127,7 +121,7 @@ class HomeTab extends StatelessWidget {
                           direction: Axis.horizontal,
                           spacing: 4,
                           children: [
-                            for (var filter in tags)
+                            for (var filter in TagsList().tags)
                               FilterChipComponent(
                                 label: filter['tag'],
                                 markerIconPath: filter['asset'],
