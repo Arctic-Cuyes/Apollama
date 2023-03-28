@@ -315,7 +315,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                     ),
                                     ]
                                   ),
-                                  Positioned(
+                                  isMyProfile ? Positioned(
                                     right: 3,
                                     top: -6,
                                     child: ElevatedButton(
@@ -335,7 +335,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                         ]
                                       ), 
                                     )
-                                  )
+                                  ) : const SizedBox.shrink(),
                               ]
                             ),
                                 //Información extra: fecha de creación de perfil, ubicación,
