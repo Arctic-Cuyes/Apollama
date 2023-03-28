@@ -126,9 +126,22 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       
       builder: (_){
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(12),
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Nuevo nombre de usuario", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                    IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.cancel_rounded,
+                          size: 40,
+                        )
+                    ),
+                  ],
+                ),
               Form(
                   key: _formKey,
                   child: TextFormField(
@@ -149,16 +162,26 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   },
                   ),
                 ),
-                const SizedBox(height: 15,),
-                ElevatedButton(onPressed: (){
-                  if(_formKey.currentState?.validate() == true){
-                    UserService().updateUserName(nameController.text.trim());
-                    Navigator.pop(context);
-                    setState(() {
-                      newName = nameController.text.trim();
-                    });
-                  }
-                }, child: const Text("Actualizar"))
+                const SizedBox(height: 65,),
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Aceptar editar
+                    ElevatedButton(
+                      onPressed: (){
+                        if(_formKey.currentState?.validate() == true){
+                          UserService().updateUserName(nameController.text.trim());
+                          Navigator.pop(context);
+                          setState(() {
+                            newName = nameController.text.trim();
+                          });
+                        }
+                    }, 
+                    child: const Text("Actualizar"),
+                    ),
+                  ]
+                )
             ],
           ),
         );
@@ -298,10 +321,17 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                           elevation: MaterialStateProperty.all(0),
                                           backgroundColor: MaterialStateProperty.all(Colors.transparent),
                                           padding: MaterialStateProperty.all(const EdgeInsets.all(1)),
-                                          overlayColor: MaterialStateProperty.all(Colors.grey[10])
+                                          overlayColor: MaterialStateProperty.all(Colors.grey[10]),
                                       ),
                                       onPressed: () => openEditNameForm(),
-                                      child: Row(children: const [ Icon(Icons.edit, ), ]), 
+                                      child: Row(
+                                        children: [ 
+                                          Icon(
+                                            Icons.edit, 
+                                            color: MyApp.themeNotifier.value == ThemeMode.dark ? Colors.white : Colors.black,
+                                          ),
+                                        ]
+                                      ), 
                                     )
                                   )
                               ]

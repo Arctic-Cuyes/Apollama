@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
 
-const Color mainColorDark = Colors.amber;
+const Color mainColorDark = Colors.grey;
 
-const MaterialColor mainColorLight = Colors.amber;
+const MaterialColor mainColorLight = Colors.blue;
 
 ThemeData customDarkTheme() {
   return ThemeData.dark().copyWith(
@@ -37,6 +37,10 @@ ThemeData customDarkTheme() {
 
 ThemeData customLightTheme() {
   return ThemeData(primarySwatch: mainColorLight).copyWith(
+    appBarTheme: const AppBarTheme (
+      iconTheme: IconThemeData(color: Colors.black),
+      titleTextStyle: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+    ),
     tabBarTheme: TabBarTheme(
       unselectedLabelColor: Colors.grey,
       labelColor: GlobalColors.blackColor,
