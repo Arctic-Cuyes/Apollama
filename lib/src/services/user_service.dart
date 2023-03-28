@@ -34,16 +34,18 @@ class UserService {
 
   //Update only user name
   Future<void> updateUserName(String newName) async {
-      User currentUser = AuthService().currentUser;
-      await currentUser.updateDisplayName(newName);
-      await usersRef.doc(currentUser.uid).update({'name': newName});
-   }
+    User currentUser = AuthService().currentUser;
+    await currentUser.updateDisplayName(newName);
+    await usersRef.doc(currentUser.uid).update({'name': newName});
+  }
+
   //Update only userAvatar
   Future<void> updateUserAvatar(String avatarURL) async {
-      User currentUser = AuthService().currentUser;
-      await currentUser.updatePhotoURL(avatarURL);
-      await usersRef.doc(currentUser.uid).update({'avatarUrl': avatarURL});
-   }
+    User currentUser = AuthService().currentUser;
+    await currentUser.updatePhotoURL(avatarURL);
+    await usersRef.doc(currentUser.uid).update({'avatarUrl': avatarURL});
+  }
+
 
   // delete user
   Future<void> deleteUser(String id) async {
@@ -63,12 +65,49 @@ class UserService {
     return userSnapshot.data() != null ? true : false;
   }
 
-   // get user's reacted posts by user id
+  // up vote post
+  Future<void> upVotePost(UserModel user, Post post) async {
+    // add post to user's upvoted posts
+    user.upPosts?.add(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'upPosts': user.upPosts,
+    });
+  }
+
+  // remove upvote from post
+  Future<void> removeUpVotePost(UserModel user, Post post) async {
+    // remove post from user's upvoted posts
+    user.upPosts?.remove(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'upPosts': user.upPosts,
+    });
+  }
+
+  // down vote post
+  Future<void> downVotePost(UserModel user, Post post) async {
+    // add post to user's downvoted posts
+    user.downPosts?.add(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'downPosts': user.downPosts,
+    });
+  }
+
+  // remove downvote from post
+  Future<void> removeDownVotePost(UserModel user, Post post) async {
+    // remove post from user's downvoted posts
+    user.downPosts?.remove(post.toDocumentReference());
+    // update user
+    await usersRef.doc(user.id).update({
+      'downPosts': user.downPosts,
+    });
+  }
+
+  // get user's reacted posts by user id
   Stream<List<Post>> getUserReactedPosts(String userId) {
-    return usersRef
-        .doc(userId)
-        .snapshots()
-        .asyncMap((snapshot) async {
+    return usersRef.doc(userId).snapshots().asyncMap((snapshot) async {
       UserModel user = snapshot.data() as UserModel;
       List<Post> posts = await Future.wait(user.upPosts!.map((postRef) async {
         DocumentSnapshot postSnapshot = await postRef.get();

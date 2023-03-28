@@ -12,6 +12,7 @@ class AuthService {
     return userModel;
   }
 
+
   Future<bool> isThisUserTheCurrentUser(String userId) async {
     final user = await getCurrentUser();
     return user.id == userId;

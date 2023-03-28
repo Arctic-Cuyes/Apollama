@@ -43,12 +43,7 @@ class _PostsState extends State<Posts> {
             physics: const NeverScrollableScrollPhysics(),
             children: snapshot.data!.map((Post post) {
               return PostComponent(
-                title: post.title,
-                userID: post.authorData!.id!,
-                postText: post.description,
-                imageUrl: post.imageUrl,
-                userphoto: newImage ?? post.authorData!.avatarUrl!,
-                username: newName ?? post.authorData!.name,
+                post: post
               );
             }).toList(),
           ),

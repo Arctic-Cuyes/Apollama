@@ -25,14 +25,20 @@ class UserModel {
       age: json['age'] as int?,
       location: json['location'] as Map<String, dynamic>?,
       upPosts: (json['upPosts'] as List<dynamic>?)
-          ?.map((ref) => JsonDocumentReference(ref.path).toDocumentReference())
-          .toList(),
+              ?.map((ref) =>
+                  JsonDocumentReference(ref.path).toDocumentReference())
+              .toList() ??
+          [],
       downPosts: (json['downPosts'] as List<dynamic>?)
-          ?.map((ref) => JsonDocumentReference(ref.path).toDocumentReference())
-          .toList(),
+              ?.map((ref) =>
+                  JsonDocumentReference(ref.path).toDocumentReference())
+              .toList() ??
+          [],
       communities: (json['communities'] as List<dynamic>?)
-          ?.map((ref) => JsonDocumentReference(ref.path).toDocumentReference())
-          .toList(),
+              ?.map((ref) =>
+                  JsonDocumentReference(ref.path).toDocumentReference())
+              .toList() ??
+          [],
       createdAt: json['createdAt'] as String?,
     );
   }
@@ -43,8 +49,8 @@ class UserModel {
   final String? avatarUrl;
   final int? age;
   final Map<String, dynamic>? location;
-  final List<DocumentReference<Map<String, dynamic>>>? upPosts;
-  final List<DocumentReference<Map<String, dynamic>>>? downPosts;
+  late List<DocumentReference<Map<String, dynamic>>>? upPosts;
+  late List<DocumentReference<Map<String, dynamic>>>? downPosts;
   final List<DocumentReference<Map<String, dynamic>>>? communities;
   final String? createdAt;
 
