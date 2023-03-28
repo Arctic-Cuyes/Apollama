@@ -29,4 +29,12 @@ class TagsList {
       'selectedColor': Colors.blue
     },
   ];
+
+  Map<String, dynamic> getTag(String tag) {
+    // if not found, return the first tag
+    return tags.firstWhere((element) => element['tag'].toLowerCase() == tag, orElse: () => tags[0]);
+  }
+
+
+
 }

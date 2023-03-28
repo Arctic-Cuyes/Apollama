@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:zona_hub/src/components/post/tagsComponent.dart';
 import 'package:zona_hub/src/constants/images.dart';
+import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
@@ -129,7 +131,16 @@ class _PostComponentState extends State<PostComponent> {
                     fontWeight: FontWeight.bold,
                   )
                 ),
-                const SizedBox(height: 5),
+                Row(
+
+                  children: [
+                    for (var tag in widget.post.tagsData!) ...[
+                      TagsComponent(tagStyle: TagsList().getTag(tag.name)),
+                      const SizedBox(width: 5)
+                    ]
+                  ]
+                    
+                ),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 6,
@@ -151,7 +162,7 @@ class _PostComponentState extends State<PostComponent> {
             ),
           ),
           
-          if (widget.post.imageUrl != null) ...[
+          if (widget.post.imageUrl == "a") ...[
             const Divider(
               color: Colors.transparent,
             ),
@@ -183,7 +194,9 @@ class _PostComponentState extends State<PostComponent> {
 
               ] else ... [
                 IconButton(
-                  icon: const Icon(Icons.thumb_up_alt_outlined),
+                  icon: const Icon(
+                    Iconsax.like_1
+                  ),
                   onPressed: addLike,
                 ),
               ],
