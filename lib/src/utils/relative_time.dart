@@ -11,14 +11,15 @@ class RelativeTime {
     if (difference.inDays == 1) {
       return 'Ayer';
     }
+    
     if (difference.inDays >= 1) {
-      return 'hace ${difference.inDays} días';
+      return 'Hace ${difference.inDays} días';
     }
     
-    if (difference.inHours > 1) {
+    if (difference.inHours >= 1) {
       return 'Hace ${difference.inHours} hora${(difference.inHours > 1 ? "s" : "")}';
     }
-    if (difference.inMinutes > 1) {
+    if (difference.inMinutes >= 1) {
       return 'Hace ${difference.inMinutes} minuto${(difference.inMinutes > 1 ? "s" : "")}';
     }
     return 'Hace un momento';

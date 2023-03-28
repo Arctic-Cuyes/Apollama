@@ -61,6 +61,7 @@ dependencies:
 
   flutter_flushbar: ^0.0.2
   dart_geohash: ^2.0.2
+  iconsax: ^0.0.8
   
 dependency_overrides:
   flutter_lints: ^2.0.1 #modificado

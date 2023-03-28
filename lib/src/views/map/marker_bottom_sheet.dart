@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/post/post.dart';
+import 'package:zona_hub/src/models/geo/geo_data.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 
 class _MarkerBottomModal extends StatelessWidget {
@@ -19,14 +21,19 @@ class _MarkerBottomModal extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(bottom: 5, left: 8, right: 8),
           child: PostComponent(
-            title:"hola",
-            userID: "JlZxZOy4WNkTU8jni4FN", //Para probar
-            userphoto:
-                "https://i.pinimg.com/564x/3b/cd/8c/3bcd8c2ae805e65d52cd07c1c396dc8a.jpg",
-            username: marker.title,
-            imageUrl:
-                "https://www.hogarmania.com/archivos/201910/mascota-perdida-XxXx80.jpg",
-            postText: marker.address ?? "No address",
+            post: Post(
+              title: "title", 
+              description: "description", 
+              location: GeoData(
+                geohash: "geohash", 
+                geopoint: GeoPoint(0, 0)
+              ), 
+              imageUrl: null, 
+              endDate: DateTime.now(),
+              createdAt: DateTime.now(),
+              ups: 5,
+              downs: 6
+            ),
           ),
         ),
       ),
