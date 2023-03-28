@@ -58,6 +58,7 @@ dependencies:
   firebase_storage: ^11.0.16
 
   flutter_flushbar: ^0.0.2
+  iconsax: ^0.0.8
   
 dependency_overrides:
   flutter_lints: ^2.0.1 #modificado
