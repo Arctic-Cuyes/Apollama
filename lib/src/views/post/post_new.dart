@@ -1,22 +1,28 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_geohash/dart_geohash.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:zona_hub/src/models/geo/geo_data.dart';
+import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/models/tag_model.dart';
+import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
+import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/services/reverse_geocode_service.dart';
+import 'package:zona_hub/src/services/tag_service.dart';
 import 'package:zona_hub/src/views/post/select_location.dart';
 
-final List<String> _chips = [
-  'Animales',
-  'Ayuda',
-  'Aviso',
-  'Salud',
-  'Social',
+final List<Map> _chips = [
+  {"nombre": 'Animales', "id": "5aVNEOQ8X3bYv3XgQSZe"},
+  {"nombre": 'Ayuda', "id": "uCRlMFDJ8nLDrdPq4Art"},
+  {"nombre": 'Aviso', "id": "H3onPaVN8EUK0NKvwduN"},
+  {"nombre": 'Salud', "id": "Nk455xSI5Fb46u2WDCfl"},
+  {"nombre": 'Evento', "id": "bfR5cV0Kq4ZMfQAuPhY0"},
 ];
-final List<String> _selectedChips = [];
+final List<Map> _selectedChips = [];
 File? _currentImageFile;
 
 class NewPostForm extends StatefulWidget {
@@ -33,13 +39,17 @@ class _NewPostFormState extends State<NewPostForm> {
   final _addressController = TextEditingController();
   final _beginDateController = TextEditingController();
   final _endDateController = TextEditingController();
+  final _storage = Storage();
 
+  late Post newPost;
   bool _manyDays = false;
   LatLng? _currentLatLng;
   AddressDetail? addressDetail;
   bool _errorOnChips = false;
   bool _errorOnDates = false;
   bool _warningOnAddress = false;
+  DateTime? _beginDatePicked;
+  DateTime? _endDatePicked;
 
   @override
   void initState() {
@@ -48,6 +58,7 @@ class _NewPostFormState extends State<NewPostForm> {
 
   @override
   void dispose() {
+    _selectedChips.clear();
     _titleController.dispose();
     _descriptionController.dispose();
     _addressController.dispose();
@@ -82,7 +93,7 @@ class _NewPostFormState extends State<NewPostForm> {
     }
   }
 
-  void _datePickerOnTap(TextEditingController controller) async {
+  void _datePickerOnTap(TextEditingController controller, bool isBegin) async {
     DateTime? pickedDate = await showDatePicker(
         cancelText: "Cancelar",
         confirmText: "Confirmar",
@@ -93,6 +104,11 @@ class _NewPostFormState extends State<NewPostForm> {
         lastDate: DateTime(2050));
 
     if (pickedDate != null) {
+      if (isBegin) {
+        _beginDatePicked = pickedDate;
+      } else {
+        _endDatePicked = pickedDate;
+      }
       String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
 
       setState(() {
@@ -127,24 +143,82 @@ class _NewPostFormState extends State<NewPostForm> {
     }
   }
 
-  void _submit() async {
-    debugPrint('Formulario válido');
-    debugPrint("Title: ${_titleController.text}");
-    debugPrint("Desc: ${_descriptionController.text}");
-    debugPrint("Address : ${_addressController.text}");
-    debugPrint("Address geohash: ${addressDetail!.geohash}");
-    debugPrint("DateTime: ${DateTime.now()}");
-    debugPrint("Comunnity: ${addressDetail!.city}");
-    debugPrint("Address geopoint: ${_currentLatLng.toString()}");
-    debugPrint(
-        "Begin Date: ${_endDateController.text.isEmpty ? null : _beginDateController.text}");
-    debugPrint(
-        "End Date: ${_endDateController.text.isEmpty ? _beginDateController.text : _endDateController.text}");
-    debugPrint(_selectedChips.toString());
-    debugPrint("Imagen  ${_currentImageFile?.path}");
+  openDialogLoader() {
+    showDialog(
+        context: context,
+        useRootNavigator: true,
+        barrierDismissible: false,
+        builder: (_) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
   }
 
-  void getGeopointFromAddress() {}
+  openCompleteLoader() {
+    showDialog(
+        context: context,
+        useRootNavigator: true,
+        barrierDismissible: false,
+        builder: (_) {
+          return AlertDialog(
+              title: const Text("Publicado con éxito"),
+              content: const Icon(Icons.check, color: Colors.green, size: 64),
+              actionsPadding: const EdgeInsets.only(right: 20, bottom: 15),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                  ),
+                  child: const Text("Aceptar"),
+                )
+              ]);
+        });
+  }
+
+  Future<void> _submit() async {
+    openDialogLoader();
+    List<Tag> chipsRef = [];
+    String photoUrl = "";
+    TagService tagService = TagService();
+    PostService postService = PostService();
+    for (var item in _selectedChips) {
+      chipsRef.add(await tagService.getTagFromId(item["id"]));
+    }
+    if (_currentImageFile != null) {
+      photoUrl = await _storage.uploadPostImage(_currentImageFile!);
+    }
+
+    newPost = Post(
+      title: _titleController.text,
+      description: _descriptionController.text,
+      address: _addressController.text,
+      location: GeoData(
+          geohash: addressDetail!.geohash,
+          geopoint: GeoPoint(
+            _currentLatLng!.latitude,
+            _currentLatLng!.longitude,
+          )),
+      imageUrl: photoUrl,
+      tagsData: chipsRef,
+      endDate:
+          _endDateController.text.isEmpty ? _beginDatePicked! : _endDatePicked!,
+      beginDate: _endDateController.text.isEmpty ? null : _beginDatePicked,
+      createdAt: DateTime.now(),
+      community: addressDetail!.city,
+    );
+    debugPrint('Formulario válido');
+    postService.createPost(newPost).whenComplete(() {
+      Navigator.of(context).pop();
+      openCompleteLoader();
+    });
+
+    // await openCompleteLoader();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +234,7 @@ class _NewPostFormState extends State<NewPostForm> {
             children: [
               TextFormField(
                 controller: _titleController,
+                textCapitalization: TextCapitalization.sentences,
                 maxLength: 50,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
@@ -172,15 +247,19 @@ class _NewPostFormState extends State<NewPostForm> {
                 validator: _validateTextField,
               ),
               TextFormField(
+                textCapitalization: TextCapitalization.sentences,
                 maxLength: 200,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: _descriptionController,
-                decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.edit),
+                decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.edit),
                     labelText: 'Descripción',
-                    hintText: "Detalles sobre el tema"),
+                    hintText: "Detalles sobre el tema",
+                    suffixIcon: IconButton(
+                        onPressed: () => _titleController.clear(),
+                        icon: const Icon(Icons.clear))),
                 validator: _validateTextField,
               ),
               TextFormField(
@@ -223,7 +302,7 @@ class _NewPostFormState extends State<NewPostForm> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text("Fechas"),
+                  const Text("Fechas", style: TextStyle(fontSize: 16)),
                   Row(
                     children: [
                       Checkbox(
@@ -255,7 +334,8 @@ class _NewPostFormState extends State<NewPostForm> {
                         ),
                         validator: _validateTextField,
                         readOnly: true,
-                        onTap: () => _datePickerOnTap(_beginDateController)),
+                        onTap: () =>
+                            _datePickerOnTap(_beginDateController, true)),
                   ),
                   const Spacer(flex: 1),
                   Expanded(
@@ -272,7 +352,8 @@ class _NewPostFormState extends State<NewPostForm> {
                         ),
                         validator: _validateEndDateField,
                         readOnly: true,
-                        onTap: () => _datePickerOnTap(_endDateController),
+                        onTap: () =>
+                            _datePickerOnTap(_endDateController, false),
                       ),
                     ),
                   )
@@ -285,11 +366,15 @@ class _NewPostFormState extends State<NewPostForm> {
                   style: TextStyle(color: Colors.red),
                 ),
               ),
-              Row(
-                children: const [
-                  Icon(Icons.tag),
-                  Text('Categorias'),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Row(
+                  children: const [
+                    Icon(Icons.tag),
+                    SizedBox(width: 5),
+                    Text('Categorias', style: TextStyle(fontSize: 16)),
+                  ],
+                ),
               ),
               const TagChipsWidget(),
               Visibility(
@@ -299,25 +384,33 @@ class _NewPostFormState extends State<NewPostForm> {
                   style: TextStyle(color: Colors.red),
                 ),
               ),
-              const ImagePostWidget(),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: ImagePostWidget(),
+              ),
               const SizedBox(height: 16.0),
               Center(
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30))),
                     backgroundColor: Colors.amber,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       setState(() {
                         _errorOnChips = _selectedChips.isEmpty;
                         _errorOnDates = !_areDatesCoherent();
                       });
                       if (!_errorOnChips && !_errorOnDates) {
-                        _submit();
+                        await _submit();
                       }
                     }
                   },
-                  child: const Text('Enviar'),
+                  icon: const Icon(Icons.post_add),
+                  label: const Text('Publicar'),
                 ),
               ),
             ],
@@ -336,7 +429,7 @@ class TagChipsWidget extends StatefulWidget {
 }
 
 class _TagChipsWidgetState extends State<TagChipsWidget> {
-  void _handleChipSelected(String value) {
+  void _handleChipSelected(Map value) {
     setState(() {
       if (_selectedChips.contains(value)) {
         _selectedChips.remove(value);
@@ -361,7 +454,7 @@ class _TagChipsWidgetState extends State<TagChipsWidget> {
         return Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: FilterChip(
-            label: Text(chip),
+            label: Text(chip["nombre"]),
             selected: isSelected,
             selectedColor: color,
             onSelected: (isSelected) {
@@ -414,7 +507,7 @@ class _ImagePostWidgetState extends State<ImagePostWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text("Imagen"),
+            const Text("Imagen", style: TextStyle(fontSize: 16)),
             Row(
               children: [
                 ElevatedButton.icon(
@@ -436,19 +529,22 @@ class _ImagePostWidgetState extends State<ImagePostWidget> {
           stream: _imageStreamController.stream,
           initialData: null,
           builder: (context, AsyncSnapshot<File?> snapshot) {
-            return SizedBox(
-                width: double.infinity,
-                child: snapshot.hasData
-                    ? Image.file(snapshot.data!)
-                    : Container(
-                        decoration: BoxDecoration(border: Border.all()),
-                        child: const Padding(
-                            padding: EdgeInsets.all(30),
-                            child: Icon(
-                              Icons.image_not_supported_outlined,
-                              size: 30,
-                            )),
-                      ));
+            return Padding(
+              padding: const EdgeInsets.only(top: 15, bottom: 8),
+              child: SizedBox(
+                  width: double.infinity,
+                  child: snapshot.hasData
+                      ? Image.file(snapshot.data!)
+                      : Container(
+                          decoration: BoxDecoration(border: Border.all()),
+                          child: const Padding(
+                              padding: EdgeInsets.all(30),
+                              child: Icon(
+                                Icons.image_not_supported_outlined,
+                                size: 30,
+                              )),
+                        )),
+            );
           },
         ),
         Row(

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,24 +8,27 @@ import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 
 class Storage {
-  final Reference firebaseStorage = FirebaseStorage.instance.ref(); 
+  final Reference firebaseStorage = FirebaseStorage.instance.ref();
   final ImagePicker imagePicker = ImagePicker();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   uploadImage(ImageSource source) async {
     XFile? file = await imagePicker.pickImage(source: source);
-    if(file == null){return;};
+    if (file == null) {
+      return;
+    }
+    ;
 
-    Reference referenceDirImages = firebaseStorage.child('profile_images'); 
+    Reference referenceDirImages = firebaseStorage.child('profile_images');
     Reference referenceFile = referenceDirImages.child(file.name);
     //Upload file
     try {
-      await referenceFile.putFile(File(file.path));  
+      await referenceFile.putFile(File(file.path));
       String photoURL = await referenceFile.getDownloadURL();
       await firebaseAuth.currentUser!.updatePhotoURL(photoURL);
-      
+
       UserModel currenUser = await AuthService().getCurrentUser();
-      
+
       UserModel newUser = UserModel(
         id: currenUser.id,
         name: currenUser.name,
@@ -44,6 +46,18 @@ class Storage {
     } catch (e) {
       debugPrint("ERROR AL SUBIR FOTO: ${e.toString()}");
     }
-    
+  }
+
+  uploadPostImage(File file) async {
+    Reference referenceDirImages = firebaseStorage.child('profile_images');
+    Reference referenceFile =
+        referenceDirImages.child(file.uri.pathSegments.last);
+    try {
+      await referenceFile.putFile(file);
+      String photoURL = await referenceFile.getDownloadURL();
+      return photoURL;
+    } catch (e) {
+      debugPrint("ERROR AL SUBIR FOTO: ${e.toString()}");
+    }
   }
 }

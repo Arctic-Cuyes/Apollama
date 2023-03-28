@@ -36,7 +36,10 @@ class TagService {
     return tagRef.doc(id);
   }
 
-  Tag getTagFromId(String id) {
-    return tagRef.doc(id).get() as Tag;
+  Future<Tag> getTagFromId(String id) async {
+    DocumentSnapshot doc = await tagRef.doc(id).get();
+    Tag fetched = doc.data() as Tag;
+    fetched.id = doc.reference.id;
+    return fetched;
   }
 }
