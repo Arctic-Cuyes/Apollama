@@ -26,11 +26,15 @@ class PostService {
   final TagService tagService = TagService();
   final GpsService gpsService = GpsService();
 
-  static DocumentReference<Map<String, dynamic>> user = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
+  static DocumentReference<Map<String, dynamic>> user = FirebaseFirestore
+      .instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
 
   Future<Post> _getPostSettled(DocumentSnapshot<Post> document) async {
     Post post = document.data()!;
     post.authorData = await userService.getUserDataFromDocRef(post.author!);
+    post.tagsData = await tagService.getTagsFromDocRefList(post.tags!);
     post.id = document.id;
     post.authorData!.id = post.author!.id;
     return post;
@@ -78,7 +82,7 @@ class PostService {
       List<Post> posts = [];
       for (DocumentSnapshot<Post> document in documentList) {
         Post post = await _getPostSettled(document);
-        UserModel currentUser = await authService.getCurrentUser();
+        // UserModel currentUser = await authService.getCurrentUser();
         if (await _thisPostMustBeInactive(post)) continue;
         // if (_thisPostIsAlreadyVoted(post, currentUser)) continue;
         posts.add(post);
@@ -222,11 +226,11 @@ class PostService {
     return false;
   }
 
-  static bool ifPostIsAlreadyUpVotedByCurrentUser(Post post)  {
+  static bool ifPostIsAlreadyUpVotedByCurrentUser(Post post) {
     return post.upVotes!.contains(user);
   }
 
-  static bool ifPostIsAlreadyDownVotedByCurrentUser(Post post)  {
+  static bool ifPostIsAlreadyDownVotedByCurrentUser(Post post) {
     return post.downVotes!.contains(user);
   }
 }

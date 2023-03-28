@@ -42,4 +42,19 @@ class TagService {
     fetched.id = doc.reference.id;
     return fetched;
   }
+
+  Future<Tag> getTagDataFromDocRef(DocumentReference tagRef) async {
+    DocumentSnapshot tagSnapshot = await tagRef.get();
+    return Tag.fromJson(tagSnapshot.data() as Map<String, dynamic>);
+  }
+
+  Future<List<Tag>> getTagsFromDocRefList(
+      List<DocumentReference> tagRefs) async {
+    List<Tag> tags = [];
+    for (DocumentReference tagRef in tagRefs) {
+      Tag tag = await getTagDataFromDocRef(tagRef);
+      tags.add(tag);
+    }
+    return tags;
+  }
 }
