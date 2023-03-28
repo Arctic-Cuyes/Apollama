@@ -228,23 +228,25 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   actions: [
                     //Reportar perfil (solo se mostrará en perfil != auth.user)
                     isMyProfile
-                        ? DropdownButton(
-                          underline: const SizedBox.shrink(),
-                          onChanged: (value) {
-                            switch(value){
-                              case '1':
-                                //Open privacity settings
-                                break;
-                            }
+                        ? 
+                        PopupMenuButton(
+                          onSelected: (value){
+                            //If value == 0 edit profile privacity
                           },
-                          items: const [
-                            DropdownMenuItem(value: "1", child: Text("Privacidad")),
-                          ],
-                          icon: const Icon(Icons.more_vert))
+                          itemBuilder: (context){
+                            return [
+                              const PopupMenuItem(
+                                value: 0,
+                                child: Text("Editar Privacidad"),
+                              )
+                            ];
+                          }
+                        )
                         : IconButton(
                             tooltip: "Reportar usuario",
                             onPressed: () {},
-                            icon: const Icon(Icons.info)),
+                            icon: const Icon(Icons.info)
+                          ),
                   ],
                 ),
                 body: RefreshIndicator(

@@ -28,7 +28,7 @@ ThemeData customDarkTheme() {
         
     //Botón "(+)" en página home
     floatingActionButtonTheme:
-        const FloatingActionButtonThemeData(backgroundColor: GlobalColors.mainColor),
+        const FloatingActionButtonThemeData(backgroundColor: GlobalColors.mainColor,),
     //Loaders
     progressIndicatorTheme:
         const ProgressIndicatorThemeData(color: GlobalColors.mainColor),
