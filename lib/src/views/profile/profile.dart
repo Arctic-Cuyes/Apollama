@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
+import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
+import 'package:zona_hub/src/utils/open_new_post_view.dart';
 import 'package:zona_hub/src/views/profile/posts.dart';
 
 
@@ -261,7 +263,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           child: Card(
                           elevation: 0,
                           child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                          padding: const EdgeInsets.fromLTRB(4, 4, 0, 4),
                           child: Column(children: [
                             Stack(
                               children: [
@@ -350,19 +352,19 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                   text:
                                       "Se unió el ${DateFormat("d 'de' MMMM 'del' yyyy", 'es').format(DateFormat('dd-MM-yyyy hh:mm:ss').parse(snapshot.data!.createdAt!))}",
                                 ),
-                                //NUMERO DE COMUNIDADES
+                                //NUMERO DE COMUNIDADES (Segunda ronda)
                     
-                                Flex(direction: Axis.horizontal, children: const [
-                                  ExtraInfo(
-                                      icon: Icon(Icons.public),
-                                      text: "Comunidades 10"),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  ExtraInfo(
-                                      icon: Icon(Icons.post_add),
-                                      text: "Publicaciones 1000")
-                                ]),
+                                // Flex(direction: Axis.horizontal, children: [
+                                //   ExtraInfo(
+                                //       icon: Icon(Icons.public),
+                                //       text: "Comunidades 0"),
+                                //   SizedBox(
+                                //     width: 10,
+                                //   ),
+                                //   ExtraInfo(
+                                //       icon: Icon(Icons.post_add),
+                                //       text: "Publicaciones "),
+                                // ]),
                               ]),
                               ),
                             ),
@@ -379,10 +381,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                                 FloatingActionButton(
                                   onPressed: (){
                                     //Go to create post page
+                                    goToNewPostForm(context);
                                   },
-                                  child: const Icon(Icons.edit_square),
+                                  child: const Icon(Icons.edit_square, color: Colors.white,),
                                 ),
-                                const Text("   Crea una nueva publicación")
+                                const Text("   Nueva publicación", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),)
                               ],
                             ),
                           ) : const SizedBox.shrink(),

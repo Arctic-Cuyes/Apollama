@@ -2,10 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
-import 'package:zona_hub/src/constants/custom_filter_images.dart';
 import 'package:zona_hub/src/constants/tags_list.dart';
+import 'package:zona_hub/src/utils/open_new_post_view.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
-import 'package:zona_hub/src/views/post/post_new.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,7 +43,7 @@ class _HomePageState extends State<HomePage> {
               child: FloatingActionButton(
                   onPressed: () {
                     //go to new_post page
-                    _goToNewPostForm(context);
+                    goToNewPostForm(context);
                   },
                   child: const Icon(Icons.add),
                 ),
@@ -55,29 +54,6 @@ class _HomePageState extends State<HomePage> {
          ),
       ),
     );
-  }
-
-  void _goToNewPostForm(BuildContext context) {
-    Navigator.of(context).push(PageRouteBuilder(
-        pageBuilder: (_, __, ___) => NewPostForm(),
-        transitionDuration: const Duration(milliseconds: 300),
-        reverseTransitionDuration: const Duration(milliseconds: 300),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0, 2);
-          const end = Offset.zero;
-          const curve = Curves.ease;
-          final tween = Tween(begin: begin, end: end);
-
-          final curvedAnimation = CurvedAnimation(
-            parent: animation,
-            curve: curve,
-          );
-
-          return SlideTransition(
-            position: tween.animate(curvedAnimation),
-            child: child,
-          );
-        }));
   }
 }
 
@@ -133,7 +109,7 @@ class HomeTab extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text("TAGS", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),),
+                              const Text("Categorías", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),),
                               IconButton(
                                 onPressed: (){
                                   Navigator.pop(context);
