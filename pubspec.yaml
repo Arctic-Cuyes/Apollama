@@ -52,12 +52,15 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.2.6
   connectivity_plus: ^3.0.3
   flutter_svg: ^2.0.4
-  geoflutterfire: ^3.0.3
+  uuid: ^3.0.7
+  http: ^0.13.5
   intl: ^0.17.0
+  geoflutterfire: ^3.0.3
   image_picker: ^0.8.7
   firebase_storage: ^11.0.16
 
   flutter_flushbar: ^0.0.2
+  dart_geohash: ^2.0.2
   iconsax: ^0.0.8
   
 dependency_overrides:
