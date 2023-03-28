@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
-import 'package:zona_hub/src/services/post_service.dart';
+import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
-import 'package:zona_hub/src/views/profile/profile.dart';
 
 class Interactions extends StatefulWidget {
-  final String authorID; 
-  const Interactions({super.key, required this.authorID});
+  
+  const Interactions({super.key});
 
   @override
   State<Interactions> createState() => _InteractionsState();
@@ -15,22 +14,17 @@ class Interactions extends StatefulWidget {
 
 class _InteractionsState extends State<Interactions> with AutomaticKeepAliveClientMixin {
   final UserService userService = UserService();
-  ScrollController controller = ScrollController();
+  final AuthService authService = AuthService();
 
   @override
   bool get wantKeepAlive => true;
   
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    controller.dispose();
-    super.dispose();
-  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return StreamBuilder<List<Post>>(
-      stream: userService.getUserReactedPosts(widget.authorID), 
+      stream: userService.getUserReactedPosts(authService.currentUser.uid), 
       builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
         if (snapshot.hasError) {
           return const Text('Something went wrong');
@@ -52,7 +46,6 @@ class _InteractionsState extends State<Interactions> with AutomaticKeepAliveClie
         return RefreshIndicator(
           onRefresh: () async => setState((){}),
           child: ListView(
-            controller: controller,
             children: snapshot.data!.map((Post post) {
               return PostComponent(
                 post: post,
