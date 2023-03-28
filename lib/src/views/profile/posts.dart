@@ -18,7 +18,7 @@ class _PostsState extends State<Posts> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Post>>(
-      stream: postService.getPostsByAuthorId("D749gqawBmeSPhJyx4fylIbUvWJ3"), 
+      stream: postService.getPostsByAuthorId(widget.authorID), 
       builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
         if (snapshot.hasError) {
           return const Text('Something went wrong');
