@@ -1,10 +1,15 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/tags_list.dart';
+import 'package:zona_hub/src/models/tag_model.dart';
+import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/utils/open_new_post_view.dart';
 import 'package:zona_hub/src/views/home/home_popular.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
+
+final FilterProvider changeNotifier = FilterProvider();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,13 +35,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Stack(children: [
-          const TabBarView(
-            children: [
-              Recientes(),
-              Popular(),
-              // Recientes(),
-            ],
-          ),
+          const PostView(),
           Positioned(
             bottom: 5,
             right: 5,
@@ -58,7 +57,7 @@ class HomeTab extends StatelessWidget {
   const HomeTab({
     super.key,
   });
-
+  
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -116,7 +115,7 @@ class HomeTab extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 120,),
+                              const SizedBox(height: 60,),
                               Wrap(
                                   alignment: WrapAlignment.center,
                                   direction: Axis.horizontal,
@@ -129,35 +128,38 @@ class HomeTab extends StatelessWidget {
                                         selectedColor: filter['selectedColor'],
                                       ),
                                   ]),
-                              // ElevatedButton(
-                              //     onPressed: () {
-                              //       //Set state with new filters
-                              
-                              //     },
-                              //     style: ButtonStyle(
-                              //       backgroundColor: MaterialStateProperty.all(
-                              //           Colors.grey[600]),
-                              //       shape: MaterialStateProperty.all(
-                              //           RoundedRectangleBorder(
-                              //               borderRadius:
-                              //                   BorderRadius.circular(10))),
-                              //     ),
-                              //     child: SizedBox(
-                              //         width: 150,
-                              //         child: Row(
-                              //           children: const [
-                              //             Icon(Icons.check_circle_outlined),
-                              //             SizedBox(
-                              //               width: 20,
-                              //             ),
-                              //             Text(
-                              //               "Aplicar filtros",
-                              //               style: TextStyle(fontSize: 16),
-                              //             )
-                              //           ],
-                              //         )
-                              //       )
-                              //     )
+                              const SizedBox(height: 50,),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    //Set state with new filters
+                                    // applyFilters(context, filters, filterProvider);
+                                    changeNotifier.setRefresh(true);
+                                    Navigator.pop(context); // Close filters selector
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.grey[600]),
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10))),
+                                  ),
+                                  child: SizedBox(
+                                      width: 150,
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.check_circle_outlined),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          Text(
+                                            "Aplicar filtros",
+                                            style: TextStyle(fontSize: 16),
+                                          )
+                                        ],
+                                      )
+                                    )
+                                  )
                             ],
                           ),
                         ),
@@ -168,6 +170,51 @@ class HomeTab extends StatelessWidget {
                 Icons.filter_list_rounded,
               )),
         ),
+      ],
+    );
+  }
+}
+
+class PostView extends StatefulWidget {
+  const PostView({super.key});
+
+  @override
+  State<PostView> createState() => _PostViewState();
+}
+
+class _PostViewState extends State<PostView> {
+  List<Tag> filters = [];
+  @override
+  void initState() {
+    super.initState();
+    changeNotifier.addListener(onSetFilterListener);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    changeNotifier.removeListener(onSetFilterListener);
+    super.dispose();
+  }
+
+  onSetFilterListener(){
+    final filterProvider = context.read<FilterProvider>();
+    //clear filters 
+    setState(() {
+      filters = [];
+    });
+     for (var element in filterProvider.filters) {
+      Tag tag = Tag(name: element);
+      filters.add(tag);
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return TabBarView(
+      children: [
+        Recientes(filters: filters,),
+        Popular(filters: filters,),
+        // Recientes(),
       ],
     );
   }
