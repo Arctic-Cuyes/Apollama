@@ -1,3 +1,6 @@
+import 'dart:isolate';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,9 +26,15 @@ class PostService {
   final TagService tagService = TagService();
   final GpsService gpsService = GpsService();
 
+  static DocumentReference<Map<String, dynamic>> user = FirebaseFirestore
+      .instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+
   Future<Post> _getPostSettled(DocumentSnapshot<Post> document) async {
     Post post = document.data()!;
     post.authorData = await userService.getUserDataFromDocRef(post.author!);
+    post.tagsData = await tagService.getTagsFromDocRefList(post.tags!);
     post.id = document.id;
     post.authorData!.id = post.author!.id;
     return post;
@@ -73,9 +82,9 @@ class PostService {
       List<Post> posts = [];
       for (DocumentSnapshot<Post> document in documentList) {
         Post post = await _getPostSettled(document);
-        UserModel currentUser = await authService.getCurrentUser();
+        // UserModel currentUser = await authService.getCurrentUser();
         if (await _thisPostMustBeInactive(post)) continue;
-        if (_thisPostIsAlreadyVoted(post, currentUser)) continue;
+        // if (_thisPostIsAlreadyVoted(post, currentUser)) continue;
         posts.add(post);
       }
       return posts;
@@ -99,7 +108,8 @@ class PostService {
 
   // verify that endDate is after now, if not set the post to inactive
   Future<bool> _thisPostMustBeInactive(Post post) async {
-    if (post.endDate.isBefore(DateTime.now())) {
+    if (post.endDate.isBefore(DateTime.now().add(const Duration(days: 1))) &&
+        post.active) {
       await _setPostInactive(post);
       return true;
     }
@@ -215,5 +225,13 @@ class PostService {
       return true;
     }
     return false;
+  }
+
+  static bool ifPostIsAlreadyUpVotedByCurrentUser(Post post) {
+    return post.upVotes!.contains(user);
+  }
+
+  static bool ifPostIsAlreadyDownVotedByCurrentUser(Post post) {
+    return post.downVotes!.contains(user);
   }
 }

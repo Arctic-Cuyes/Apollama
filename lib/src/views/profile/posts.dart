@@ -12,21 +12,11 @@ class Posts extends StatefulWidget {
   State<Posts> createState() => _PostsState();
 }
 
-class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
+class _PostsState extends State<Posts> {
   final PostService postService = PostService();
-  ScrollController controller = ScrollController();
 
   @override
-  bool get wantKeepAlive => true;
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    controller.dispose();
-    super.dispose();
-  }
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     return StreamBuilder<List<Post>>(
       stream: postService.getPostsByAuthorId(widget.authorID), 
       builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
@@ -50,15 +40,10 @@ class _PostsState extends State<Posts> with AutomaticKeepAliveClientMixin {
         return RefreshIndicator(
           onRefresh: () async => setState((){}),
           child: ListView(
-            controller: controller,
+            physics: const NeverScrollableScrollPhysics(),
             children: snapshot.data!.map((Post post) {
               return PostComponent(
-                title: post.title,
-                userID: post.authorData!.id!,
-                postText: post.description,
-                imageUrl: post.imageUrl,
-                userphoto: newImage ?? post.authorData!.avatarUrl!,
-                username: newName ?? post.authorData!.name,
+                post: post
               );
             }).toList(),
           ),
