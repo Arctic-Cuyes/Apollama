@@ -32,7 +32,7 @@ class _FilterBoxState extends State<FilterChipComponent> {
             checkmarkColor: Colors.white,
             backgroundColor: Colors.grey[500],
             selectedColor: widget.selectedColor,
-            selected: fp.filters.contains(widget.label) ,
+            selected: fp.filters.contains(widget.label),
             label: Text(widget.label, style: const TextStyle(color: Colors.white),), 
             onSelected: (bool selected) { fp.toggleFilter(widget.label); },
           ),
