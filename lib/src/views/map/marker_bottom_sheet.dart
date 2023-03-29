@@ -21,19 +21,7 @@ class _MarkerBottomModal extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(bottom: 5, left: 8, right: 8),
           child: PostComponent(
-            post: Post(
-              title: "title", 
-              description: "description", 
-              location: GeoData(
-                geohash: "geohash", 
-                geopoint: GeoPoint(0, 0)
-              ), 
-              imageUrl: null, 
-              endDate: DateTime.now(),
-              createdAt: DateTime.now(),
-              ups: 5,
-              downs: 6
-            ),
+            post: marker,
           ),
         ),
       ),

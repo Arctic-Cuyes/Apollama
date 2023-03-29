@@ -27,6 +27,7 @@ class _RecientesState extends State<Recientes>
 
   @override
   Widget build(BuildContext context) {
+    final filterProvider = context.watch<FilterProvider>();
     super.build(context);
     return RefreshIndicator(
         color: Colors.white,
@@ -36,13 +37,12 @@ class _RecientesState extends State<Recientes>
         child: FutureBuilder(
           future: gpsService.determinePosition(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            final filterProvider = context.read()<FilterProvider>();
             //Iterate filterProvider.filter
             List<Tag> filters = [];
             for (var element in filterProvider.filters){
-              Tag tag = Tag(name: element);
-              filters.add(tag);
-            }
+               Tag tag = Tag(name: element);
+               filters.add(tag);
+             }
             // if has data return a stream builder
             if (snapshot.hasData) {
               return StreamBuilder<List<Post>>(

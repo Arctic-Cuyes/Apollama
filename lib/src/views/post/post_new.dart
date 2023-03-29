@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/models/geo/geo_data.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
@@ -13,15 +14,10 @@ import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/services/reverse_geocode_service.dart';
 import 'package:zona_hub/src/services/tag_service.dart';
+import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/views/post/select_location.dart';
 
-final List<Map> _chips = [
-  {"nombre": 'Animales', "id": "5aVNEOQ8X3bYv3XgQSZe"},
-  {"nombre": 'Ayuda', "id": "uCRlMFDJ8nLDrdPq4Art"},
-  {"nombre": 'Aviso', "id": "H3onPaVN8EUK0NKvwduN"},
-  {"nombre": 'Salud', "id": "Nk455xSI5Fb46u2WDCfl"},
-  {"nombre": 'Evento', "id": "bfR5cV0Kq4ZMfQAuPhY0"},
-];
+final _chips = TagsList().tags;
 final List<Map> _selectedChips = [];
 File? _currentImageFile;
 
@@ -259,7 +255,12 @@ class _NewPostFormState extends State<NewPostForm> {
   Widget build(BuildContext context) {
     debugPrint("Se construye formulario");
     return Scaffold(
-      appBar: AppBar(title: const Text("Nueva Publicación")),
+      appBar: AppBar(
+        title: const Text(
+          "Nueva Publicación",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         child: Form(
@@ -341,7 +342,7 @@ class _NewPostFormState extends State<NewPostForm> {
                   Row(
                     children: [
                       Checkbox(
-                        fillColor: const MaterialStatePropertyAll(Colors.amber),
+                        fillColor: const MaterialStatePropertyAll(Colors.blue),
                         value: _manyDays,
                         onChanged: (value) {
                           setState(() {
@@ -427,12 +428,11 @@ class _NewPostFormState extends State<NewPostForm> {
               Center(
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    backgroundColor: Colors.amber,
-                  ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30))),
+                      backgroundColor: GlobalColors.mainColor),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       setState(() {
@@ -481,17 +481,29 @@ class _TagChipsWidgetState extends State<TagChipsWidget> {
       children: _chips.map((chip) {
         final isSelected = _selectedChips.contains(chip);
         final index = _selectedChips.indexOf(chip);
-        final color = isSelected
+        final color = chip["selectedColor"];
+        const textColor = Colors.white;
+        final weigth = isSelected ? FontWeight.w500 : FontWeight.normal;
+        final borderColor = isSelected
             ? index == 0
-                ? Colors.lightGreen.shade900
-                : Colors.lightGreen.shade500
-            : Colors.grey;
+                ? BorderSide(color: Colors.indigo.shade500, width: 3.5)
+                : null
+            : null;
         return Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: FilterChip(
-            label: Text(chip["nombre"]),
+            avatar: CircleAvatar(
+                backgroundColor: chip["selectedColor"],
+                child: Image.asset(chip["asset"])),
+            label: Text(
+              chip["tag"],
+              style: TextStyle(color: textColor, fontWeight: weigth),
+            ),
             selected: isSelected,
+            side: borderColor,
+            backgroundColor: Colors.black26,
             selectedColor: color,
+            checkmarkColor: textColor,
             onSelected: (isSelected) {
               _handleChipSelected(chip);
             },
