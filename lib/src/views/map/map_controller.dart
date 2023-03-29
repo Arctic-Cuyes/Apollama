@@ -6,7 +6,9 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
+import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/views/map/marker_bottom_sheet.dart';
 import '../../services/Map/gps_service.dart';
@@ -25,7 +27,7 @@ class MapController extends ChangeNotifier {
   StreamSubscription? _nearMarkersFetch;
   late final StreamController<CameraPosition> _cameraPosController;
 
-  late final List fetchedMarkers;
+  late final List<Post> fetchedPosts;
   final Map<MarkerId, Marker> _markers = {};
 
   late bool isDisposed;
@@ -39,7 +41,7 @@ class MapController extends ChangeNotifier {
     isDisposed = false;
     _cameraPosController = StreamController();
     geo = Geoflutterfire();
-    fetchedMarkers = [];
+    fetchedPosts = [];
     loadMarkers(context);
   }
 
@@ -76,41 +78,37 @@ class MapController extends ChangeNotifier {
     _markersSubscription = _markersListener(context);
   }
 
-  BitmapDescriptor assignIcon(int categoria) {
-    late final BitmapDescriptor icon;
-    switch (categoria) {
-      case 1:
-        icon = avisoMarker;
-        break;
-      case 2:
-        icon = ayudaMarker;
-        break;
-      case 3:
-        icon = eventoMarker;
-        break;
-      case 4:
-        icon = petMarker;
-        break;
-      case 5:
-        icon = saludMarker;
-        break;
+  BitmapDescriptor assignIcon(Tag tag) {
+    String categoria = tag.name;
+    if (categoria == "Animales") {
+      return petMarker;
     }
-
-    return icon;
+    if (categoria == "Avisos") {
+      return ayudaMarker;
+    }
+    if (categoria == "Salud") {
+      return saludMarker;
+    }
+    if (categoria == "Eventos") {
+      return eventoMarker;
+    }
+    if (categoria == "Ayuda") {
+      return avisoMarker;
+    }
+    return petMarker;
   }
 
   void addMarker(Post cMarker, BuildContext context) {
     debugPrint("add marker");
-    debugPrint(cMarker.toJson().toString());
     final id = cMarker.id;
     final markerId = MarkerId(id.toString());
-    final icon = assignIcon(1);
+    final icon = assignIcon(cMarker.tagsData![0]);
     final newMarker = Marker(
       markerId: markerId,
       position: LatLng(cMarker.location.geopoint.latitude,
           cMarker.location.geopoint.longitude),
       icon: icon,
-      draggable: true,
+      draggable: false,
       onTap: () {
         debugPrint(markerId.toString());
         showMarkerBottomSheet(context, cMarker);
@@ -122,13 +120,13 @@ class MapController extends ChangeNotifier {
 
   StreamSubscription<dynamic> _markersListener(BuildContext context) {
     _nearMarkersFetch = postService.getPosts().listen((List<Post> event) {
-      fetchedMarkers.clear();
+      fetchedPosts.clear();
       for (var item in event) {
         // final marker = Post.fromJson(item as Map<String, dynamic>);
-        fetchedMarkers.add(item);
+        fetchedPosts.add(item);
       }
       _markers.clear();
-      for (var item in fetchedMarkers) {
+      for (var item in fetchedPosts) {
         addMarker(item, context);
       }
       notifyListeners();
