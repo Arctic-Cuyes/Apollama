@@ -25,7 +25,6 @@ class FilterProvider extends  ChangeNotifier {
       _filters.add(filter);
     }
     _prefs.setStringList('filters_$_userId', _filters);
-    
     notifyListeners();
   }
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/tags_list.dart';
+import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/utils/open_new_post_view.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
 
