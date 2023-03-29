@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/utils/open_new_post_view.dart';
+import 'package:zona_hub/src/views/home/home_popular.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,10 +30,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Stack(children: [
-          TabBarView(
+          const TabBarView(
             children: [
               Recientes(),
-              Recientes(),
+              Popular(),
               // Recientes(),
             ],
           ),
@@ -94,7 +95,7 @@ class HomeTab extends StatelessWidget {
                           width: double.infinity,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(20),
@@ -115,6 +116,7 @@ class HomeTab extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              const SizedBox(height: 120,),
                               Wrap(
                                   alignment: WrapAlignment.center,
                                   direction: Axis.horizontal,
@@ -127,32 +129,35 @@ class HomeTab extends StatelessWidget {
                                         selectedColor: filter['selectedColor'],
                                       ),
                                   ]),
-                              ElevatedButton(
-                                  onPressed: () {
-                                    //Set state with new filters
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.grey[600]),
-                                    shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10))),
-                                  ),
-                                  child: SizedBox(
-                                      width: 150,
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.check_circle_outlined),
-                                          SizedBox(
-                                            width: 20,
-                                          ),
-                                          Text(
-                                            "Aplicar filtros",
-                                            style: TextStyle(fontSize: 16),
-                                          )
-                                        ],
-                                      )))
+                              // ElevatedButton(
+                              //     onPressed: () {
+                              //       //Set state with new filters
+                              
+                              //     },
+                              //     style: ButtonStyle(
+                              //       backgroundColor: MaterialStateProperty.all(
+                              //           Colors.grey[600]),
+                              //       shape: MaterialStateProperty.all(
+                              //           RoundedRectangleBorder(
+                              //               borderRadius:
+                              //                   BorderRadius.circular(10))),
+                              //     ),
+                              //     child: SizedBox(
+                              //         width: 150,
+                              //         child: Row(
+                              //           children: const [
+                              //             Icon(Icons.check_circle_outlined),
+                              //             SizedBox(
+                              //               width: 20,
+                              //             ),
+                              //             Text(
+                              //               "Aplicar filtros",
+                              //               style: TextStyle(fontSize: 16),
+                              //             )
+                              //           ],
+                              //         )
+                              //       )
+                              //     )
                             ],
                           ),
                         ),
