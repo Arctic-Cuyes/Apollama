@@ -39,24 +39,23 @@ class _PostComponentState extends State<PostComponent> {
     likes = widget.post.upVotes!.length;
     dislikes = widget.post.downVotes!.length;
     alreadyLike = PostService.ifPostIsAlreadyUpVotedByCurrentUser(widget.post);
-    alreadyDislike = PostService.ifPostIsAlreadyDownVotedByCurrentUser(widget.post);
+    alreadyDislike =
+        PostService.ifPostIsAlreadyDownVotedByCurrentUser(widget.post);
   }
 
-  
-
-  void addLike() async{
+  void addLike() async {
     setState(() {
       if (!alreadyLike) {
         likes++;
         alreadyLike = true;
       }
 
-      if (alreadyDislike){
+      if (alreadyDislike) {
         dislikes--;
         alreadyDislike = false;
       }
     });
-    try{
+    try {
       await PostService().upVotePost(widget.post.id!);
     } catch (e) {
       print(e);
@@ -67,18 +66,18 @@ class _PostComponentState extends State<PostComponent> {
     }
   }
 
-  void addDislike() async{
+  void addDislike() async {
     setState(() {
-      if (!alreadyDislike){
+      if (!alreadyDislike) {
         dislikes++;
         alreadyDislike = true;
       }
-      if (alreadyLike){
+      if (alreadyLike) {
         likes--;
         alreadyLike = false;
       }
     });
-    try{
+    try {
       await PostService().downVotePost(widget.post.id!);
     } catch (e) {
       print(e);
@@ -160,33 +159,22 @@ class _PostComponentState extends State<PostComponent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.post.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  )
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                  ),
-                  child: Wrap(
-                
-                    children: [
-                      for (var tag in widget.post.tagsData!) ...[
-                        TagsComponent(tagStyle: TagsList().getTag(tag.name)),
-                        // const SizedBox(width: 5)
-                      ]
-                    ]
-                      
-                  ),
-                ),
                 Text(widget.post.title,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     )),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Wrap(children: [
+                    for (var tag in widget.post.tagsData!) ...[
+                      TagsComponent(tagStyle: TagsList().getTag(tag.name)),
+                      // const SizedBox(width: 5)
+                    ]
+                  ]),
+                ),
                 const SizedBox(height: 5),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -210,7 +198,6 @@ class _PostComponentState extends State<PostComponent> {
               ],
             ),
           ),
-          
 
           if (widget.post.imageUrl != "") ...[
             const Divider(
@@ -231,7 +218,7 @@ class _PostComponentState extends State<PostComponent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              if (alreadyLike) ... [
+              if (alreadyLike) ...[
                 IconButton(
                   icon: const Icon(
                     Iconsax.like_15,
@@ -241,15 +228,12 @@ class _PostComponentState extends State<PostComponent> {
                 ),
               ] else ...[
                 IconButton(
-                  icon: const Icon(
-                    Iconsax.like_1
-                  ),
+                  icon: const Icon(Iconsax.like_1),
                   onPressed: addLike,
                 ),
               ],
-
               Text(likes.toString()),
-              if (alreadyDislike) ... [
+              if (alreadyDislike) ...[
                 IconButton(
                   icon: const Icon(
                     Iconsax.dislike5,
@@ -263,8 +247,6 @@ class _PostComponentState extends State<PostComponent> {
                   onPressed: addDislike,
                 ),
               ],
-
-
               Text(dislikes.toString()),
               IconButton(
                 icon: const Icon(Icons.comment),
