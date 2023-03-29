@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Storage/firebase_storage.dart';
+import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
-import 'package:zona_hub/src/views/post/post_new.dart';
+import 'package:zona_hub/src/utils/open_new_post_view.dart';
 import 'package:zona_hub/src/views/profile/posts.dart';
 
 String? newImage;
@@ -265,9 +266,10 @@ class _ProfilePageState extends State<ProfilePage>
                         child: Card(
                           elevation: 0,
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                            child: Column(children: [
-                              Stack(children: [
+                          padding: const EdgeInsets.fromLTRB(4, 4, 0, 4),
+                          child: Column(children: [
+                            Stack(
+                              children: [
                                 Flex(
                                     direction: Axis.horizontal,
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -366,17 +368,27 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               //NUMERO DE COMUNIDADES
 
-                              Flex(direction: Axis.horizontal, children: const [
-                                ExtraInfo(
-                                    icon: Icon(Icons.public),
-                                    text: "Comunidades 10"),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ExtraInfo(
-                                    icon: Icon(Icons.post_add),
-                                    text: "Publicaciones 1000")
-                              ]),
+                              // Flex(direction: Axis.horizontal, children: const [
+                              //   ExtraInfo(
+                              //       icon: Icon(Icons.public),
+                              //       text: "Comunidades 10"),
+                              //   SizedBox(
+                              //     width: 10,
+                              //   ),
+                              //   //NUMERO DE COMUNIDADES (Segunda ronda)
+                    
+                              //   // Flex(direction: Axis.horizontal, children: [
+                              //   //   ExtraInfo(
+                              //   //       icon: Icon(Icons.public),
+                              //   //       text: "Comunidades 0"),
+                              //   //   SizedBox(
+                              //   //     width: 10,
+                              //   //   ),
+                              //   //   ExtraInfo(
+                              //   //       icon: Icon(Icons.post_add),
+                              //   //       text: "Publicaciones "),
+                              //   // ]),
+                              // ]),
                             ]),
                           ),
                         ),
@@ -394,11 +406,11 @@ class _ProfilePageState extends State<ProfilePage>
                                   children: [
                                     FloatingActionButton(
                                       onPressed: () {
-                                        _goToNewPostForm(context);
+                                        goToNewPostForm(context);
                                       },
                                       child: const Icon(Icons.edit_square),
                                     ),
-                                    const Text("   Crea una nueva publicación")
+                                    const Text("   Nueva publicación", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),)
                                   ],
                                 ),
                               )
@@ -482,27 +494,4 @@ class _ExtraInfoState extends State<ExtraInfo> {
       ),
     );
   }
-}
-
-void _goToNewPostForm(BuildContext context) {
-  Navigator.of(context).push(PageRouteBuilder(
-      pageBuilder: (_, __, ___) => NewPostForm(),
-      transitionDuration: const Duration(milliseconds: 300),
-      reverseTransitionDuration: const Duration(milliseconds: 300),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0, 2);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-        final tween = Tween(begin: begin, end: end);
-
-        final curvedAnimation = CurvedAnimation(
-          parent: animation,
-          curve: curve,
-        );
-
-        return SlideTransition(
-          position: tween.animate(curvedAnimation),
-          child: child,
-        );
-      }));
 }
