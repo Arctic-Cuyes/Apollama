@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -184,10 +185,14 @@ class PostView extends StatefulWidget {
 
 class _PostViewState extends State<PostView> {
   List<Tag> filters = [];
+  
   @override
   void initState() {
     super.initState();
+    debugPrint("Se construye post View state y se aplican los filtros");
     changeNotifier.addListener(onSetFilterListener);
+    //Al llamar al provider en init state se toma un tiempo en cargar los filtros de shared preferences
+    Timer(const Duration(milliseconds: 10), () { setFilters(); });
   }
 
   @override
@@ -198,16 +203,22 @@ class _PostViewState extends State<PostView> {
   }
 
   onSetFilterListener(){
-    final filterProvider = context.read<FilterProvider>();
+    setFilters();
+  }
+
+  setFilters() {
     //clear filters 
     setState(() {
       filters = [];
     });
-     for (var element in filterProvider.filters) {
+    final filterProvider = context.read<FilterProvider>();
+    for (var element in filterProvider.filters) {
       Tag tag = Tag(name: element);
       filters.add(tag);
     }
+    debugPrint("Filtros : ${filters.length}");
   }
+
   @override
   Widget build(BuildContext context) {
     return TabBarView(
