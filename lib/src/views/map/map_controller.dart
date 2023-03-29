@@ -80,19 +80,19 @@ class MapController extends ChangeNotifier {
 
   BitmapDescriptor assignIcon(Tag tag) {
     String categoria = tag.name;
-    if (categoria == "animales") {
+    if (categoria == "Animales") {
       return petMarker;
     }
-    if (categoria == "ayuda") {
+    if (categoria == "Avisos") {
       return ayudaMarker;
     }
-    if (categoria == "salud") {
+    if (categoria == "Salud") {
       return saludMarker;
     }
-    if (categoria == "eventos benéficos") {
+    if (categoria == "Eventos") {
       return eventoMarker;
     }
-    if (categoria == "avisos") {
+    if (categoria == "Ayuda") {
       return avisoMarker;
     }
     return petMarker;
