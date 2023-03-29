@@ -63,6 +63,7 @@ class _PostComponentState extends State<PostComponent> {
       print(e);
       setState(() {
         likes--;
+        alreadyDislike = false;
       });
     }
   }
