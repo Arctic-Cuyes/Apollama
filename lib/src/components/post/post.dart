@@ -29,23 +29,62 @@ class PostComponent extends StatefulWidget {
 class _PostComponentState extends State<PostComponent> {
   int comments = 0;
   DateTime date = DateTime.now();
-  bool waitingForLike = false;
+  int likes = 0;
+  int dislikes = 0;
+  bool alreadyLike = false;
+  bool alreadyDislike = false;
+
+  @override
+  void initState() {
+    super.initState();
+    likes = widget.post.upVotes!.length;
+    dislikes = widget.post.downVotes!.length;
+    alreadyLike = PostService.ifPostIsAlreadyUpVotedByCurrentUser(widget.post);
+    alreadyDislike = PostService.ifPostIsAlreadyDownVotedByCurrentUser(widget.post);
+  }
 
   
 
   void addLike() async{
+    setState(() {
+      if (!alreadyLike) {
+        likes++;
+        alreadyLike = true;
+      }
+
+      if (alreadyDislike){
+        dislikes--;
+        alreadyDislike = false;
+      }
+    });
     try{
       await PostService().upVotePost(widget.post.id!);
     } catch(e){
       print(e);
+      setState(() {
+        likes--;
+      });
     }
   }
 
   void addDislike() async{
+    setState(() {
+      if (!alreadyDislike){
+        dislikes++;
+        alreadyDislike = true;
+      }
+      if (alreadyLike){
+        likes--;
+        alreadyLike = false;
+      }
+    });
     try{
       await PostService().downVotePost(widget.post.id!);
     } catch(e){
       print(e);
+      setState(() {
+        dislikes--;
+      });
     }
   }
 
@@ -131,15 +170,20 @@ class _PostComponentState extends State<PostComponent> {
                     fontWeight: FontWeight.bold,
                   )
                 ),
-                Row(
-
-                  children: [
-                    for (var tag in widget.post.tagsData!) ...[
-                      TagsComponent(tagStyle: TagsList().getTag(tag.name)),
-                      const SizedBox(width: 5)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Wrap(
+                
+                    children: [
+                      for (var tag in widget.post.tagsData!) ...[
+                        TagsComponent(tagStyle: TagsList().getTag(tag.name)),
+                        // const SizedBox(width: 5)
+                      ]
                     ]
-                  ]
-                    
+                      
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -162,7 +206,8 @@ class _PostComponentState extends State<PostComponent> {
             ),
           ),
           
-          if (widget.post.imageUrl == "a") ...[
+
+          if (widget.post.imageUrl != "") ...[
             const Divider(
               color: Colors.transparent,
             ),
@@ -183,7 +228,7 @@ class _PostComponentState extends State<PostComponent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              if (PostService.ifPostIsAlreadyUpVotedByCurrentUser(widget.post)) ... [
+              if (alreadyLike) ... [
                 IconButton(
                   icon: const Icon(
                     Iconsax.like_15,
@@ -201,8 +246,8 @@ class _PostComponentState extends State<PostComponent> {
                 ),
               ],
 
-              Text(widget.post.upVotes!.length.toString()),
-              if (PostService.ifPostIsAlreadyDownVotedByCurrentUser(widget.post)) ... [
+              Text(likes.toString()),
+              if (alreadyDislike) ... [
                 IconButton(
                   icon: const Icon(
                     Iconsax.dislike5,
@@ -220,7 +265,7 @@ class _PostComponentState extends State<PostComponent> {
               ],
 
 
-              Text(widget.post.downVotes!.length.toString()),
+              Text(dislikes.toString()),
               IconButton(
                 icon: const Icon(Icons.comment),
                 onPressed: addComment,
