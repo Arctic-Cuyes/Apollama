@@ -25,26 +25,29 @@ class _RecientesState extends State<Recientes>
   @override
   bool get wantKeepAlive => true;
 
+  void applyFilters(filters) {
+    debugPrint("aplicando filters");
+    final filterProvider = context.watch<FilterProvider>();
+    for (var element in filterProvider.filters) {
+      Tag tag = Tag(name: element);
+      filters.add(tag);
+    }
+  }
+ 
   @override
   Widget build(BuildContext context) {
-    final filterProvider = context.watch<FilterProvider>();
     super.build(context);
     return RefreshIndicator(
-        color: Colors.white,
         onRefresh: () async {
-          setState(() {});
+         setState(() {});
         },
         child: FutureBuilder(
           future: gpsService.determinePosition(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            //Iterate filterProvider.filter
-            List<Tag> filters = [];
-            for (var element in filterProvider.filters){
-               Tag tag = Tag(name: element);
-               filters.add(tag);
-             }
             // if has data return a stream builder
             if (snapshot.hasData) {
+              List<Tag> filters = [];
+              applyFilters(filters);
               return StreamBuilder<List<Post>>(
                   stream: postService.getPostsAround(
                       position: snapshot.data as Position,
@@ -60,8 +63,29 @@ class _RecientesState extends State<Recientes>
                     }
 
                     if (snapshot.data!.isEmpty) {
-                      return const Center(
-                        child: Text('No hay eventos cercanos :c'),
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("No hay publicaciones cerca", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),),
+                            const SizedBox(height: 20),
+                            const Icon(
+                              Icons.hourglass_empty,
+                              size: 150,
+                            ),
+                            IconButton(
+                              iconSize: 50,
+                              onPressed: () async {
+                                setState(() {});
+                              },
+                              icon: const Icon(
+                                Icons.change_circle,
+                                size: 50,
+                              ),
+                            )
+                            
+                          ],
+                        ),
                       );
                     }
 
