@@ -100,7 +100,6 @@ class MapController extends ChangeNotifier {
 
   void addMarker(Post cMarker, BuildContext context) {
     debugPrint("add marker");
-    debugPrint(cMarker.toJson().toString());
     final id = cMarker.id;
     final markerId = MarkerId(id.toString());
     final icon = assignIcon(cMarker.tagsData![0]);
@@ -109,7 +108,7 @@ class MapController extends ChangeNotifier {
       position: LatLng(cMarker.location.geopoint.latitude,
           cMarker.location.geopoint.longitude),
       icon: icon,
-      draggable: true,
+      draggable: false,
       onTap: () {
         debugPrint(markerId.toString());
         showMarkerBottomSheet(context, cMarker);
