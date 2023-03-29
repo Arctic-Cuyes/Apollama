@@ -10,6 +10,9 @@ class FilterProvider extends  ChangeNotifier {
   List<String> _filters = [];
   List<String> get filters => _filters;
 
+  bool? _refresh;
+  bool? get refresh => _refresh;
+
    checkFilterPrefs () async {
     _userId = AuthService().currentUser.uid;
     _prefs = await SharedPreferences.getInstance();
@@ -25,6 +28,11 @@ class FilterProvider extends  ChangeNotifier {
       _filters.add(filter);
     }
     _prefs.setStringList('filters_$_userId', _filters);
+    notifyListeners();
+  }
+
+  void setRefresh(value){
+    _refresh = value;
     notifyListeners();
   }
 }
