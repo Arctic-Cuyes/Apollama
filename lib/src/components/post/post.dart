@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:zona_hub/src/components/post/tagsComponent.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
 import 'package:zona_hub/src/constants/images.dart';
+import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
@@ -26,21 +28,63 @@ class PostComponent extends StatefulWidget {
 class _PostComponentState extends State<PostComponent> {
   int comments = 0;
   DateTime date = DateTime.now();
-  bool waitingForLike = false;
+  int likes = 0;
+  int dislikes = 0;
+  bool alreadyLike = false;
+  bool alreadyDislike = false;
 
-  void addLike() async {
-    try {
+  @override
+  void initState() {
+    super.initState();
+    likes = widget.post.upVotes!.length;
+    dislikes = widget.post.downVotes!.length;
+    alreadyLike = PostService.ifPostIsAlreadyUpVotedByCurrentUser(widget.post);
+    alreadyDislike = PostService.ifPostIsAlreadyDownVotedByCurrentUser(widget.post);
+  }
+
+  
+
+  void addLike() async{
+    setState(() {
+      if (!alreadyLike) {
+        likes++;
+        alreadyLike = true;
+      }
+
+      if (alreadyDislike){
+        dislikes--;
+        alreadyDislike = false;
+      }
+    });
+    try{
       await PostService().upVotePost(widget.post.id!);
     } catch (e) {
       print(e);
+      setState(() {
+        likes--;
+        alreadyDislike = false;
+      });
     }
   }
 
-  void addDislike() async {
-    try {
+  void addDislike() async{
+    setState(() {
+      if (!alreadyDislike){
+        dislikes++;
+        alreadyDislike = true;
+      }
+      if (alreadyLike){
+        likes--;
+        alreadyLike = false;
+      }
+    });
+    try{
       await PostService().downVotePost(widget.post.id!);
     } catch (e) {
       print(e);
+      setState(() {
+        dislikes--;
+      });
     }
   }
 
@@ -116,6 +160,28 @@ class _PostComponentState extends State<PostComponent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                  widget.post.title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  )
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Wrap(
+                
+                    children: [
+                      for (var tag in widget.post.tagsData!) ...[
+                        TagsComponent(tagStyle: TagsList().getTag(tag.name)),
+                        // const SizedBox(width: 5)
+                      ]
+                    ]
+                      
+                  ),
+                ),
                 Text(widget.post.title,
                     style: const TextStyle(
                       fontSize: 20,
@@ -144,8 +210,9 @@ class _PostComponentState extends State<PostComponent> {
               ],
             ),
           ),
+          
 
-          if (widget.post.imageUrl != null) ...[
+          if (widget.post.imageUrl != "") ...[
             const Divider(
               color: Colors.transparent,
             ),
@@ -164,8 +231,7 @@ class _PostComponentState extends State<PostComponent> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              if (PostService.ifPostIsAlreadyUpVotedByCurrentUser(
-                  widget.post)) ...[
+              if (alreadyLike) ... [
                 IconButton(
                   icon: const Icon(
                     Iconsax.like_15,
@@ -175,13 +241,15 @@ class _PostComponentState extends State<PostComponent> {
                 ),
               ] else ...[
                 IconButton(
-                  icon: const Icon(Icons.thumb_up_alt_outlined),
+                  icon: const Icon(
+                    Iconsax.like_1
+                  ),
                   onPressed: addLike,
                 ),
               ],
-              Text(widget.post.upVotes!.length.toString()),
-              if (PostService.ifPostIsAlreadyDownVotedByCurrentUser(
-                  widget.post)) ...[
+
+              Text(likes.toString()),
+              if (alreadyDislike) ... [
                 IconButton(
                   icon: const Icon(
                     Iconsax.dislike5,
@@ -195,7 +263,9 @@ class _PostComponentState extends State<PostComponent> {
                   onPressed: addDislike,
                 ),
               ],
-              Text(widget.post.downVotes!.length.toString()),
+
+
+              Text(dislikes.toString()),
               IconButton(
                 icon: const Icon(Icons.comment),
                 onPressed: addComment,

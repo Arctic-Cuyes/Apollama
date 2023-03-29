@@ -34,4 +34,12 @@ class TagsList {
       "id": "Nk455xSI5Fb46u2WDCfl"
     },
   ];
+
+  Map<String, dynamic> getTag(String tag) {
+    // if not found, return the first tag
+    return tags.firstWhere((element) => element['tag'] == tag, orElse: () => tags[0]);
+  }
+
+
+
 }
