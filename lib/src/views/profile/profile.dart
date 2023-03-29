@@ -368,27 +368,27 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               //NUMERO DE COMUNIDADES
 
-                              Flex(direction: Axis.horizontal, children: const [
-                                ExtraInfo(
-                                    icon: Icon(Icons.public),
-                                    text: "Comunidades 10"),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                //NUMERO DE COMUNIDADES (Segunda ronda)
+                              // Flex(direction: Axis.horizontal, children: const [
+                              //   ExtraInfo(
+                              //       icon: Icon(Icons.public),
+                              //       text: "Comunidades 10"),
+                              //   SizedBox(
+                              //     width: 10,
+                              //   ),
+                              //   //NUMERO DE COMUNIDADES (Segunda ronda)
                     
-                                // Flex(direction: Axis.horizontal, children: [
-                                //   ExtraInfo(
-                                //       icon: Icon(Icons.public),
-                                //       text: "Comunidades 0"),
-                                //   SizedBox(
-                                //     width: 10,
-                                //   ),
-                                //   ExtraInfo(
-                                //       icon: Icon(Icons.post_add),
-                                //       text: "Publicaciones "),
-                                // ]),
-                              ]),
+                              //   // Flex(direction: Axis.horizontal, children: [
+                              //   //   ExtraInfo(
+                              //   //       icon: Icon(Icons.public),
+                              //   //       text: "Comunidades 0"),
+                              //   //   SizedBox(
+                              //   //     width: 10,
+                              //   //   ),
+                              //   //   ExtraInfo(
+                              //   //       icon: Icon(Icons.post_add),
+                              //   //       text: "Publicaciones "),
+                              //   // ]),
+                              // ]),
                             ]),
                           ),
                         ),
