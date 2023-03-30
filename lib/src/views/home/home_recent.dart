@@ -8,6 +8,7 @@ import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
+import 'package:zona_hub/src/utils/post_query.dart';
 
 class Recientes extends StatefulWidget {
   const Recientes({super.key});
@@ -26,7 +27,6 @@ class _RecientesState extends State<Recientes>
   bool get wantKeepAlive => true;
 
   void applyFilters(filters) {
-    debugPrint("aplicando filters");
     final filterProvider = context.watch<FilterProvider>();
     for (var element in filterProvider.filters) {
       Tag tag = Tag(name: element);

@@ -1,9 +1,11 @@
+// ignore_for_file: unnecessary_this
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/services/tag_service.dart';
 
-enum PostQuery { all, mine, tags, beforeEndDate, active }
+enum PostQuery { all, mine, tags, beforeEndDate, active, recent, popular }
 
 final TagService tagService = TagService();
 
@@ -26,6 +28,15 @@ extension QueryDuplication on Query<Post> {
             isGreaterThanOrEqualTo: DateTime.now().toIso8601String());
       case PostQuery.active:
         return this.where('active', isEqualTo: true);
+
+      case PostQuery.recent:
+        return this
+            .where('active', isEqualTo: true)
+            .orderBy('createdAt', descending: true);
+      case PostQuery.popular:
+        return this
+            .where('active', isEqualTo: true)
+            .orderBy('puntuation', descending: true);
     }
   }
 }

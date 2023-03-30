@@ -26,7 +26,6 @@ class _RecientesState extends State<Popular>
   bool get wantKeepAlive => true;
 
   void applyFilters(filters) {
-    debugPrint("aplicando filters");
     final filterProvider = context.watch<FilterProvider>();
     for (var element in filterProvider.filters) {
       Tag tag = Tag(name: element);

@@ -1,7 +1,4 @@
-import 'dart:isolate';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
@@ -86,17 +83,18 @@ class PostService {
         // UserModel currentUser = await authService.getCurrentUser();
         if (await _thisPostMustBeInactive(post)) continue;
         // if (_thisPostIsAlreadyVoted(post, currentUser)) continue;
-        if(tags.isNotEmpty) if (!await _thisPostHasAnyTag(post, tags)) continue;
+        if (tags.isNotEmpty && !_thisPostHasAnyTag(post, tags)) continue;
         posts.add(post);
       }
       return posts;
     });
   }
 
-  Future<bool> _thisPostHasAnyTag(Post post, List<Tag> tags) async {
+  bool _thisPostHasAnyTag(Post post, List<Tag> tags) {
     List<Tag>? postTags = post.tagsData;
-    return tags.any((tag) => postTags!.any((postTag) => postTag.name == tag.name) == true);
-}
+    return tags.any(
+        (tag) => postTags!.any((postTag) => postTag.name == tag.name) == true);
+  }
 
   // create a post and set the author to the current user
   Future<void> createPost(Post post) async {
