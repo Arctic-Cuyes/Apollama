@@ -236,9 +236,11 @@ class _NewPostFormState extends State<NewPostForm> {
           )),
       imageUrl: photoUrl,
       tagsData: chipsRef,
-      endDate:
-          _endDateController.text.isEmpty ? _beginDatePicked! : _endDatePicked!,
-      beginDate: _endDateController.text.isEmpty ? null : _beginDatePicked,
+      endDate: _endDateController.text.isEmpty
+          ? DateTime.now().add(const Duration(days: 7))
+          : _beginDatePicked!,
+      beginDate:
+          _beginDateController.text.isEmpty ? DateTime.now() : _beginDatePicked,
       createdAt: DateTime.now(),
       community: addressDetail!.city,
     );
