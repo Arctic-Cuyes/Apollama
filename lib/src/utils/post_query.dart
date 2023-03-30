@@ -12,14 +12,15 @@ final TagService tagService = TagService();
 extension QueryDuplication on Query<Post> {
   Query<Post> queryBy(
       {PostQuery query = PostQuery.all, List<Tag> tags = const <Tag>[]}) {
-    checkPostQueryParams(query: query, tags: tags);
+    // checkPostQueryParams(query: query, tags: tags);
     switch (query) {
       case PostQuery.all:
         return this;
       case PostQuery.mine:
         return this.where('author', isEqualTo: 'me'); // TODO: implement
       case PostQuery.tags:
-        return this.where('tags', //WARNING: the vs code warning is wrong
+        if (tags.isEmpty) return this;
+        return this.where('tags',
             arrayContainsAny: tags
                 .map((tag) => tagService.getTagDocRefFromId(tag.id!))
                 .toList());
@@ -30,21 +31,17 @@ extension QueryDuplication on Query<Post> {
         return this.where('active', isEqualTo: true);
 
       case PostQuery.recent:
-        return this
-            .where('active', isEqualTo: true)
-            .orderBy('createdAt', descending: true);
+        return this.orderBy('createdAt', descending: true);
       case PostQuery.popular:
-        return this
-            .where('active', isEqualTo: true)
-            .orderBy('puntuation', descending: true);
+        return this.orderBy('puntuation', descending: true);
     }
   }
 }
 
-void checkPostQueryParams(
-    {PostQuery query = PostQuery.beforeEndDate,
-    List<Tag> tags = const <Tag>[]}) {
-  if (query == PostQuery.tags && tags.isEmpty) {
-    throw ArgumentError('Tags cannot be empty when query is PostQuery.tags');
-  }
-}
+// void checkPostQueryParams(
+//     {PostQuery query = PostQuery.beforeEndDate,
+//     List<Tag> tags = const <Tag>[]}) {
+//   if (query == PostQuery.tags && tags.isEmpty) {
+//     throw ArgumentError('Tags cannot be empty when query is PostQuery.tags');
+//   }
+// }

@@ -40,7 +40,7 @@ class PostService {
 
   Stream<List<Post>> getPosts(
       {PostQuery query = PostQuery.active, List<Tag> tags = const <Tag>[]}) {
-    checkPostQueryParams(query: query, tags: tags);
+    // checkPostQueryParams(query: query, tags: tags);
 
     Stream<List<DocumentSnapshot<Post>>> stream =
         postsRef.queryBy(query: query, tags: tags).snapshots().map((snapshot) {
@@ -59,17 +59,20 @@ class PostService {
   }
 
   Stream<List<Post>> getPostsAround(
-      {PostQuery query = PostQuery.active,
+      {PostQuery query = PostQuery.all,
       List<Tag> tags = const <Tag>[],
-      required Position position}) {
-    checkPostQueryParams(query: query, tags: tags);
+      required Position position,
+      orderBy = PostQuery.recent}) {
+    // checkPostQueryParams(query: query, tags: tags);
 
     GeoFirePoint center =
         _geo.point(latitude: position.latitude, longitude: position.longitude);
 
     Stream<List<DocumentSnapshot<Post>>> stream = _geo
         .collectionWithConverter(
-            collectionRef: postsRef.queryBy(query: query, tags: tags))
+            collectionRef: postsRef
+                .queryBy(tags: tags, query: PostQuery.tags)
+                .queryBy(query: PostQuery.active))
         .within(
             center: center,
             radius: 4,
@@ -85,6 +88,19 @@ class PostService {
         // if (_thisPostIsAlreadyVoted(post, currentUser)) continue;
         if (tags.isNotEmpty && !_thisPostHasAnyTag(post, tags)) continue;
         posts.add(post);
+      }
+      if (orderBy == PostQuery.recent) {
+        posts.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+      }
+      if (orderBy == PostQuery.popular) {
+        posts.sort((a, b) {
+          int comparePuntuation = b.puntuation!.compareTo(a.puntuation!);
+          if (comparePuntuation != 0) {
+            return comparePuntuation;
+          } else {
+            return b.ups!.compareTo(a.ups!);
+          }
+        });
       }
       return posts;
     });
@@ -156,7 +172,9 @@ class PostService {
     // add the user to the up votes list
     post.upVotes?.add(user.toDocumentReference());
     // update the post
-    await postsRef.doc(post.id).update({'upVotes': post.upVotes});
+    await postsRef
+        .doc(post.id)
+        .update({'upVotes': post.upVotes, 'puntuation': post.puntuation! + 1});
     // update the user
     await userService.upVotePost(user, post);
   }
@@ -172,7 +190,9 @@ class PostService {
     // remove the user from the up votes list
     post.upVotes?.remove(user.toDocumentReference());
     // update the post
-    await postsRef.doc(post.id).update({'upVotes': post.upVotes});
+    await postsRef
+        .doc(post.id)
+        .update({'upVotes': post.upVotes, 'puntuation': post.puntuation! - 1});
     // update the user
     await userService.removeUpVotePost(user, post);
   }
@@ -190,7 +210,8 @@ class PostService {
     // add the user to the down votes list
     post.downVotes?.add(user.toDocumentReference());
     // update the post
-    await postsRef.doc(post.id).update({'downVotes': post.downVotes});
+    await postsRef.doc(post.id).update(
+        {'downVotes': post.downVotes, 'puntuation': post.puntuation! - 1});
     // update the user
     await userService.downVotePost(user, post);
   }
@@ -206,7 +227,8 @@ class PostService {
     // remove the user from the down votes list
     post.downVotes?.remove(user.toDocumentReference());
     // update the post
-    await postsRef.doc(post.id).update({'downVotes': post.downVotes});
+    await postsRef.doc(post.id).update(
+        {'downVotes': post.downVotes, 'puntuation': post.puntuation! + 1});
     // update the user
     await userService.removeDownVotePost(user, post);
   }
@@ -224,13 +246,13 @@ class PostService {
     }
   }
 
-  bool _thisPostIsAlreadyVoted(Post post, UserModel user) {
-    if (post.upVotes!.contains(user.toDocumentReference()) ||
-        post.downVotes!.contains(user.toDocumentReference())) {
-      return true;
-    }
-    return false;
-  }
+  // bool _thisPostIsAlreadyVoted(Post post, UserModel user) {
+  //   if (post.upVotes!.contains(user.toDocumentReference()) ||
+  //       post.downVotes!.contains(user.toDocumentReference())) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   static bool ifPostIsAlreadyUpVotedByCurrentUser(Post post) {
     return post.upVotes!.contains(user);
