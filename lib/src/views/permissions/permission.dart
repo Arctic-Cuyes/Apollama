@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:zona_hub/src/styles/global.colors.dart';
 import 'package:zona_hub/src/views/permissions/permission_controller.dart';
 import 'package:zona_hub/src/views/root.dart';
 

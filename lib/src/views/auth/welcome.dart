@@ -68,7 +68,7 @@ class _WelcomeViewState extends State<WelcomeView> {
             const Image(image: AssetImage(GlobalConstansImages.urlLogo), width: 100,),
             const SizedBox(height: 20.0),
             const Text(
-              "Zona Hub",
+              "Apollama",
               style: TextStyle(
                 color: GlobalColors.blackColor,
                 fontSize: 40.0,

@@ -76,7 +76,6 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    // print(AuthService().currentUser.photoURL!,);
     return Scaffold(
       //Sidebar
       //Ingonar la recomendación de hacer constante el componente ya que contiene elementos que van a cambiar
@@ -85,7 +84,7 @@ class _RootState extends State<Root> {
         
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Zona Hub"),
+        title: const Text("Apollama"),
         actions: [
           Container(
             padding: const EdgeInsets.all(10.0),

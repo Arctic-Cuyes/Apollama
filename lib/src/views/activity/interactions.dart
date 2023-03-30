@@ -34,12 +34,14 @@ class _InteractionsState extends State<Interactions> with AutomaticKeepAliveClie
         }
     
         if(snapshot.data!.isEmpty){
-          return  Column(
-            children: const [
-              SizedBox(height: 181,),
-              Icon(Icons.comment, size: 120,),
-              Text("Aún no tienes interacciones", style: TextStyle(fontSize: 20),)                
-            ],
+          return  Center(
+            child: Column(
+              children: const [
+                SizedBox(height: 181,),
+                Icon(Icons.comment, size: 120,),
+                Text("Aún no tienes interacciones", style: TextStyle(fontSize: 20),)                
+              ],
+            ),
           ) ;
         }
     
