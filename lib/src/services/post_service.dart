@@ -129,8 +129,8 @@ class PostService {
 
   // verify that endDate is after now, if not set the post to inactive
   Future<bool> _thisPostMustBeInactive(Post post) async {
-    if (post.endDate.isBefore(DateTime.now().add(const Duration(days: 1))) &&
-        post.active) {
+    if (post.active &&
+        DateTime.now().isAfter(post.endDate.add(const Duration(days: 1)))) {
       await _setPostInactive(post);
       return true;
     }
