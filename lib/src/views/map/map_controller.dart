@@ -83,7 +83,7 @@ class MapController extends ChangeNotifier {
     if (categoria == "Animales") {
       return petMarker;
     }
-    if (categoria == "Avisos") {
+    if (categoria == "Ayuda") {
       return ayudaMarker;
     }
     if (categoria == "Salud") {
@@ -92,7 +92,7 @@ class MapController extends ChangeNotifier {
     if (categoria == "Eventos") {
       return eventoMarker;
     }
-    if (categoria == "Ayuda") {
+    if (categoria == "Avisos") {
       return avisoMarker;
     }
     return petMarker;
