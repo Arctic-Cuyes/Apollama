@@ -18,6 +18,7 @@ class Post {
       required this.imageUrl,
       this.ups = 0,
       this.downs = 0,
+      this.puntuation = 0,
       this.tags,
       this.tagsData,
       this.community,
@@ -43,6 +44,7 @@ class Post {
           imageUrl: json['imageUrl'] as String? ?? '',
           ups: json['ups'] as int? ?? 0,
           downs: json['downs'] as int? ?? 0,
+          puntuation: json['puntuation'] as int? ?? 0,
           tags: (json['tags'] as List<dynamic>?)
                   ?.map((ref) =>
                       JsonDocumentReference(ref.path).toDocumentReference())
@@ -78,6 +80,7 @@ class Post {
   final String? imageUrl;
   final int? ups;
   final int? downs;
+  final int? puntuation;
   late List<DocumentReference<Map<String, dynamic>>>? tags;
   late List<Tag>? tagsData;
   final String? community;
@@ -97,6 +100,7 @@ class Post {
       'imageUrl': imageUrl,
       'ups': ups ?? 0,
       'downs': downs ?? 0,
+      'puntuation': puntuation ?? 0,
       'tags': tags,
       'community': community,
       if (beginDate != null) 'beginDate': beginDate!.toIso8601String(),
