@@ -6,6 +6,7 @@ import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
+import 'package:zona_hub/src/utils/post_query.dart';
 
 class Popular extends StatefulWidget {
   final List<Tag> filters;
@@ -29,7 +30,7 @@ class _RecientesState extends State<Popular>
     super.build(context);
     return RefreshIndicator(
         onRefresh: () async {
-         setState(() {});
+          setState(() {});
         },
         child: FutureBuilder(
           future: gpsService.determinePosition(),
@@ -39,7 +40,7 @@ class _RecientesState extends State<Popular>
                   stream: postService.getPostsAround(
                       position: snapshot.data as Position,
                       tags: widget.filters,
-                  ),
+                      orderBy: PostQuery.popular),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Post>> snapshot) {
                     if (snapshot.hasError) {
@@ -54,7 +55,11 @@ class _RecientesState extends State<Popular>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("No hay publicaciones cerca", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),),
+                            const Text(
+                              "No hay publicaciones cerca",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400),
+                            ),
                             const SizedBox(height: 20),
                             const Icon(
                               Icons.hourglass_empty,
@@ -70,7 +75,6 @@ class _RecientesState extends State<Popular>
                                 size: 50,
                               ),
                             )
-                            
                           ],
                         ),
                       );

@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Icon(Icons.add, color: Colors.white),
             ),
-          ), 
+          ),
         ]),
       ),
     );
@@ -58,7 +58,7 @@ class HomeTab extends StatelessWidget {
   const HomeTab({
     super.key,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -104,7 +104,13 @@ class HomeTab extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    const Text("Categorías", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),),
+                                    const Text(
+                                      "Categorías",
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     IconButton(
                                         onPressed: () {
                                           Navigator.pop(context);
@@ -116,7 +122,9 @@ class HomeTab extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 60,),
+                              const SizedBox(
+                                height: 60,
+                              ),
                               Wrap(
                                   alignment: WrapAlignment.center,
                                   direction: Axis.horizontal,
@@ -129,13 +137,16 @@ class HomeTab extends StatelessWidget {
                                         selectedColor: filter['selectedColor'],
                                       ),
                                   ]),
-                              const SizedBox(height: 50,),
+                              const SizedBox(
+                                height: 50,
+                              ),
                               ElevatedButton(
                                   onPressed: () {
                                     //Set state with new filters
                                     // applyFilters(context, filters, filterProvider);
                                     changeNotifier.setRefresh(true);
-                                    Navigator.pop(context); // Close filters selector
+                                    Navigator.pop(
+                                        context); // Close filters selector
                                   },
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
@@ -158,9 +169,7 @@ class HomeTab extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           )
                                         ],
-                                      )
-                                    )
-                                  )
+                                      )))
                             ],
                           ),
                         ),
@@ -185,14 +194,16 @@ class PostView extends StatefulWidget {
 
 class _PostViewState extends State<PostView> {
   List<Tag> filters = [];
-  
+
   @override
   void initState() {
     super.initState();
     debugPrint("Se construye post View state y se aplican los filtros");
     changeNotifier.addListener(onSetFilterListener);
     //Al llamar al provider en init state se toma un tiempo en cargar los filtros de shared preferences
-    Timer(const Duration(milliseconds: 10), () { setFilters(); });
+    Timer(const Duration(milliseconds: 10), () {
+      setFilters();
+    });
   }
 
   @override
@@ -202,18 +213,19 @@ class _PostViewState extends State<PostView> {
     super.dispose();
   }
 
-  onSetFilterListener(){
+  onSetFilterListener() {
     setFilters();
   }
 
   setFilters() {
-    //clear filters 
+    //clear filters
     setState(() {
       filters = [];
     });
     final filterProvider = context.read<FilterProvider>();
     for (var element in filterProvider.filters) {
-      Tag tag = Tag(name: element);
+      String id = TagsList().getTagId(element);
+      Tag tag = Tag(name: element, id: id);
       filters.add(tag);
     }
     debugPrint("Filtros : ${filters.length}");
@@ -223,8 +235,12 @@ class _PostViewState extends State<PostView> {
   Widget build(BuildContext context) {
     return TabBarView(
       children: [
-        Recientes(filters: filters,),
-        Popular(filters: filters,),
+        Recientes(
+          filters: filters,
+        ),
+        Popular(
+          filters: filters,
+        ),
         // Recientes(),
       ],
     );
