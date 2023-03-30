@@ -198,10 +198,10 @@ class _PostViewState extends State<PostView> {
   @override
   void initState() {
     super.initState();
-    debugPrint("Se construye post View state y se aplican los filtros");
     changeNotifier.addListener(onSetFilterListener);
     //Al llamar al provider en init state se toma un tiempo en cargar los filtros de shared preferences
-    Timer(const Duration(milliseconds: 10), () {
+    //En debug es más lento
+    Timer(const Duration(milliseconds: 15), () {
       setFilters();
     });
   }
