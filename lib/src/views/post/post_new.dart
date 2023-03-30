@@ -284,7 +284,7 @@ class _NewPostFormState extends State<NewPostForm> {
               ),
               TextFormField(
                 textCapitalization: TextCapitalization.sentences,
-                maxLength: 200,
+                maxLength: 300,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
