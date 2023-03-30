@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/geo/geo_data.dart';
 import 'package:zona_hub/src/models/post_model.dart';
+import 'package:zona_hub/src/models/user_model.dart';
 
 class _MarkerBottomModal extends StatelessWidget {
   final Post marker;

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/post/post.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
-import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Map/gps_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
-import 'package:zona_hub/src/utils/post_query.dart';
 
 class Recientes extends StatefulWidget {
-  const Recientes({super.key});
+  final List<Tag> filters;
+  const Recientes({super.key, required this.filters});
 
   @override
   State<Recientes> createState() => _RecientesState();
@@ -26,14 +24,6 @@ class _RecientesState extends State<Recientes>
   @override
   bool get wantKeepAlive => true;
 
-  void applyFilters(filters) {
-    final filterProvider = context.watch<FilterProvider>();
-    for (var element in filterProvider.filters) {
-      Tag tag = Tag(name: element);
-      filters.add(tag);
-    }
-  }
- 
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -44,14 +34,11 @@ class _RecientesState extends State<Recientes>
         child: FutureBuilder(
           future: gpsService.determinePosition(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            // if has data return a stream builder
             if (snapshot.hasData) {
-              List<Tag> filters = [];
-              applyFilters(filters);
               return StreamBuilder<List<Post>>(
                   stream: postService.getPostsAround(
                       position: snapshot.data as Position,
-                      tags: filters,
+                      tags: widget.filters,
                   ),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Post>> snapshot) {
