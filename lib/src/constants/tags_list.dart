@@ -37,9 +37,11 @@ class TagsList {
 
   Map<String, dynamic> getTag(String tag) {
     // if not found, return the first tag
-    return tags.firstWhere((element) => element['tag'] == tag, orElse: () => tags[0]);
+    return tags.firstWhere((element) => element['tag'] == tag,
+        orElse: () => tags[0]);
   }
 
-
-
+  String getTagId(String tag) {
+    return getTag(tag)['id'];
+  }
 }
