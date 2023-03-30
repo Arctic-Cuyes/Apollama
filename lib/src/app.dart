@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, currentMode, _) {
         return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'ZonaHub',
+            title: 'Apollama',
             //Customize light theme
             theme: customLightTheme(),
             //Customize dark theme with primarySwatch amber

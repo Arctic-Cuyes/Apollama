@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/drawer.dart';
+import 'package:zona_hub/src/constants/images.dart';
 import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/Internet/connectivity_service.dart';
@@ -65,8 +66,6 @@ class _RootState extends State<Root> {
     });
   }
 
-  
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -81,34 +80,39 @@ class _RootState extends State<Root> {
       //Ingonar la recomendación de hacer constante el componente ya que contiene elementos que van a cambiar
       drawer: Drawer(child: DrawerComponent()),
       appBar: AppBar(
-        
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Apollama"),
+        title: Row(
+          children: const [
+            Image(
+              image: AssetImage(GlobalConstansImages.urlLogo),
+              fit: BoxFit.contain,
+              height: 34,
+            ),
+            SizedBox(width: 9),
+            Text("Apollama"),
+          ],
+        ),
         actions: [
           Container(
-            padding: const EdgeInsets.all(10.0),
-            child: GestureDetector(
-              onTap: () => {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => 
-                    ProfilePage(usuario: 
-                      AuthService().getCurrentUser(), 
-                      userID: AuthService().currentUser.uid,
-                    )
-                  )
-                )
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
+              padding: const EdgeInsets.all(10.0),
+              child: GestureDetector(
+                onTap: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfilePage(
+                                usuario: AuthService().getCurrentUser(),
+                                userID: AuthService().currentUser.uid,
+                              )))
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
                   child: Image.network(
-                  AuthService().currentUser.photoURL!,
+                    AuthService().currentUser.photoURL!,
+                  ),
                 ),
-              ),
-            )
-            
-            
-          ),
+              )),
         ],
       ),
       body: pages[currentPage],
