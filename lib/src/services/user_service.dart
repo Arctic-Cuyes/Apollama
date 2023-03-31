@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
 import 'package:zona_hub/src/services/Auth/auth_service.dart';
+import 'package:zona_hub/src/services/tag_service.dart';
 
 class UserService {
   final usersRef =
@@ -11,7 +12,8 @@ class UserService {
                 UserModel.fromJson(snapshots.data() as Map<String, dynamic>),
             toFirestore: (user, _) => user.toJson(),
           );
-
+  final TagService tagService = TagService();
+  
   Future<UserModel> getUserDataFromDocRef(DocumentReference userRef) async {
     DocumentSnapshot userSnapshot = await userRef.get();
     return UserModel.fromJson(userSnapshot.data() as Map<String, dynamic>);
@@ -114,6 +116,7 @@ class UserService {
         Post post = Post.fromJson(postSnapshot.data() as Map<String, dynamic>);
         post.id = postSnapshot.id;
         post.authorData = await getUserDataFromDocRef(post.author!);
+        post.tagsData = await tagService.getTagsFromDocRefList(post.tags!);
         post.authorData!.id = post.author!.id;
         return post;
       }));
