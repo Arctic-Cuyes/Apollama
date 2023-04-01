@@ -296,7 +296,7 @@ class _NewPostFormState extends State<NewPostForm> {
                     labelText: 'Descripción',
                     hintText: "Detalles sobre el tema",
                     suffixIcon: IconButton(
-                        onPressed: () => _titleController.clear(),
+                        onPressed: () => _descriptionController.clear(),
                         icon: const Icon(Icons.clear))),
                 validator: _validateTextField,
               ),
