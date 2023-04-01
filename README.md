@@ -1,8 +1,6 @@
 <h1 align="center"> Apollama </h1> <br>
 <p align="center">
-  <a href="https://apollama.com/">
-    <img alt="GitPoint" title="ZonaHub" src="https://raw.githubusercontent.com/Arctic-Cuyes/ZonaHub/main/assets/images/ZH_Logo.png" width="150">
-  </a>
+    <img alt="Apollama" title="Apollama" src="assets/images/apollama.png" width="150">
 </p>
 
 <h3 align="center">
@@ -15,44 +13,47 @@
   </a>
 </p>
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Features](#features)
 - [Contributors](#contributors)
+- [Demo](#demo)
 - [Powered by](#powered-by)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Introduction
-**UN Sustainable Goals Addressed:** #10: Reduce Inequalities
+**UN Sustainable Goals Addressed:** 
 
-Apollama  is dedicated to promoting sustainable development and fulfilling the United Nations' Sustainable Development Goal of reducing inequalities (ODS-10). It is a social networking platform that allows users to share information about their local community using GPS, including news, health campaigns, community issues, volunteer/social events, adoption centers, points of interest, and more.
+<p align="center">
+  <img src = "assets/images/unsg.png" width=600>
+</p>
+
+Apollama is a social networking app designed to bring local communities together and facilitate communication and collaboration among members. With Apollama, users can discover and share information about local issues and events, and offer and receive help from others in their community. It's an easy and convenient way to stay informed, engaged, and connected with the people around you.
 
 
 <p align="center">
-  <img src = "http://i.imgur.com/HowF6aM.png" width=350>
+  <img src = "assets/images/mockups/1.png" width=600>
 </p>
 
 ## Features
 
-A few of the things you can do with ZonaHub:
+A few of the things you can do with Apollama:
 
-* Connect with your local community: Use GPS to explore and connect with your local community.
-* Stay informed: Get the latest news and updates about your community, including health campaigns and volunteer/social events.
-* Volunteer opportunities: Find volunteer opportunities in your community and connect with local organizations.
-* Adopt a pet: Discover adoption centers and connect with pets in need of a loving home.
-* Explore points of interest: Discover interesting places in your community and share them with others.
+* Top-notch user authentication system with secure login methods like email, Google, and Facebook.
+* Newsfeed feature that allows you to quickly and easily stay up-to-date on all the local issues and events happening in your community, with access to relevant posts and events on a map.
+* Find posts by category, including notices, aid, activities, pets, and health-related information, and rate the relevance of each post to promote the most useful content for your community.
+* Integration with Google Maps API, allowing you to find and discover relevant events and posts near you on a map with markers indicating their categories.
+* The option to create and share your own posts about local issues or events you come across, with easy management of your profile and access to your recent posts right from your profile page.
 
 <p align="center">
-  <img src = "http://i.imgur.com/IkSnFRL.png" width=700>
+  <img src = "assets/images/mockups/2.png">
 </p>
 
 <p align="center">
-  <img src = "http://i.imgur.com/0iorG20.png" width=700>
+  <img src = "assets/images/mockups/3.png">
 </p>
 
 
@@ -68,7 +69,8 @@ This project was made possible by these wonderful team, called Arctic Cuyes (Cuy
 <a href="https://github.com/BrunoMont2003" target="_blank" rel="noreferrer"><img src="https://avatars.githubusercontent.com/u/71912905?v=4" width="72" height="72" alt="bruno" /></a>
 </p>
 
-
+## Demo
+[![Watch the demo](./assets/images/ss/apollama-demo.png)](https://www.youtube.com/watch?v=kZfwyp8fL_g)
 
 ## Powered by 
 
