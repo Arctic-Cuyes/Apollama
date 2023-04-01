@@ -61,7 +61,7 @@ class _RootState extends State<Root> {
       });
       _requestPermission();
       AuthService().getCurrentUser();
-      //Check user logged shared preferences
+      //Check filters in shared preferences
       context.read<FilterProvider>().checkFilterPrefs();
     });
   }

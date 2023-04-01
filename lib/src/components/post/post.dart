@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:zona_hub/src/components/post/tagsComponent.dart';
+import 'package:zona_hub/src/components/post/tags_component.dart';
 import 'package:zona_hub/src/constants/custom_marker_images.dart';
 import 'package:zona_hub/src/constants/images.dart';
 import 'package:zona_hub/src/constants/tags_list.dart';
 import 'package:zona_hub/src/models/post_model.dart';
 import 'package:zona_hub/src/models/tag_model.dart';
 import 'package:zona_hub/src/models/user_model.dart';
-import 'package:zona_hub/src/services/Auth/auth_service.dart';
 import 'package:zona_hub/src/services/post_service.dart';
 import 'package:zona_hub/src/services/user_service.dart';
 import 'package:zona_hub/src/styles/global.colors.dart';
@@ -58,7 +57,6 @@ class _PostComponentState extends State<PostComponent> {
     try {
       await PostService().upVotePost(widget.post.id!);
     } catch (e) {
-      print(e);
       setState(() {
         likes--;
         alreadyDislike = false;
@@ -80,7 +78,6 @@ class _PostComponentState extends State<PostComponent> {
     try {
       await PostService().downVotePost(widget.post.id!);
     } catch (e) {
-      print(e);
       setState(() {
         dislikes--;
       });
@@ -141,7 +138,7 @@ class _PostComponentState extends State<PostComponent> {
                         )),
                     Text(
                       RelativeTime.format(widget.post.createdAt!),
-                      style: TextStyle(fontSize: 11),
+                      style: const TextStyle(fontSize: 11),
                     )
                   ],
                 ),
@@ -367,7 +364,7 @@ class _MapaDialogState extends State<MapaDialog> {
     return Dialog(
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: Container(
+      child: SizedBox(
         height: 400,
         child: Stack(
           children: [
