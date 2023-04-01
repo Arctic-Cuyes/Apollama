@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zona_hub/src/models/tag_model.dart';
 
 class TagsComponent extends StatefulWidget {
   final Map<String, dynamic> tagStyle;
