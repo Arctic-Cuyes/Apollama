@@ -15,44 +15,38 @@ class WelcomeView extends StatefulWidget {
 class _WelcomeViewState extends State<WelcomeView> {
   void showLoginBottomSheet() {
     showModalBottomSheet(
-      context: context, 
-      isScrollControlled: true,
-      backgroundColor: GlobalColors.whiteColor,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-
-        maxChildSize: 0.7,
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        builder: (context, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          child: Container(
-            child: LoginScreen(),
-          )
-        ),
-      )
-    );
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: GlobalColors.whiteColor,
+        builder: (context) => DraggableScrollableSheet(
+              expand: false,
+              maxChildSize: 0.7,
+              initialChildSize: 0.6,
+              minChildSize: 0.4,
+              builder: (context, scrollController) => SingleChildScrollView(
+                  controller: scrollController,
+                  child: Container(
+                    child: LoginScreen(),
+                  )),
+            ));
   }
 
   void showRegisterBottomSheet() {
     showModalBottomSheet(
-      context: context, 
-      isScrollControlled: true,
-      backgroundColor: GlobalColors.whiteColor,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-
-        maxChildSize: 0.8,
-        initialChildSize: 0.7,
-        minChildSize: 0.6,
-        builder: (context, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          child: Container(
-            child: RegisterScreen(),
-          )
-        ),
-      )
-    );
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: GlobalColors.whiteColor,
+        builder: (context) => DraggableScrollableSheet(
+              expand: false,
+              maxChildSize: 0.8,
+              initialChildSize: 0.7,
+              minChildSize: 0.6,
+              builder: (context, scrollController) => SingleChildScrollView(
+                  controller: scrollController,
+                  child: Container(
+                    child: RegisterScreen(),
+                  )),
+            ));
   }
 
   @override
@@ -65,15 +59,17 @@ class _WelcomeViewState extends State<WelcomeView> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Image(image: AssetImage(GlobalConstansImages.urlLogo), width: 100,),
+            const Image(
+              image: AssetImage(GlobalConstansImages.urlLogo),
+              width: 100,
+            ),
             const SizedBox(height: 20.0),
             const Text(
-              "Zona Hub",
+              "Apollama",
               style: TextStyle(
-                color: GlobalColors.blackColor,
-                fontSize: 40.0,
-                fontWeight: FontWeight.bold
-              ),
+                  color: GlobalColors.mainColor,
+                  fontSize: 40.0,
+                  fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10.0),
@@ -99,8 +95,6 @@ class _WelcomeViewState extends State<WelcomeView> {
               ),
             ),
 
-            
-
             const SizedBox(height: 10.0),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -113,16 +107,9 @@ class _WelcomeViewState extends State<WelcomeView> {
                 showBorders: true,
               ),
             ),
-
-        
-          
           ],
         ),
       ),
-   
     );
   }
-
-  
 }
-

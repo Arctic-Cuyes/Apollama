@@ -1,9 +1,16 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zona_hub/src/components/filter/filter_chip.dart';
 import 'package:zona_hub/src/constants/tags_list.dart';
+import 'package:zona_hub/src/models/tag_model.dart';
+import 'package:zona_hub/src/providers/filters_provider.dart';
 import 'package:zona_hub/src/utils/open_new_post_view.dart';
+import 'package:zona_hub/src/views/home/home_popular.dart';
 import 'package:zona_hub/src/views/home/home_recent.dart';
+
+final FilterProvider changeNotifier = FilterProvider();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,13 +36,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Stack(children: [
-          TabBarView(
-            children: [
-              Recientes(),
-              Recientes(),
-              // Recientes(),
-            ],
-          ),
+          const PostView(),
           Positioned(
             bottom: 5,
             right: 5,
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Icon(Icons.add, color: Colors.white),
             ),
-          ), 
+          ),
         ]),
       ),
     );
@@ -94,7 +95,7 @@ class HomeTab extends StatelessWidget {
                           width: double.infinity,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(20),
@@ -103,7 +104,13 @@ class HomeTab extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    const Text("Categorías", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),),
+                                    const Text(
+                                      "Categorías",
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     IconButton(
                                         onPressed: () {
                                           Navigator.pop(context);
@@ -114,6 +121,9 @@ class HomeTab extends StatelessWidget {
                                         ))
                                   ],
                                 ),
+                              ),
+                              const SizedBox(
+                                height: 60,
                               ),
                               Wrap(
                                   alignment: WrapAlignment.center,
@@ -127,9 +137,16 @@ class HomeTab extends StatelessWidget {
                                         selectedColor: filter['selectedColor'],
                                       ),
                                   ]),
+                              const SizedBox(
+                                height: 50,
+                              ),
                               ElevatedButton(
                                   onPressed: () {
                                     //Set state with new filters
+                                    // applyFilters(context, filters, filterProvider);
+                                    changeNotifier.setRefresh(true);
+                                    Navigator.pop(
+                                        context); // Close filters selector
                                   },
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
@@ -163,6 +180,68 @@ class HomeTab extends StatelessWidget {
                 Icons.filter_list_rounded,
               )),
         ),
+      ],
+    );
+  }
+}
+
+class PostView extends StatefulWidget {
+  const PostView({super.key});
+
+  @override
+  State<PostView> createState() => _PostViewState();
+}
+
+class _PostViewState extends State<PostView> {
+  List<Tag> filters = [];
+
+  @override
+  void initState() {
+    super.initState();
+    changeNotifier.addListener(onSetFilterListener);
+    //Al llamar al provider en init state se toma un tiempo en cargar los filtros de shared preferences
+    //En debug es más lento
+    Timer(const Duration(milliseconds: 15), () {
+      setFilters();
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    changeNotifier.removeListener(onSetFilterListener);
+    super.dispose();
+  }
+
+  onSetFilterListener() {
+    setFilters();
+  }
+
+  setFilters() {
+    //clear filters
+    setState(() {
+      filters = [];
+    });
+    final filterProvider = context.read<FilterProvider>();
+    for (var element in filterProvider.filters) {
+      String id = TagsList().getTagId(element);
+      Tag tag = Tag(name: element, id: id);
+      filters.add(tag);
+    }
+    debugPrint("Filtros : ${filters.length}");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TabBarView(
+      children: [
+        Recientes(
+          filters: filters,
+        ),
+        Popular(
+          filters: filters,
+        ),
+        // Recientes(),
       ],
     );
   }

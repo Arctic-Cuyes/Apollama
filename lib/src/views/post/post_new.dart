@@ -236,9 +236,11 @@ class _NewPostFormState extends State<NewPostForm> {
           )),
       imageUrl: photoUrl,
       tagsData: chipsRef,
-      endDate:
-          _endDateController.text.isEmpty ? _beginDatePicked! : _endDatePicked!,
-      beginDate: _endDateController.text.isEmpty ? null : _beginDatePicked,
+      endDate: _endDateController.text.isEmpty
+          ? DateTime.now().add(const Duration(days: 7))
+          : _beginDatePicked!,
+      beginDate:
+          _beginDateController.text.isEmpty ? DateTime.now() : _beginDatePicked,
       createdAt: DateTime.now(),
       community: addressDetail!.city,
     );
@@ -284,7 +286,7 @@ class _NewPostFormState extends State<NewPostForm> {
               ),
               TextFormField(
                 textCapitalization: TextCapitalization.sentences,
-                maxLength: 200,
+                maxLength: 300,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -294,7 +296,7 @@ class _NewPostFormState extends State<NewPostForm> {
                     labelText: 'Descripción',
                     hintText: "Detalles sobre el tema",
                     suffixIcon: IconButton(
-                        onPressed: () => _titleController.clear(),
+                        onPressed: () => _descriptionController.clear(),
                         icon: const Icon(Icons.clear))),
                 validator: _validateTextField,
               ),
